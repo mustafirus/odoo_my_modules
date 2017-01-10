@@ -1,0 +1,17 @@
+<odoo>
+  <data>
+    <record model="ir.ui.view" id="view_general_configuration_mail_svami">
+      <field name="name">base.config.settings.mail.svami</field>
+      <field name="model">base.config.settings</field>
+      <field name="inherit_id" ref="mail.view_general_configuration_mail_alias_domain"/>
+      <field name="arch" type="xml">
+        <xpath expr="//field[@name='alias_domain']" position='after'>
+            <div>
+                <label for="use_svami" class="oe_inline"/>
+                <field name="use_svami" class="oe_inline"/>
+            </div>
+        </xpath>
+      </field>
+    </record>
+  </data>
+</odoo>
