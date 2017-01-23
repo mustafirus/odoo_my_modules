@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import string
 from glob import glob
 
 from odoo import models, fields, api, _
@@ -50,6 +51,8 @@ class BackupRestore(models.TransientModel):
         if not self.backup_name:
             return
 
+        self.backup_name = string.replace(self.backup_name,' ', '_')
+
         file = open("%s/%s.zip" % (backup_dir,self.backup_name),"w", 0600)
         dump_db(self._cr.dbname,file)
         file.close()
@@ -64,11 +67,8 @@ class BackupRestore(models.TransientModel):
         dbname = self._cr.dbname
         restore_name = self.restore_name
 
-#        self._cr.commit()
         exp_drop(dbname)
         restore_db(dbname, restore_name)
-        odoo.service.server.restart()
-        a = 1
 
 
 
