@@ -41,18 +41,18 @@
 
     <!-- Top menu item -->
 
-    <menuitem name="helpdesk" id="helpdesk.menu_root"/>
+    <menuitem name="Helpdesk" id="helpdesk.menu_root"/>
 
     <!-- menu categories -->
 
-    <menuitem name="Menu 1" id="helpdesk.menu_1" parent="helpdesk.menu_root"/>
-    <menuitem name="Menu 2" id="helpdesk.menu_2" parent="helpdesk.menu_root"/>
+    <menuitem name="Helpdesk" id="helpdesk.menu_tickets" parent="helpdesk.menu_root"/>
+    <menuitem name="Configuration" id="helpdesk.menu_config" parent="helpdesk.menu_root"/>
 
     <!-- actions -->
 
-    <menuitem name="List" id="helpdesk.menu_1_list" parent="helpdesk.menu_1"
+    <menuitem name="Tickets" id="helpdesk.tickets" parent="helpdesk.menu_tickets"
               action="helpdesk.action_window"/>
-    <menuitem name="Server to list" id="helpdesk" parent="helpdesk.menu_2"
+    <menuitem name="Support teams" id="helpdesk.help_teams" parent="helpdesk.menu_config"
               action="helpdesk.action_server"/>
 
   </data>
