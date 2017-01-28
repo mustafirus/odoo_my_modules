@@ -41,19 +41,19 @@
 
     <!-- Top menu item -->
 
-    <menuitem name="Helpdesk" id="helpdesk.menu_root"/>
+    <menuitem name="Helpdesk" id="menu_root"/>
 
     <!-- menu categories -->
 
-    <menuitem name="Helpdesk" id="helpdesk.menu_tickets" parent="helpdesk.menu_root"/>
-    <menuitem name="Configuration" id="helpdesk.menu_config" parent="helpdesk.menu_root"/>
+    <menuitem name="Helpdesk" id="menu_tickets" parent="menu_root"/>
+    <menuitem name="Configuration" id="menu_config" parent="menu_root"/>
 
     <!-- actions -->
 
-    <menuitem name="Tickets" id="helpdesk.tickets" parent="helpdesk.menu_tickets"
-              action="helpdesk.action_window"/>
-    <menuitem name="Support teams" id="helpdesk.help_teams" parent="helpdesk.menu_config"
-              action="helpdesk.action_server"/>
+    <menuitem name="Tickets" id="tickets" parent="menu_tickets"
+              action="action_window"/>
+    <menuitem name="Support teams" id="help_teams" parent="menu_config"
+              action="action_server"/>
 
   </data>
 </odoo>
