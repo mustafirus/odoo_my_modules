@@ -12,6 +12,7 @@
         # 'security/ir.model.access.csv',
         'views/views.xml',
         'views/templates.xml',
+        'views/support_team_views.xml',
     ],
     'demo': [],
     'depends': ['mail'],
