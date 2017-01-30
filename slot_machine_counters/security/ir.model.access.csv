@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_slot_machine_counters_gambling,gambling.gambling,model_gambling_gambling,,1,0,0,0

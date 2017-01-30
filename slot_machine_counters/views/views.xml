@@ -1,0 +1,151 @@
+<odoo>
+    <data>
+        <!-- explicit list view definition -->
+
+        <record model="ir.ui.view" id="hall_list">
+            <field name="name">Halls</field>
+            <field name="model">slot_machine_counters.hall</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="description"/>
+                    <field name="hub_id"/>
+                    <field name="hub_sim"/>
+                    <field name="phone"/>
+                    <field name="geo"/>
+                    <field name="slot_ids"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="slot_list">
+            <field name="name">Slots</field>
+            <field name="model">slot_machine_counters.slot</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="device_id"/>
+                    <field name="num"/>
+                    <field name="type"/>
+                    <field name="denomenation"/>
+                    <field name="hall_id"/>
+                    <field name="passwd"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="hall_form">
+            <field name="model">slot_machine_counters.hall</field>
+            <!--<field name="priority">15</field>-->
+            <field name="arch" type="xml">
+                <form>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only" string="Hall name"/>
+                        <h1>
+                            <field name="name" placeholder="Hall name ....."/>
+                        </h1>
+                        <div name="options_active"/>
+                    </div>
+                    <group>
+                        <group name="left">
+                            <field name="hub_id"/>
+                            <field name="hub_sim"/>
+                            <field name="phone"/>
+                            <field name="geo"/>
+                        </group>
+                        <group name="right">
+                            <field name="description"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="slots" string="Slots">
+                            <field name="slot_ids" widget="many2many_kanban" options="{'not_delete': True}">
+                                <kanban quick_create="true" create="true" delete="true">
+                                    <field name="device_id"/>
+                                    <templates>
+                                        <t t-name="kanban-box">
+                                            <div class="oe_kanban_global_click" style="position: relative">
+                                                <a t-if="! read_only_mode" type="delete"
+                                                   style="position: absolute; right: 0; padding: 4px; diplay: inline-block">
+                                                    X
+                                                </a>
+                                                <div class="oe_module_vignette">
+                                                    <!--<img t-att-src="kanban_image('res.users', 'image_small', record.id.value)" class="oe_avatar oe_kanban_avatar_smallbox"/>-->
+                                                    <div class="oe_module_desc">
+                                                        <field name="device_id"/>
+                                                        <field name="type"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </t>
+                                    </templates>
+                                </kanban>
+                            </field>
+                        </page>
+                        <page string="More Info" name="more_info" groups="base.group_no_one">
+                            <group string="Company" groups="base.group_multi_company">
+                                <field name="company_id" options="{'no_create': True}"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="slot_form">
+            <field name="model">slot_machine_counters.slot</field>
+            <!--<field name="priority">15</field>-->
+            <field name="arch" type="xml">
+                <form>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <group>
+                        <group name="left">
+                            <field name="device_id"/>
+                            <field name="num"/>
+                            <field name="type"/>
+                        </group>
+                        <group name="right">
+                            <field name="denomenation"/>
+                            <field name="hall_id"/>
+                            <field name="passwd"/>
+                        </group>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+
+        <!-- actions opening views on models -->
+        <record model="ir.actions.act_window" id="slot_machine_counters.action_window_hall">
+            <field name="name">Hals</field>
+            <field name="res_model">slot_machine_counters.hall</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="slot_machine_counters.action_window_slot">
+            <field name="name">Slots</field>
+            <field name="res_model">slot_machine_counters.slot</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+        <!-- Top menu item -->
+        <menuitem name="Slot Machine Counters" id="slot_machine_counters.menu_root"/>
+        <!-- menu categories -->
+        <menuitem name="Menu 1" id="slot_machine_counters.menu_1" parent="slot_machine_counters.menu_root"/>
+        <menuitem name="Config" id="slot_machine_counters.menu_config" parent="slot_machine_counters.menu_root"/>
+        <!-- actions -->
+        <menuitem name="Hals" id="slot_machine_counters.menu_hals" parent="slot_machine_counters.menu_config"
+                  action="slot_machine_counters.action_window_hall"/>
+        <menuitem name="Slots" id="slot_machine_counters.menu_Slots" parent="slot_machine_counters.menu_config"
+                  action="slot_machine_counters.action_window_slot"/>
+    </data>
+</odoo>
