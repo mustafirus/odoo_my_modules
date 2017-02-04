@@ -10,11 +10,14 @@
     'license':'LGPL-3',
     'data': [
         # 'security/ir.model.access.csv',
-        'views/views.xml',
-        'views/templates.xml',
-        'views/support_team_views.xml',
+        'views/helpdesk_tickets.xml',
+        'views/helpdesk_team_views.xml',
+        'views/helpdesk_stage_views.xml',
+        'views/helpdesk_data.xml',
+
     ],
     'demo': [],
-    'depends': ['mail'],
+    'depends': ['base','mail'],
     'installable': True,
+    'application': True,
 }

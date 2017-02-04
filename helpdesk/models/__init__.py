@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from . import models
-from . import support_team
+from . import res_users
+from . import helpdesk_stage
+from . import helpdesk_team
+from . import helpdesk_ticket
+
