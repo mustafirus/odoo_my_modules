@@ -2,6 +2,7 @@
 
 from odoo import models, fields, api, _
 import dns.resolver
+import string
 
 def is_alias_on_svami(domain_alias):
     try:
@@ -42,8 +43,12 @@ class BaseConfiguration(models.TransientModel):
             mail_server.unlink()
             fetchmail_server.unlink()
 
+        mailbox = string.replace(self._cr.dbname,'_', '-')
+
+
         mail_server.create(
-            {'name': "svami", 'smtp_host': "mail.svami.in.ua", 'smtp_port': "587", 'smtp_user': "odoo@"+alias_domain,
+            {'name': "svami", 'smtp_host': "mail.svami.in.ua", 'smtp_port': "587",
+             'smtp_user': mailbox + "@odoo.svami.in.ua",
              'smtp_encryption': "starttls"}
         )
         fetchmail_server.create(
