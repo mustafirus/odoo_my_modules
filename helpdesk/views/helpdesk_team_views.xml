@@ -183,7 +183,9 @@
                 id="support_team_config"
                 name="Support teams"
                 action="support_team_config_action"
-                parent="menu_config" />
+                parent="menu_config"
+                groups="base.group_system"
+        />
             <!--help="&gt;p class=&quot;oe_view_nocontent_create&quot;&lt;-->
                     <!--Click here to define a new support team.-->
                   <!--&gt;/p&lt;-->

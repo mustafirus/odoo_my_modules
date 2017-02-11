@@ -56,7 +56,7 @@ class SupportTeam(models.Model):
                 ['|', ('user_id', '=', user_id), ('member_ids', '=', user_id)],
                 limit=1)
         if not team_id:
-            team_id = self.env.ref('helpdesk.help', raise_if_not_found=False)
+            team_id = self.env.ref('helpdesk.team_alpha', raise_if_not_found=False)
         return team_id
 
 

@@ -18,8 +18,9 @@ class HelpdeskTicket(models.Model):
     partner_id = fields.Many2one('res.partner', string='Customer', index=True)
     contact_name = fields.Char('Contact Name')
     email_from = fields.Char('Email', help="Email address of the contact", index=True)
-    user_id = fields.Many2one('res.users', string='Assigned to', index=True, track_visibility='onchange', default=lambda self: self.env.uid)
-    team_id = fields.Many2one('helpdesk.team', string='Support Team', default=lambda self: self.env['helpdesk.team'].sudo()._get_default_team_id(user_id=self.env.uid),
+    user_id = fields.Many2one('res.users', string='Assigned to', index=True, track_visibility='onchange', default=False)
+    team_id = fields.Many2one('helpdesk.team', string='Support Team',
+        default=lambda self: self.env['helpdesk.team'].sudo()._get_default_team_id(user_id=self.env.uid),
         index=True, track_visibility='onchange', help='When sending mails, the default email address is taken from the sales team.')
     date_deadline = fields.Datetime(string='Deadline')
 
@@ -90,3 +91,10 @@ class HelpdeskTicket(models.Model):
         # perform search
         stage_ids = stages._search(search_domain, order=order, access_rights_uid=SUPERUSER_ID)
         return stages.browse(stage_ids)
+
+    @api.multi
+    def takeit(self):
+        self.ensure_one()
+        vals = {'user_id' : self.env.uid,
+                'team_id': self.env['helpdesk.team'].sudo()._get_default_team_id(user_id=self.env.uid).id}
+        return super(HelpdeskTicket, self).write(vals)

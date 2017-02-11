@@ -19,13 +19,17 @@
         <field name="sequence">80</field>
     </record>
     <data noupdate="1">
-        <record model="helpdesk.team" id="team_help">
-            <field name="name">Help</field>
+        <record model="helpdesk.team" id="team_alpha">
+            <field name="name">Alpha Team</field>
             <field name="member_ids" eval="[(4, ref('base.user_root'))]"/>
         </record>
 
-        <record model="helpdesk.team" id="team_guru">
-            <field name="name">Guru</field>
+        <record model="helpdesk.team" id="team_beta">
+            <field name="name">Beta Team</field>
+        </record>
+
+        <record model="helpdesk.team" id="team_omega">
+            <field name="name">Omega Team</field>
         </record>
     </data>
 </odoo>
