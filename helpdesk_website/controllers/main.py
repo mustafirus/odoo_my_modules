@@ -73,9 +73,12 @@ class WebsiteAccount(website_account):
 
     @http.route(['/helpdesk'], type='http', auth="public", website=True)
     def helpdesk(self, **kw):
-        return request.render("helpdesk.helpdesk",{ 'use_website_helpdesk_form' : True })
+        team = http.request.env.ref('helpdesk.team_alpha')
+        team.website_published = False
+        return request.render("helpdesk.helpdesk",{ 'use_website_helpdesk_form' : True,
+                                                    'team': team,
+                                                    })
         # teams = http.request.env['helpdesk.team']
-        # team = http.request.env.ref('helpdesk.team_help')
         # return request.render("helpdesk.helpdesk",{ 'teams' : teams,
         #                                             'team': team,
         #                                             'use_website_helpdesk_form' : True })

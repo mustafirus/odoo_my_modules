@@ -53,7 +53,7 @@ class BaseConfiguration(models.TransientModel):
         )
         fetchmail_server.create(
             {'name': "svami", 'server': "mail.svami.in.ua", 'port': "993",
-             'type': 'imap', 'is_ssl': True, 'user': "odoo@" + alias_domain}
+             'type': 'imap', 'is_ssl': True, 'user': mailbox + "@odoo.svami.in.ua"}
         )
         self.env['ir.config_parameter'].set_param("svami.use_svami", alias_domain)
 

@@ -5,4 +5,13 @@
             <field name="website_form_access">True</field>
             <field name="website_form_label">Create a ticket</field>
         </record>
+        <function model="ir.model.fields" name="formbuilder_whitelist">
+            <value>helpdesk.ticket</value>
+            <value eval="[
+                'contact_name',
+                'email_from',
+                'name',
+                'description',
+            ]"/>
+        </function>
 </odoo>
