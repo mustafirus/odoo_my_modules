@@ -20,5 +20,5 @@ This module adds helpdesk tickets inside your account's page on website.
         'views/helpdesk_website_data.xml',
     ],
     'demo': [],
-    'depends': ['helpdesk','website_portal'],
+    'depends': ['helpdesk','website_portal', "website_form"],
 }
