@@ -1,0 +1,5 @@
+<odoo>
+  <data noupdate="1">
+    <function model="base.config.settings" name="_set_default_mail_catchall_domain"/>
+  </data>
+</odoo>
