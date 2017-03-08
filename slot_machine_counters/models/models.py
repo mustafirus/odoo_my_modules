@@ -27,3 +27,23 @@ class Slot(models.Model):
     hall_id = fields.Many2one("slot_machine_counters.hall","Hall")
     passwd = fields.Char("Password")
     active = fields.Boolean('Active?', default=True)
+
+class SlotShot(models.Model):
+    _name = 'slot_machine_counters.slotshot'
+    _description = 'SlotShot'
+
+    hall_id = fields.Many2one("slot_machine_counters.hall","Hall")
+    date = fields.Date("Date")
+    shotshot_line = fields.One2many('slot_machine_counters.slotshot.line', 'slotshot_id', string='Slotshot Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True)
+
+class SlotShotLine(models.Model):
+    _name = 'slot_machine_counters.slotshot.line'
+    _description = 'SlotShot Line'
+    _order = 'slotshot_id'
+
+    slotshot_id = fields.Many2one('slot_machine_counters.slotshot', string='SlotShot Reference', required=True, ondelete='cascade', index=True, copy=False)
+    iin_begin = fields.Integer("iin")
+    out_begin = fields.Integer("out")
+    iin_end   = fields.Integer("iin")
+    out_end   = fields.Integer("out")
+    delta     = fields.Integer("delta",compute='_compute_amount', readonly=True, store=True)
