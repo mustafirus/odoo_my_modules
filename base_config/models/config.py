@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api, _
+from odoo import models, api
+import vars
 
 class BaseConfig(models.TransientModel):
     _inherit = 'base.config.settings'
 
     @api.model
     def _set_default_mail_catchall_domain(self):
-        alias_domain = "{{odoo_domain}}" #
         mail_server= self.env['ir.mail_server'].sudo().search([('name', '=', 'localhost')])
         fetchmail_server= self.env['fetchmail.server'].sudo().search([('name', '=', 'localhost')])
 
@@ -19,8 +19,8 @@ class BaseConfig(models.TransientModel):
         if len(fetchmail_server) == 0:
             fetchmail_server.create(
                 {'name': "localhost", 'server': "localhost", 'port': "143",
-                 'type': 'imap', 'is_ssl': False, 'user': "odoo", 'password' : "{{odoo_mail_password}}"} #
+                 'type': 'imap', 'is_ssl': False, 'user': "odoo", 'password' : vars.odoo_mail_password} #
             )
-        self.env['ir.config_parameter'].set_param("mail.catchall.domain", alias_domain)
+        self.env['ir.config_parameter'].set_param("mail.catchall.domain", vars.alias_domain)
 
 
