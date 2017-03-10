@@ -1,15 +1,26 @@
 <odoo>
     <data>
         <!--  -->
-        <!--   <record id="object0" model="slot_machine_counters.gambling"> -->
-        <!--     <field name="name">Object 0</field> -->
-        <!--     <field name="value">0</field> -->
-        <!--   </record> -->
+           <record id="hall1" model="slot_machine_counters.hall">
+             <field name="name">Hall 1</field>
+             <field name="description">dfdfdfs</field>
+             <field name="hub_sn">H33234</field>
+             <field name="hub_sim">3345435</field>
+             <field name="phone">3345435</field>
+           </record>
         <!--  -->
-        <!--   <record id="object1" model="slot_machine_counters.gambling"> -->
-        <!--     <field name="name">Object 1</field> -->
-        <!--     <field name="value">10</field> -->
-        <!--   </record> -->
+           <record id="slot1" model="slot_machine_counters.slot">
+             <field name="index">1</field>
+             <field name="dev_sn">S3435</field>
+             <field name="type">BlackJack</field>
+             <field name="hall_id" ref="hall1"/>
+           </record>
+           <record id="slot2" model="slot_machine_counters.slot">
+             <field name="index">2</field>
+             <field name="dev_sn">S2546</field>
+             <field name="type">BlackJack</field>
+             <field name="hall_id" ref="hall1"/>
+           </record>
         <!--  -->
         <!--   <record id="object2" model="slot_machine_counters.gambling"> -->
         <!--     <field name="name">Object 2</field> -->

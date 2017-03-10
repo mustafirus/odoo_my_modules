@@ -7,8 +7,7 @@
             <field name="model">slot_machine_counters.slotshot</field>
             <field name="arch" type="xml">
                 <tree>
-                    <field name="date"/>
-                    <field name="hall_id"/>
+                    <field name="name"/>
                 </tree>
             </field>
         </record>
@@ -19,25 +18,23 @@
             <field name="arch" type="xml">
                 <form>
                     <header>
-                        <button name="action_cancel" states="draft,sent,sale" type="object" string="Cancel"/>
+                        <button name="get_data" type="object" string="Get data"
+                                attrs="{'invisible': [('date', '=', False)]}"
+                        />
                     </header>
                     <sheet>
                         <group>
                             <group name="left">
-                                <field name="hub_id"/>
-                                <field name="hub_sim"/>
-                                <field name="phone"/>
-                                <field name="geo"/>
-                            </group>
-                            <group name="right">
-                                <field name="description"/>
+                                <field name="hall_id"/>
+                                <field name="date"/>
                             </group>
                         </group>
                         <notebook>
                             <page string="Slotshot Lines">
-                                <field name="slotshot_line" mode="tree"
-                                    attrs="{'readonly': [('state', 'in', ('done','cancel'))]}">
-                                    <tree string="Sales Order Lines" editable="bottom">
+                                <field name="slotshot_lines" mode="tree" readonly="1">
+                                    <tree string="Slotshot Lines">
+                                        <field name="index"/>
+                                        <field name="slot_id"/>
                                         <field name="iin_begin"/>
                                         <field name="iin_end"/>
                                         <field name="out_begin"/>
@@ -46,14 +43,6 @@
                                     </tree>
                                 </field>
                                 <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
-                                    <field name="amount_untaxed" widget='monetary' options="{'currency_field': 'currency_id'}"/>
-                                    <field name="amount_tax" widget='monetary' options="{'currency_field': 'currency_id'}"/>
-                                    <div class="oe_subtotal_footer_separator oe_inline o_td_label">
-                                        <label for="amount_total" />
-                                        <button name="button_dummy"
-                                            states="draft,sent" string="(update)" type="object" class="oe_edit_only oe_link"/>
-                                    </div>
-                                    <field name="amount_total" nolabel="1" class="oe_subtotal_footer_separator" widget='monetary' options="{'currency_field': 'currency_id'}"/>
                                 </group>
                                 <div class="oe_clear"/>
                             </page>
@@ -64,23 +53,16 @@
         </record>
 
         <!-- actions opening views on models -->
-        <record model="ir.actions.act_window" id="slot_machine_counters.action_window_hall">
-            <field name="name">Hals</field>
-            <field name="res_model">slot_machine_counters.hall</field>
+        <record model="ir.actions.act_window" id="slot_machine_counters.action_window_slotshots">
+            <field name="name">Slot Shots</field>
+            <field name="res_model">slot_machine_counters.slotshot</field>
             <field name="view_mode">tree,form</field>
         </record>
-
-        <record model="ir.actions.act_window" id="slot_machine_counters.action_window_slot">
-            <field name="name">Slots</field>
-            <field name="res_model">slot_machine_counters.slot</field>
-            <field name="view_mode">tree,form</field>
-        </record>
-
 
         <!-- menu categories -->
-        <menuitem name="Menu 2" id="slot_machine_counters.menu_2" parent="slot_machine_counters.menu_root"/>
+        <menuitem name="Search" id="slot_machine_counters.search" parent="slot_machine_counters.menu_root"/>
         <!-- actions -->
-        <menuitem name="Hals" id="slot_machine_counters.menu_hals" parent="slot_machine_counters.menu_2"
-                  action="slot_machine_counters.action_window_hall"/>
+        <menuitem name="Slot Shots" id="slot_machine_counters.menu_slotshots" parent="slot_machine_counters.search"
+                  action="slot_machine_counters.action_window_slotshots"/>
     </data>
 </odoo>

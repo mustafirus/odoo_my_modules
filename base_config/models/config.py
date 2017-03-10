@@ -8,7 +8,7 @@ class BaseConfig(models.TransientModel):
 
     @api.model
     def _set_default_mail_catchall_domain(self):
-        mail_server= self.env['ir.mail_server'].sudo().search([('name', '=', 'localhost')])
+        # mail_server= self.env['ir.mail_server'].sudo().search([('name', '=', 'localhost')])
         fetchmail_server= self.env['fetchmail.server'].sudo().search([('name', '=', 'localhost')])
 
         # mail_server.create(

@@ -16,7 +16,11 @@
     'depends': ['base'],
     'data': [
         # 'security/ir.model.access.csv',
-        'views/views.xml',
+        'views/hallslot.xml',
         'views/templates.xml',
+        'views/slotshot.xml',
+    ],
+    'demo': [
+        'demo/demo.xml',
     ],
 }
