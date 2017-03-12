@@ -12,7 +12,7 @@ class BaseConfig(models.TransientModel):
         if len(fetchmail_server) == 0:
             fetchmail_server.create(
                 {'name': "localhost", 'server': "localhost", 'port': "143",
-                 'type': 'imap', 'is_ssl': False, 'user': "odoo", 'password' : vars.odoo_mail_password} #
+                 'type': 'imap', 'is_ssl': False, 'user': "odoo", 'password' : vars.mail_odoo_password}
             )
         self.env['ir.config_parameter'].set_param("mail.catchall.domain", vars.alias_domain)
 
