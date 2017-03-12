@@ -10,8 +10,9 @@
     """,
     'author': "golubev",
     'website': "http://www.cloud.net.ua",
-    'depends': ['mail'],
+    'depends': ['fetchmail'],
     'data': [
         'data/config.xml',
     ],
+    'installable': True,
 }
