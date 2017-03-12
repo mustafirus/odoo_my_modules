@@ -10,7 +10,7 @@
     """,
     'author': "golubev",
     'website': "http://www.cloud.net.ua",
-    'depends': ['fetchmail'],
+    'depends': ['fetchmail','auth_ldap'],
     'data': [
         'data/config.xml',
     ],
