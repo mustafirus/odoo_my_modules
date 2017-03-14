@@ -23,8 +23,8 @@
                 <tree>
                     <field name="name"/>
                     <field name="type"/>
-                    <field name="denomenation" widget="monetary" options="{'currency_field': 'company_currency_id'}"/>
-                    <field name="company_currency_id" invisible="1"/>
+                    <field name="denomenation"/>
+                    <field name="currency_id" invisible="1"/>
                     <field name="hall_id"/>
                 </tree>
             </field>
@@ -66,8 +66,8 @@
                                     <field name="index"/>
                                     <field name="dev_sn"/>
                                     <field name="type"/>
-                                    <field name="denomenation" widget="monetary" options="{'currency_field': 'company_currency_id'}"/>
-                                    <field name="company_currency_id" invisible="1"/>
+                                    <field name="denomenation"/>
+                                    <field name="currency_id" invisible="1"/>
                                 </tree>
                             </field>
                         </page>
@@ -105,8 +105,8 @@
                             <field name="type"/>
                         </group>
                         <group name="right">
-                            <field name="denomenation" widget="monetary" options="{'currency_field': 'company_currency_id'}"/>
-                            <field name="company_currency_id" invisible="1"/>
+                            <field name="denomenation"/>
+                            <field name="currency_id" invisible="1"/>
                             <field name="hall_id"/>
                         </group>
                     </group>

@@ -29,8 +29,8 @@ class Slot(models.Model):
     index = fields.Integer("Index")
     dev_sn = fields.Char("SN")
     type = fields.Char("Game type")
-    denomenation = fields.Monetary("Denomenation",currency_field='company_currency_id')
-    company_currency_id = fields.Many2one('res.currency', related='hall_id.company_id.currency_id', readonly=True,
+    denomenation = fields.Monetary("Denomenation")
+    currency_id = fields.Many2one('res.currency', related='hall_id.company_id.currency_id', readonly=True,
         help='Utility field to express amount currency')
     hall_id = fields.Many2one("slot_machine_counters.hall","Hall")
     active = fields.Boolean('Active?', default=True)
