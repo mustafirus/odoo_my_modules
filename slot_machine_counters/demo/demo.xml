@@ -1,25 +1,48 @@
 <odoo>
     <data>
         <!--  -->
-           <record id="hall1" model="slot_machine_counters.hall">
-             <field name="name">Hall 1</field>
+           <record id="hall4" model="slot_machine_counters.hall">
+             <field name="name">Hall 4</field>
              <field name="description">dfdfdfs</field>
-             <field name="hub_sn">H33234</field>
+             <field name="hub_sn">H4</field>
              <field name="hub_sim">3345435</field>
              <field name="phone">3345435</field>
            </record>
         <!--  -->
            <record id="slot1" model="slot_machine_counters.slot">
              <field name="index">1</field>
-             <field name="dev_sn">S3435</field>
+             <field name="dev_sn">C1</field>
              <field name="type">BlackJack</field>
-             <field name="hall_id" ref="hall1"/>
+             <field name="hall_id" ref="hall4"/>
+             <field name="denomenation">0.1</field>
            </record>
            <record id="slot2" model="slot_machine_counters.slot">
              <field name="index">2</field>
-             <field name="dev_sn">S2546</field>
+             <field name="dev_sn">C2</field>
              <field name="type">BlackJack</field>
-             <field name="hall_id" ref="hall1"/>
+             <field name="hall_id" ref="hall4"/>
+             <field name="denomenation">0.2</field>
+           </record>
+           <record id="slot3" model="slot_machine_counters.slot">
+             <field name="index">3</field>
+             <field name="dev_sn">C3</field>
+             <field name="type">BlackJack</field>
+             <field name="hall_id" ref="hall4"/>
+             <field name="denomenation">0.3</field>
+           </record>
+           <record id="slot4" model="slot_machine_counters.slot">
+             <field name="index">4</field>
+             <field name="dev_sn">C4</field>
+             <field name="type">BlackJack</field>
+             <field name="hall_id" ref="hall4"/>
+             <field name="denomenation">0.2</field>
+           </record>
+           <record id="slot5" model="slot_machine_counters.slot">
+             <field name="index">5</field>
+             <field name="dev_sn">C5</field>
+             <field name="type">BlackJack</field>
+             <field name="hall_id" ref="hall4"/>
+             <field name="denomenation">0.1</field>
            </record>
         <!--  -->
         <!--   <record id="object2" model="slot_machine_counters.gambling"> -->

@@ -35,11 +35,15 @@
                                     <tree string="Slotshot Lines">
                                         <field name="index"/>
                                         <field name="slot_id"/>
-                                        <field name="iin_begin"/>
                                         <field name="iin_end"/>
-                                        <field name="out_begin"/>
+                                        <field name="iin_begin"/>
                                         <field name="out_end"/>
-                                        <field name="delta"/>
+                                        <field name="out_begin"/>
+                                        <field name="iin"/>
+                                        <field name="out"/>
+                                        <field name="credit"/>
+                                        <field name="amount" widget="monetary"/>
+                                        <field name="currency_id" invisible="1"/>
                                     </tree>
                                 </field>
                                 <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
