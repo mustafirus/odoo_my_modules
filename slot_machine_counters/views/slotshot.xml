@@ -8,6 +8,11 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
+                    <field name="hall_id"/>
+                    <field name="date_beg"/>
+                    <field name="date_end"/>
+                    <field name="credit"/>
+                    <field name="amount" widget="monetary"/>
                 </tree>
             </field>
         </record>
@@ -19,14 +24,21 @@
                 <form>
                     <header>
                         <button name="get_data" type="object" string="Get data"
-                                attrs="{'invisible': [('date', '=', False)]}"
+                                attrs="{'invisible': [('date_end', '=', False)]}"
                         />
                     </header>
                     <sheet>
+                        <group name="left">
+                            <field name="hall_id"/>
+                        </group>
+                            <group name="right">
+                            </group>
                         <group>
                             <group name="left">
-                                <field name="hall_id"/>
-                                <field name="date"/>
+                                <field name="date_beg"/>
+                            </group>
+                            <group name="right">
+                                <field name="date_end"/>
                             </group>
                         </group>
                         <notebook>
@@ -46,7 +58,9 @@
                                         <field name="currency_id" invisible="1"/>
                                     </tree>
                                 </field>
-                                <group class="oe_subtotal_footer oe_right" colspan="2" name="sale_total">
+                                <group class="oe_subtotal_footer oe_right" colspan="2" name="slot_total">
+                                    <field name="credit" />
+                                    <field name="amount" widget='monetary'/>
                                 </group>
                                 <div class="oe_clear"/>
                             </page>
@@ -56,6 +70,197 @@
             </field>
         </record>
 
+        <record model="ir.ui.view" id="hallreport_form">
+            <field name="model">slot_machine_counters.hallreport</field>
+            <!--<field name="priority">15</field>-->
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="hallreport_print" type="object" string="Print"
+                                attrs="{'invisible': [('date_end', '=', False)]}"
+                        />
+                    </header>
+                    <sheet>
+                        <group name="left">
+                            <field name="hall_id"/>
+                        </group>
+                            <group name="right">
+                            </group>
+                        <group>
+                            <group name="left">
+                                <field name="date_beg"/>
+                            </group>
+                            <group name="right">
+                                <field name="date_end"/>
+                            </group>
+                            <field name="gps" readonly="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <template id="hallreport_document">
+            <t t-call="report.external_layout">
+                <div class="page">
+                    <h2>
+                        <span>Hall Report</span>
+                    </h2>
+
+                    <div class="row mt32 mb32">
+                        <div class="col-xs-2">
+                            <strong>Hall:</strong>
+                            <p t-field="o.hall_id"/>
+                        </div>
+                        <div class="col-xs-2">
+                            <strong>From:</strong>
+                            <p t-field="o.date_beg"/>
+                        </div>
+                        <div class="col-xs-2">
+                            <strong>To:</strong>
+                            <p t-field="o.date_end"/>
+                        </div>
+                    </div>
+                    <div class="row mt32 mb32">
+                        <p>
+                            <strong>SN:</strong>
+                            <span t-field="o.hall_id.hub_sn"/>
+                        </p>
+                        <p>
+                            <strong>Phone:</strong>
+                            <span t-field="o.hall_id.phone"/>
+                        </p>
+                        <p>
+                            <strong>SIM:</strong>
+                            <span t-field="o.hall_id.hub_sim"/>
+                        </p>
+                        <p>
+                            <strong>GPS:</strong>
+                            <span t-field="o.gps"/>
+                        </p>
+                        <p>
+                            <strong>Description:</strong>
+                            <div t-field="o.hall_id.description"/>
+                        </p>
+                    </div>
+
+
+                    <table class="table table-condensed">
+                        <thead>
+                            <tr>
+                                <th>Nr.</th>
+                                <th class="text-left">Nr.</th>
+                                <th class="text-left">S/N Mega</th>
+                                <th class="text-left">S/N Slot</th>
+                                <th class="text-left">Name</th>
+                                <th class="text-right">Denom.</th>
+                                <th class="text-right">IN</th>
+                                <th class="text-right">in</th>
+                                <th class="text-right">IN-in</th>
+                                <th class="text-right">OUT</th>
+                                <th class="text-right">out</th>
+                                <th class="text-right">OUT-out</th>
+                                <th class="text-right">credit</th>
+                                <th class="text-right">$</th>
+                                <th class="text-right">BET</th>
+                                <th class="text-right">bet</th>
+                                <th class="text-right">BET-bet</th>
+                                <th class="text-right">WIN</th>
+                                <th class="text-right">win</th>
+                                <th class="text-right">WIN-win</th>
+                                <th class="text-right">credit</th>
+                                <th class="text-right">$</th>
+                            </tr>
+                        </thead>
+                        <!--<tbody class="invoice_tbody">-->
+                            <!--<tr t-foreach="o.invoice_line_ids" t-as="l">-->
+                                <!--<td><span t-field="l.name"/></td>-->
+                                <!--<td class="hidden"><span t-field="l.origin"/></td>-->
+                                <!--<td class="text-right">-->
+                                    <!--<span t-field="l.quantity"/>-->
+                                    <!--<span t-field="l.uom_id"  groups="product.group_uom"/>-->
+                                <!--</td>-->
+                                <!--<td class="text-right">-->
+                                    <!--<span t-field="l.price_unit"/>-->
+                                <!--</td>-->
+                                <!--<td t-if="display_discount" class="text-right">-->
+                                    <!--<span t-field="l.discount"/>-->
+                                <!--</td>-->
+                                <!--<td class="text-right">-->
+                                    <!--<span t-esc="', '.join(map(lambda x: (x.description or x.name), l.invoice_line_tax_ids))"/>-->
+                                <!--</td>-->
+                                <!--<td class="text-right">-->
+                                    <!--<span t-field="l.price_subtotal"-->
+                                        <!--t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
+                                <!--</td>-->
+                            <!--</tr>-->
+                        <!--</tbody>-->
+                    </table>
+
+                    <!--<div class="row">-->
+                        <!--<div class="col-xs-4 pull-right">-->
+                            <!--<table class="table table-condensed">-->
+                                <!--<tr class="border-black">-->
+                                    <!--<td><strong>Subtotal</strong></td>-->
+                                    <!--<td class="text-right">-->
+                                        <!--<span t-field="o.amount_untaxed" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
+                                    <!--</td>-->
+                                <!--</tr>-->
+                                <!--<t t-foreach="o._get_tax_amount_by_group()" t-as="amount_by_group">-->
+                                    <!--<tr>-->
+                                        <!--<td><span t-esc="amount_by_group[0] if len(o.tax_line_ids) > 1 else (o.tax_line_ids.tax_id.description or o.tax_line_ids.tax_id.name)"/></td>-->
+                                        <!--<td class="text-right">-->
+                                            <!--<span t-esc="amount_by_group[1]" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
+                                        <!--</td>-->
+                                    <!--</tr>-->
+                                <!--</t>-->
+                                <!--<tr class="border-black">-->
+                                    <!--<td><strong>Total</strong></td>-->
+                                    <!--<td class="text-right">-->
+                                         <!--<span t-field="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
+                                    <!--</td>-->
+                                <!--</tr>-->
+                            <!--</table>-->
+                        <!--</div>-->
+                    <!--</div>-->
+
+
+<!--
+                    <p t-if="o.comment">
+                        <strong>Comment:</strong>
+                        <span t-field="o.comment"/>
+                    </p>
+                    <p t-if="o.payment_term_id">
+                        <span t-field="o.payment_term_id.note"/>
+                    </p>
+                    <p t-if="o.fiscal_position_id.note">
+                        <strong>Fiscal Position Remark:</strong>
+                        <span t-field="o.fiscal_position_id.note"/>
+                    </p>
+-->
+                </div>
+
+            </t>
+        </template>
+
+        <template id="hallreport_multi">
+            <t t-call="report.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="slot_machine_counters.hallreport_document"/>
+                </t>
+            </t>
+        </template>
+
+        <report
+            id="hallreport_report"
+            model="slot_machine_counters.hallreport"
+            string="Hal Reports"
+            report_type="qweb-html"
+            name="slot_machine_counters.hallreport_multi"
+            file="slot_machine_counters.hallreport"
+            attachment_use="False"
+        />
+
         <!-- actions opening views on models -->
         <record model="ir.actions.act_window" id="slot_machine_counters.action_window_slotshots">
             <field name="name">Slot Shots</field>
@@ -63,10 +268,19 @@
             <field name="view_mode">tree,form</field>
         </record>
 
+        <record model="ir.actions.act_window" id="slot_machine_counters.action_window_hallreport">
+            <field name="name">Hall Report</field>
+            <field name="res_model">slot_machine_counters.hallreport</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+        </record>
+
         <!-- menu categories -->
-        <menuitem name="Search" id="slot_machine_counters.search" parent="slot_machine_counters.menu_root"/>
+        <menuitem name="Counters" id="slot_machine_counters.counters" parent="slot_machine_counters.menu_root"/>
         <!-- actions -->
-        <menuitem name="Slot Shots" id="slot_machine_counters.menu_slotshots" parent="slot_machine_counters.search"
+        <menuitem name="Slot Shots" id="slot_machine_counters.menu_slotshots" parent="slot_machine_counters.counters"
                   action="slot_machine_counters.action_window_slotshots"/>
+        <menuitem name="Hall Reports" id="slot_machine_counters.menu_hallreport" parent="slot_machine_counters.counters"
+                  action="slot_machine_counters.action_window_hallreport"/>
     </data>
 </odoo>

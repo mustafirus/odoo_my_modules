@@ -19,6 +19,7 @@
         'views/hallslot.xml',
         'views/templates.xml',
         'views/slotshot.xml',
+        'data/sequence.xml',
     ],
     'demo': [
         'demo/demo.xml',
