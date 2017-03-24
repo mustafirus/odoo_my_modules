@@ -48,9 +48,9 @@
                                         <field name="index"/>
                                         <field name="slot_id"/>
                                         <field name="iin_end"/>
-                                        <field name="iin_begin"/>
+                                        <field name="iin_beg"/>
                                         <field name="out_end"/>
-                                        <field name="out_begin"/>
+                                        <field name="out_beg"/>
                                         <field name="iin"/>
                                         <field name="out"/>
                                         <field name="credit"/>
@@ -148,7 +148,6 @@
                     <table class="table table-condensed">
                         <thead>
                             <tr>
-                                <th>Nr.</th>
                                 <th class="text-left">Nr.</th>
                                 <th class="text-left">S/N Mega</th>
                                 <th class="text-left">S/N Slot</th>
@@ -172,29 +171,33 @@
                                 <th class="text-right">$</th>
                             </tr>
                         </thead>
-                        <!--<tbody class="invoice_tbody">-->
-                            <!--<tr t-foreach="o.invoice_line_ids" t-as="l">-->
-                                <!--<td><span t-field="l.name"/></td>-->
-                                <!--<td class="hidden"><span t-field="l.origin"/></td>-->
-                                <!--<td class="text-right">-->
-                                    <!--<span t-field="l.quantity"/>-->
-                                    <!--<span t-field="l.uom_id"  groups="product.group_uom"/>-->
-                                <!--</td>-->
-                                <!--<td class="text-right">-->
-                                    <!--<span t-field="l.price_unit"/>-->
-                                <!--</td>-->
-                                <!--<td t-if="display_discount" class="text-right">-->
-                                    <!--<span t-field="l.discount"/>-->
-                                <!--</td>-->
-                                <!--<td class="text-right">-->
-                                    <!--<span t-esc="', '.join(map(lambda x: (x.description or x.name), l.invoice_line_tax_ids))"/>-->
-                                <!--</td>-->
-                                <!--<td class="text-right">-->
-                                    <!--<span t-field="l.price_subtotal"-->
-                                        <!--t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                <!--</td>-->
-                            <!--</tr>-->
-                        <!--</tbody>-->
+                        <tbody>
+                            <tr t-foreach="o.hallreport_lines" t-as="l">
+                                <td><span t-field="l.index"/></td>
+                                <td><span t-field="l.slot_id"/></td>
+                                <td><span t-field="l.slot_id.slot_sn"/></td>
+                                <td><span t-field="l.slot_id.type"/></td>
+                                <td><span t-field="l.slot_id.denomenation"/></td>
+
+                                <td class="text-right"><span t-field="l.iin_end"/></td>
+                                <td class="text-right"><span t-field="l.iin_beg"/></td>
+                                <td class="text-right"><span t-field="l.iin"/></td>
+                                <td class="text-right"><span t-field="l.out_end"/></td>
+                                <td class="text-right"><span t-field="l.out_beg"/></td>
+                                <td class="text-right"><span t-field="l.out"/></td>
+                                <td class="text-right"><span t-field="l.credit"/></td>
+                                <td class="text-right"><span t-field="l.amount"/></td>
+
+                                <td class="text-right"><span t-field="l.bet_end"/></td>
+                                <td class="text-right"><span t-field="l.bet_beg"/></td>
+                                <td class="text-right"><span t-field="l.bet"/></td>
+                                <td class="text-right"><span t-field="l.win_end"/></td>
+                                <td class="text-right"><span t-field="l.win_beg"/></td>
+                                <td class="text-right"><span t-field="l.win"/></td>
+                                <td class="text-right"><span t-field="l.credit_bw"/></td>
+                                <td class="text-right"><span t-field="l.amount_bw"/></td>
+                            </tr>
+                        </tbody>
                     </table>
 
                     <!--<div class="row">-->
@@ -255,7 +258,7 @@
             id="hallreport_report"
             model="slot_machine_counters.hallreport"
             string="Hal Reports"
-            report_type="qweb-html"
+            report_type="qweb-pdf"
             name="slot_machine_counters.hallreport_multi"
             file="slot_machine_counters.hallreport"
             attachment_use="False"

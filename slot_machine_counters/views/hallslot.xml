@@ -21,7 +21,7 @@
             <field name="model">slot_machine_counters.slot</field>
             <field name="arch" type="xml">
                 <tree>
-                    <field name="name"/>
+                    <field name="dev_sn"/>
                     <field name="type"/>
                     <field name="denomenation"/>
                     <field name="currency_id" invisible="1"/>
@@ -92,16 +92,16 @@
                         </button>
                     </div>
                     <div class="oe_title">
-                        <label for="name" class="oe_edit_only" string="Slot name"/>
+                        <label for="dev_sn" class="oe_edit_only" string="Slot SN"/>
                         <h1>
-                            <field name="name" placeholder="Slot name ....."/>
+                            <field name="dev_sn" placeholder="Slot SN ....."/>
                         </h1>
                         <div name="options_active"/>
                     </div>
                     <group>
                         <group name="left">
                             <field name="index"/>
-                            <field name="dev_sn"/>
+                            <field name="slot_sn"/>
                             <field name="type"/>
                         </group>
                         <group name="right">
