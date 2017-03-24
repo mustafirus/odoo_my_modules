@@ -270,6 +270,7 @@
             <field name="name">Hall Report</field>
             <field name="format">A4</field>
             <field name="orientation">Landscape</field>
+            <field name="header_line" eval="True"/>
             <field name="margin_top">10</field>
             <field name="margin_bottom">10</field>
             <field name="margin_left">20</field>
