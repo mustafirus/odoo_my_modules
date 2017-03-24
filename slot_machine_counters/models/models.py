@@ -193,10 +193,10 @@ class SlotShotLine(models.Model):
         for rec in self:
             rec.out = (rec.out_end - rec.out_beg)
 
-    @api.depends('iin_beg','out_beg','iin_end','out_end')
+    @api.depends('iin','out')
     def _compute_credit(self):
         for rec in self:
-            rec.credit = (rec.iin_end - rec.iin_beg) - (rec.out_end - rec.out_beg)
+            rec.credit = rec.iin - rec.out
 
     @api.depends('credit')
     def _compute_amount(self):
@@ -213,10 +213,10 @@ class SlotShotLine(models.Model):
         for rec in self:
             rec.win = (rec.win_end - rec.win_beg)
 
-    @api.depends('bet_beg','win_beg','bet_end','win_end')
+    @api.depends('bet','win')
     def _compute_credit_bw(self):
         for rec in self:
-            rec.credit = (rec.bet_end - rec.bet_beg) - (rec.win_end - rec.win_beg)
+            rec.credit = rec.bet - rec.win
 
     @api.depends('credit_bw')
     def _compute_amount_bw(self):
