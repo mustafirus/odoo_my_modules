@@ -13,7 +13,7 @@
     'website': "http://www.oduist.com.ua",
     'category': 'Tools',
     'version': '0.1',
-    'depends': ['base'],
+    'depends': ['base', 'report'],
     'data': [
         # 'security/ir.model.access.csv',
         'views/hallslot.xml',

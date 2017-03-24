@@ -100,6 +100,18 @@
             </field>
         </record>
 
+<!--
+        <record id="paperformat_hallreport" model="report.paperformat">
+            <field name="name">Hall Report</field>
+            <field name="format">A4</field>
+            <field name="orientation">Landscape</field>
+            <field name="margin_top">10</field>
+            <field name="margin_bottom">10</field>
+            <field name="margin_left">20</field>
+            <field name="margin_right">10</field>
+        </record>
+-->
+
         <template id="hallreport_document">
             <t t-call="report.external_layout">
                 <div class="page">
@@ -254,6 +266,16 @@
             </t>
         </template>
 
+        <record id="paperformat_hallreport" model="report.paperformat">
+            <field name="name">Hall Report</field>
+            <field name="format">A4</field>
+            <field name="orientation">Landscape</field>
+            <field name="margin_top">10</field>
+            <field name="margin_bottom">10</field>
+            <field name="margin_left">20</field>
+            <field name="margin_right">10</field>
+        </record>
+
         <report
             id="hallreport_report"
             model="slot_machine_counters.hallreport"
@@ -262,7 +284,9 @@
             name="slot_machine_counters.hallreport_multi"
             file="slot_machine_counters.hallreport"
             attachment_use="False"
+            paperformat="slot_machine_counters.paperformat_hallreport"
         />
+            <!--paperformat="slot_machine_counters.paperformat_hallreport"-->
 
         <!-- actions opening views on models -->
         <record model="ir.actions.act_window" id="slot_machine_counters.action_window_slotshots">

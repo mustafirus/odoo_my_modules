@@ -130,6 +130,10 @@ class SlotShot(models.Model):
         self.ensure_one()
         if not self.hall_id:
             return
+
+        if self.date_end <= self.date_beg:
+            self.date_end = self.date_beg
+
         ids = self.hall_id.slot_ids
         slotline = self.env['slot_machine_counters.slotshot.line']
         existing = slotline.browse(self.slotshot_lines._ids)
