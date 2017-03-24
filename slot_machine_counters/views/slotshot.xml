@@ -274,6 +274,7 @@
             <field name="margin_bottom">10</field>
             <field name="margin_left">20</field>
             <field name="margin_right">10</field>
+            <field name="dpi">120</field>
         </record>
 
         <report
