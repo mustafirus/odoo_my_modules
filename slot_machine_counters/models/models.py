@@ -243,7 +243,7 @@ class SlotShotLine(models.Model):
     @api.depends('bet','win')
     def _compute_credit_bw(self):
         for rec in self:
-            rec.credit = rec.bet - rec.win
+            rec.credit_bw = rec.bet - rec.win
 
     @api.depends('credit_bw')
     def _compute_amount_bw(self):
