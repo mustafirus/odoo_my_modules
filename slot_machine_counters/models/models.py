@@ -320,8 +320,8 @@ class HallReport(models.TransientModel):
                 'out_beg': line[5],
                 'out_end': line[6],
                 'out': line[7],
-                'credit ': line[8],
-                'amount ': line[9],
+                'credit': line[8],
+                'amount': line[9],
                 'bet_beg': line[10],
                 'bet_end': line[11],
                 'win': line[12],
@@ -341,23 +341,23 @@ class HallReportLine(models.TransientModel):
     _order = 'hallreport_id,index'
 
     hallreport_id = fields.Many2one('slot_machine_counters.hallreport', string='HallReport Reference', required=True, ondelete='cascade', index=True, copy=False)
-    index = fields.Char("Index")
-    slot_id = fields.Many2one("slot_machine_counters.slot","Slot")
-    iin_beg = fields.Integer("in")
-    iin_end   = fields.Integer("IN")
-    out_beg = fields.Integer("out")
-    out_end   = fields.Integer("OUT")
-    iin       = fields.Integer("IN-in", readonly=True, store=True)
-    out       = fields.Integer("OUT-out", readonly=True, store=True)
-    credit     = fields.Integer("Credit", readonly=True, store=True)
-    amount     = fields.Monetary("$", readonly=True, store=True)
-    bet_beg = fields.Integer("bet")
-    bet_end   = fields.Integer("BET")
-    win_beg = fields.Integer("win")
-    win_end   = fields.Integer("WIN")
-    win       = fields.Integer("WIN-win", readonly=True, store=True)
-    bet       = fields.Integer("BET-bet", readonly=True, store=True)
-    credit_bw = fields.Integer("Credit", readonly=True, store=True)
-    amount_bw = fields.Monetary("$", readonly=True, store=True)
+    index     = fields.Char("Index")
+    slot_id   = fields.Many2one("slot_machine_counters.slot","Slot")
+    iin_beg   = fields.Integer()
+    iin_end   = fields.Integer()
+    out_beg   = fields.Integer()
+    out_end   = fields.Integer()
+    iin       = fields.Integer(readonly=True, store=True)
+    out       = fields.Integer(readonly=True, store=True)
+    credit = fields.Integer(readonly=True, store=True)
+    amount = fields.Monetary(readonly=True, store=True)
+    bet_beg   = fields.Integer()
+    bet_end   = fields.Integer()
+    win_beg   = fields.Integer()
+    win_end   = fields.Integer()
+    win       = fields.Integer(readonly=True, store=True)
+    bet       = fields.Integer(readonly=True, store=True)
+    credit_bw = fields.Integer(readonly=True, store=True)
+    amount_bw = fields.Monetary(readonly=True, store=True)
     currency_id = fields.Many2one('res.currency', related='hallreport_id.hall_id.company_id.currency_id', readonly=True,
         help='Utility field to express amount currency')
