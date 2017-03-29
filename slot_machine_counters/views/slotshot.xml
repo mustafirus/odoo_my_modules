@@ -229,8 +229,7 @@
                                 <td class="text-right"></td>
                                 <td class="text-right"></td>
                                 <td class="text-right"></td>
-                                <td class="text-right"><strong>Total IN-OUT</strong></td>
-                                <td class="text-right"></td>
+                                <td class="text-right" colspan="2"><strong>Total IN-OUT</strong></td>
                                 <td class="text-right"><strong><span t-field="o.amount"/></strong></td>
 
                                 <td class="text-right"></td>
@@ -238,8 +237,7 @@
                                 <td class="text-right"></td>
                                 <td class="text-right"></td>
                                 <td class="text-right"></td>
-                                <td class="text-right"><strong>Total BET-WIN</strong></td>
-                                <td class="text-right"></td>
+                                <td class="text-right" colspan="2"><strong>Total BET-WIN</strong></td>
                                 <td class="text-right"><strong><span t-field="o.amount_bw"/></strong></td>
                             </tr>
                         </tbody>

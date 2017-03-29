@@ -260,9 +260,9 @@ class HallReport(models.TransientModel):
     date_beg = fields.Date("From", required=True)
     date_end = fields.Date("To", required=True)
     hallreport_lines = fields.One2many('slot_machine_counters.hallreport.line', 'hallreport_id', string='Slotshot Lines')
-    credit     = fields.Integer("Credit",compute='_compute_total', readonly=True, store=True)
+    # credit     = fields.Integer("Credit",compute='_compute_total', readonly=True, store=True)
     amount     = fields.Monetary("$",compute='_compute_total', readonly=True, store=True)
-    credit_bw  = fields.Integer("Credit",compute='_compute_total', readonly=True, store=True)
+    # credit_bw  = fields.Integer("Credit",compute='_compute_total', readonly=True, store=True)
     amount_bw  = fields.Monetary("$",compute='_compute_total', readonly=True, store=True)
     currency_id = fields.Many2one('res.currency', related='hall_id.company_id.currency_id', readonly=True,
         help='Utility field to express amount currency')
@@ -278,14 +278,14 @@ class HallReport(models.TransientModel):
     @api.depends('hallreport_lines.credit', 'hallreport_lines.credit_bw')
     def _compute_total(self):
         for rec in self:
-            rec.credit = 0
+            # rec.credit = 0
             rec.amount = 0.0
-            rec.credit_bw = 0
+            # rec.credit_bw = 0
             rec.amount_bw = 0.0
             for line in rec.hallreport_lines:
-                rec.credit += line.credit
+                # rec.credit += line.credit
                 rec.amount += line.amount
-                rec.credit_bw += line.credit_bw
+                # rec.credit_bw += line.credit_bw
                 rec.amount_bw += line.amount_bw
 
 
