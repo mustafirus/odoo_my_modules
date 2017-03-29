@@ -35,48 +35,54 @@
             <!--<field name="priority">15</field>-->
             <field name="arch" type="xml">
                 <form>
-                    <div class="oe_button_box" name="button_box">
-                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
-                            <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
-                        </button>
-                    </div>
-                    <div class="oe_title">
-                        <label for="name" class="oe_edit_only" string="Hall name"/>
-                        <h1>
-                            <field name="name" placeholder="Hall name ....."/>
-                        </h1>
-                        <div name="options_active"/>
-                    </div>
-                    <group>
-                        <group name="left">
-                            <field name="hub_sn"/>
-                            <field name="hub_sim"/>
-                            <field name="phone"/>
-                        </group>
-                        <group name="right">
-                            <field name="description"/>
-                            <field name="gpslat"/>
-                            <field name="gpslng"/>
-                        </group>
-                    </group>
-                    <notebook>
-                        <page name="slots" string="Slots">
-                            <field name="slot_ids" widget="many2many">
-                                <tree string="Slotshot Lines" default_order="index">
-                                    <field name="index"/>
-                                    <field name="dev_sn"/>
-                                    <field name="type"/>
-                                    <field name="denomenation"/>
-                                    <field name="currency_id" invisible="1"/>
-                                </tree>
-                            </field>
-                        </page>
-                        <page string="More Info" name="more_info" groups="base.group_no_one">
-                            <group string="Company" groups="base.group_multi_company">
-                                <field name="company_id" options="{'no_create': True}"/>
+                    <header>
+                        <button name="get_data" type="object" string="Get info(gps)"
+                        />
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only" string="Hall name"/>
+                            <h1>
+                                <field name="name" placeholder="Hall name ....."/>
+                            </h1>
+                            <div name="options_active"/>
+                        </div>
+                        <group>
+                            <group name="left">
+                                <field name="hub_sn"/>
+                                <field name="hub_sim"/>
+                                <field name="phone"/>
                             </group>
-                        </page>
-                    </notebook>
+                            <group name="right">
+                                <field name="description"/>
+                                <field name="gpslat"/>
+                                <field name="gpslng"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page name="slots" string="Slots">
+                                <field name="slot_ids" widget="many2many">
+                                    <tree string="Slotshot Lines" default_order="index">
+                                        <field name="index"/>
+                                        <field name="dev_sn"/>
+                                        <field name="type"/>
+                                        <field name="denomenation"/>
+                                        <field name="currency_id" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="More Info" name="more_info" groups="base.group_no_one">
+                                <group string="Company" groups="base.group_multi_company">
+                                    <field name="company_id" options="{'no_create': True}"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
                 </form>
             </field>
         </record>

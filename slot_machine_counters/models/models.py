@@ -23,6 +23,33 @@ class Hall(models.Model):
                                  default=lambda self: self.env.user.company_id)
 
 
+    def get_info(self):
+        GAMBLING_ENDPOINT = 'http://localhost:4000/counters'
+        GAMBLING_ENDPOINT = 'http://rrd.odoo.bla:4000/hubinfo?'
+        headers = {"Content-type": "application/x-www-form-urlencoded"}
+
+        reqargs = werkzeug.url_encode({
+            'hubid': fields.Datetime.from_string(self.hub_sn),
+        })
+        try:
+            req = urllib2.Request(GAMBLING_ENDPOINT + reqargs, None, headers)
+            content = urllib2.urlopen(req, timeout=200).read()
+        except urllib2.HTTPError:
+            raise
+        content = json.loads(content)
+        err = content.get('error')
+        if err:
+            e = urllib2.HTTPError(req.get_full_url(), 999, err, headers, None)
+            raise e
+        self.write({
+            'gpslat': content.get('gpslat'),
+            'gpslng': content.get('gpslng'),
+        })
+
+
+
+
+
 class Slot(models.Model):
     _name = 'slot_machine_counters.slot'
     _rec_name = 'dev_sn'
@@ -289,17 +316,17 @@ class HallReport(models.TransientModel):
                 'index': line[1],
                 'iin_beg': line[2],
                 'iin_end': line[3],
-                'out_beg': line[4],
-                'out_end': line[5],
-                'iin': line[6],
+                'iin': line[4],
+                'out_beg': line[5],
+                'out_end': line[6],
                 'out': line[7],
                 'credit ': line[8],
                 'amount ': line[9],
                 'bet_beg': line[10],
                 'bet_end': line[11],
-                'win_beg': line[12],
-                'win_end': line[13],
-                'win': line[14],
+                'win': line[12],
+                'win_beg': line[13],
+                'win_end': line[14],
                 'bet': line[15],
                 'credit_bw': line[16],
                 'amount_bw': line[17],
