@@ -262,6 +262,8 @@ class HallReport(models.TransientModel):
     hallreport_lines = fields.One2many('slot_machine_counters.hallreport.line', 'hallreport_id', string='Slotshot Lines')
     credit     = fields.Integer("Credit",compute='_compute_total', readonly=True, store=True)
     amount     = fields.Monetary("$",compute='_compute_total', readonly=True, store=True)
+    credit_bw  = fields.Integer("Credit",compute='_compute_total', readonly=True, store=True)
+    amount_bw  = fields.Monetary("$",compute='_compute_total', readonly=True, store=True)
     currency_id = fields.Many2one('res.currency', related='hall_id.company_id.currency_id', readonly=True,
         help='Utility field to express amount currency')
     gps = fields.Char(compute="_set_data", readonly=True, store=True)
@@ -272,6 +274,19 @@ class HallReport(models.TransientModel):
         if not self.hall_id:
             return
         self.gps = "%s,%s" % (self.hall_id.gpslat,self.hall_id.gpslng)
+
+    @api.depends('hallreport_lines.credit', 'hallreport_lines.credit_bw')
+    def _compute_total(self):
+        for rec in self:
+            rec.credit = 0
+            rec.amount = 0.0
+            rec.credit_bw = 0
+            rec.amount_bw = 0.0
+            for line in rec.hallreport_lines:
+                rec.credit += line.credit
+                rec.amount += line.amount
+                rec.credit_bw += line.credit_bw
+                rec.amount_bw += line.amount_bw
 
 
     @api.multi
