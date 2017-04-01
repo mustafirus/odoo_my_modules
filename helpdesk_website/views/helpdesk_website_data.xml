@@ -8,10 +8,17 @@
         <function model="ir.model.fields" name="formbuilder_whitelist">
             <value>helpdesk.ticket</value>
             <value eval="[
+                'partner_id',
                 'contact_name',
                 'email_from',
                 'name',
                 'description',
             ]"/>
         </function>
+        <record id="menu_helpdesk" model="website.menu">
+            <field name="name">Help</field>
+            <field name="url">/helpdesk</field>
+            <field name="parent_id" ref="website.main_menu"/>
+            <field name="sequence" type="int">40</field>
+        </record>
 </odoo>

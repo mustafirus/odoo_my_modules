@@ -69,7 +69,17 @@ class WebsiteAccount(website_account):
 
     @http.route(['/helpdesk/submit'], type='http', auth="public", website=True)
     def new_ticket(self, **kw):
-        return request.render("website.new_ticket")
+        if(request.session.uid):
+            user = request.env.user
+            vals = {
+                'partner_id': request.session.uid,
+            }
+        else:
+            vals = {
+                'partner_id': None,
+            }
+
+        return request.render("website.new_ticket", vals)
 
     @http.route(['/helpdesk'], type='http', auth="public", website=True)
     def helpdesk(self, **kw):

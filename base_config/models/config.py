@@ -20,7 +20,7 @@ class BaseConfig(models.TransientModel):
         company_id = self.env.user.company_id
         if len(ldap_server) == 0:
             ldap_server.create(
-                {'ldap_base': vars.ldap_base, 'ldap_filter': "(&(objectClass=inetOrgPerson)(mail=%s))",
+                {'ldap_base': vars.ldap_base, 'ldap_filter': "(&(objectClass=inetOrgPerson)(uid=%s))",
                  'company': company_id.id }
             )
 
