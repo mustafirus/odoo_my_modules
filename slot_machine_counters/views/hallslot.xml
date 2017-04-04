@@ -98,7 +98,7 @@
                         </button>
                     </div>
                     <div class="oe_title">
-                        <label for="dev_sn" class="oe_edit_only" string="Slot SN"/>
+                        <label for="dev_sn" class="oe_edit_only" string="SN Mega"/>
                         <h1>
                             <field name="dev_sn" placeholder="Slot SN ....."/>
                         </h1>
