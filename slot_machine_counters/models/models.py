@@ -176,7 +176,7 @@ class SlotShot(models.Model):
                 'out_beg': rrd['outB'] if rrd['outB'] else rrd['winB'],
                 'out_end':   rrd['outE'] if rrd['outE'] else rrd['winE'],
                 'bet_beg': rrd['betB'],
-                'bet_end': rrd['outE'],
+                'bet_end': rrd['betE'],
                 'win_beg': rrd['winB'],
                 'win_end': rrd['winE'],
             }
