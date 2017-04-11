@@ -66,6 +66,7 @@
                                         <field name="currency_id" invisible="1"/>
                                     </tree>
                                 </field>
+                                <field name="currency_id" invisible="1"/>
                                 <group class="oe_subtotal_footer oe_right" colspan="2" name="slot_total">
                                     <field name="credit_bw"/>
                                     <field name="amount_bw" widget='monetary'/>
