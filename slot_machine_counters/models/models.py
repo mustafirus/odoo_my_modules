@@ -85,7 +85,9 @@ class SlotShot(models.Model):
     date_end = fields.Datetime("To", required=True, default=_get_now)
     slotshot_lines = fields.One2many('slot_machine_counters.slotshot.line', 'slotshot_id', string='Slotshot Lines')
     credit     = fields.Integer("Credit",compute='_compute_total', readonly=True, store=True)
-    amount     = fields.Monetary("$",compute='_compute_total', readonly=True, store=True)
+    amount     = fields.Monetary("Cash",compute='_compute_total', readonly=True, store=True)
+    credit_bw     = fields.Integer("Credit BetWin",compute='_compute_total', readonly=True, store=True)
+    amount_bw     = fields.Monetary("Cash BetWin",compute='_compute_total', readonly=True, store=True)
     currency_id = fields.Many2one('res.currency', related='hall_id.company_id.currency_id', readonly=True,
         help='Utility field to express amount currency')
 
@@ -113,11 +115,13 @@ class SlotShot(models.Model):
         for rec in self:
             rec.credit = 0
             rec.amount = 0.0
+            rec.credit_bw = 0
+            rec.amount_bw = 0.0
             for line in rec.slotshot_lines:
                 rec.credit += line.credit
                 rec.amount += line.amount
-
-
+                rec.credit_bw += line.credit_bw
+                rec.amount_bw += line.amount_bw
 
     # @api.depends('hall_id', 'date_end')
     # def _compute_name(self):
@@ -198,7 +202,7 @@ class SlotShotLine(models.Model):
     iin       = fields.Integer("IN-in",compute='_compute_iin', readonly=True, store=True)
     out       = fields.Integer("OUT-out",compute='_compute_out', readonly=True, store=True)
     credit    = fields.Integer("Credit",compute='_compute_credit', readonly=True, store=True)
-    amount    = fields.Monetary("$",compute='_compute_amount', readonly=True, store=True)
+    amount    = fields.Monetary("Cash",compute='_compute_amount', readonly=True, store=True)
     bet_beg   = fields.Integer("bet")
     bet_end   = fields.Integer("BET")
     win_beg   = fields.Integer("win")
@@ -206,7 +210,7 @@ class SlotShotLine(models.Model):
     bet       = fields.Integer("BET-bet",compute='_compute_bet', readonly=True, store=True)
     win       = fields.Integer("WIN-win",compute='_compute_win', readonly=True, store=True)
     credit_bw = fields.Integer("Credit",compute='_compute_credit_bw', readonly=True, store=True)
-    amount_bw = fields.Monetary("$",compute='_compute_amount_bw', readonly=True, store=True)
+    amount_bw = fields.Monetary("Cash",compute='_compute_amount_bw', readonly=True, store=True)
     currency_id = fields.Many2one('res.currency', related='slot_id.hall_id.company_id.currency_id', readonly=True,
         help='Utility field to express amount currency')
 #################
@@ -261,9 +265,9 @@ class HallReport(models.TransientModel):
     date_end = fields.Date("To", required=True)
     hallreport_lines = fields.One2many('slot_machine_counters.hallreport.line', 'hallreport_id', string='Slotshot Lines')
     # credit     = fields.Integer("Credit",compute='_compute_total', readonly=True, store=True)
-    amount     = fields.Monetary("$",compute='_compute_total', readonly=True, store=True)
+    amount     = fields.Monetary("Cash",compute='_compute_total', readonly=True, store=True)
     # credit_bw  = fields.Integer("Credit",compute='_compute_total', readonly=True, store=True)
-    amount_bw  = fields.Monetary("$",compute='_compute_total', readonly=True, store=True)
+    amount_bw  = fields.Monetary("Cash",compute='_compute_total', readonly=True, store=True)
     currency_id = fields.Many2one('res.currency', related='hall_id.company_id.currency_id', readonly=True,
         help='Utility field to express amount currency')
     gps = fields.Char(compute="_set_data", readonly=True, store=True)

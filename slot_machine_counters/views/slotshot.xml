@@ -55,19 +55,23 @@
                                         <field name="out"/>
                                         <field name="credit"/>
                                         <field name="amount" widget="monetary"/>
-                                        <field name="bet_end" invisible="1"/>
-                                        <field name="bet_beg" invisible="1"/>
-                                        <field name="win_end" invisible="1"/>
-                                        <field name="win_beg" invisible="1"/>
-                                        <field name="bet" invisible="1"/>
-                                        <field name="win" invisible="1"/>
-                                        <field name="credit_bw" invisible="1"/>
-                                        <field name="amount_bw" widget="monetary" invisible="1"/>
+                                        <field name="bet_end"/>
+                                        <field name="bet_beg"/>
+                                        <field name="win_end"/>
+                                        <field name="win_beg"/>
+                                        <field name="bet"/>
+                                        <field name="win"/>
+                                        <field name="credit_bw"/>
+                                        <field name="amount_bw" widget="monetary"/>
                                         <field name="currency_id" invisible="1"/>
                                     </tree>
                                 </field>
                                 <group class="oe_subtotal_footer oe_right" colspan="2" name="slot_total">
-                                    <field name="credit" />
+                                    <field name="credit_bw"/>
+                                    <field name="amount_bw" widget='monetary'/>
+                                </group>
+                                <group class="oe_subtotal_footer oe_right" colspan="2" name="slot_total">
+                                    <field name="credit"/>
                                     <field name="amount" widget='monetary'/>
                                 </group>
                                 <div class="oe_clear"/>
