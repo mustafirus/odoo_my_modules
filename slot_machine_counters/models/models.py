@@ -343,10 +343,10 @@ class HallReport(models.TransientModel):
                 'amount': line[9],
                 'bet_beg': line[10],
                 'bet_end': line[11],
-                'win': line[12],
+                'bet': line[12],
                 'win_beg': line[13],
                 'win_end': line[14],
-                'bet': line[15],
+                'win': line[15],
                 'credit_bw': line[16],
                 'amount_bw': line[17],
             }
@@ -374,8 +374,8 @@ class HallReportLine(models.TransientModel):
     bet_end   = fields.Integer()
     win_beg   = fields.Integer()
     win_end   = fields.Integer()
-    win       = fields.Integer(readonly=True, store=True)
     bet       = fields.Integer(readonly=True, store=True)
+    win       = fields.Integer(readonly=True, store=True)
     credit_bw = fields.Integer(readonly=True, store=True)
     amount_bw = fields.Monetary(readonly=True, store=True)
     currency_id = fields.Many2one('res.currency', related='hallreport_id.hall_id.company_id.currency_id', readonly=True,
