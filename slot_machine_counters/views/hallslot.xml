@@ -111,8 +111,9 @@
                             <field name="type"/>
                         </group>
                         <group name="right">
-                            <field name="denomenation"/>
-                            <field name="currency_id" invisible="1"/>
+                            <field name="boardrate"/>
+                            <field name="denom"/>
+                            <!--<field name="currency_id" invisible="1"/>-->
                             <field name="hall_id"/>
                         </group>
                     </group>

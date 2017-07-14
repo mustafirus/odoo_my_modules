@@ -106,7 +106,8 @@
                             <group name="right">
                                 <field name="date_end"/>
                             </group>
-                            <field name="gps" readonly="1"/>
+                            <field name="full"/>
+                            <!--<field name="gps" readonly="1"/>-->
                         </group>
                     </sheet>
                 </form>
@@ -174,23 +175,33 @@
                         <thead>
                             <tr>
                                 <th class="text-left">Nr.</th>
-                                <th class="text-left">S/N Mega</th>
+                                <t t-if="o.full">
+                                    <th class="text-left">S/N Mega</th>
+                                </t>
                                 <th class="text-left">S/N Slot</th>
                                 <th class="text-left">Name</th>
                                 <th class="text-right">Denom.</th>
-                                <th class="text-right">IN</th>
-                                <th class="text-right">in</th>
+                                <t t-if="o.full">
+                                    <th class="text-right">IN</th>
+                                    <th class="text-right">in</th>
+                                </t>
                                 <th class="text-right">IN-in</th>
-                                <th class="text-right">OUT</th>
-                                <th class="text-right">out</th>
+                                <t t-if="o.full">
+                                    <th class="text-right">OUT</th>
+                                    <th class="text-right">out</th>
+                                </t>
                                 <th class="text-right">OUT-out</th>
                                 <th class="text-right">credit</th>
                                 <th class="text-right">$</th>
-                                <th class="text-right">BET</th>
-                                <th class="text-right">bet</th>
+                                <t t-if="o.full">
+                                    <th class="text-right">BET</th>
+                                    <th class="text-right">bet</th>
+                                </t>
                                 <th class="text-right">BET-bet</th>
-                                <th class="text-right">WIN</th>
-                                <th class="text-right">win</th>
+                                <t t-if="o.full">
+                                    <th class="text-right">WIN</th>
+                                    <th class="text-right">win</th>
+                                </t>
                                 <th class="text-right">WIN-win</th>
                                 <th class="text-right">credit</th>
                                 <th class="text-right">$</th>
@@ -199,25 +210,35 @@
                         <tbody>
                             <tr t-foreach="o.hallreport_lines" t-as="l">
                                 <td><span t-field="l.index"/></td>
-                                <td><span t-field="l.slot_id"/></td>
+                                <t t-if="o.full">
+                                    <td><span t-field="l.slot_id"/></td>
+                                </t>
                                 <td><span t-field="l.slot_id.slot_sn"/></td>
                                 <td><span t-field="l.slot_id.type"/></td>
-                                <td><span t-field="l.slot_id.denomenation"/></td>
+                                <td class="text-right"><span t-field="l.slot_id.denomenation" t-field-options="{&quot;widget&quot;: &quot;False&quot;}"/></td>
 
-                                <td class="text-right"><span t-field="l.iin_end"/></td>
-                                <td class="text-right"><span t-field="l.iin_beg"/></td>
+                                <t t-if="o.full">
+                                    <td class="text-right"><span t-field="l.iin_end"/></td>
+                                    <td class="text-right"><span t-field="l.iin_beg"/></td>
+                                </t>
                                 <td class="text-right"><span t-field="l.iin"/></td>
-                                <td class="text-right"><span t-field="l.out_end"/></td>
-                                <td class="text-right"><span t-field="l.out_beg"/></td>
+                                <t t-if="o.full">
+                                    <td class="text-right"><span t-field="l.out_end"/></td>
+                                    <td class="text-right"><span t-field="l.out_beg"/></td>
+                                </t>
                                 <td class="text-right"><span t-field="l.out"/></td>
                                 <td class="text-right"><span t-field="l.credit"/></td>
                                 <td class="text-right"><span t-field="l.amount"/></td>
 
-                                <td class="text-right"><span t-field="l.bet_end"/></td>
-                                <td class="text-right"><span t-field="l.bet_beg"/></td>
+                                <t t-if="o.full">
+                                    <td class="text-right"><span t-field="l.bet_end"/></td>
+                                    <td class="text-right"><span t-field="l.bet_beg"/></td>
+                                </t>
                                 <td class="text-right"><span t-field="l.bet"/></td>
-                                <td class="text-right"><span t-field="l.win_end"/></td>
-                                <td class="text-right"><span t-field="l.win_beg"/></td>
+                                <t t-if="o.full">
+                                    <td class="text-right"><span t-field="l.win_end"/></td>
+                                    <td class="text-right"><span t-field="l.win_beg"/></td>
+                                </t>
                                 <td class="text-right"><span t-field="l.win"/></td>
                                 <td class="text-right"><span t-field="l.credit_bw"/></td>
                                 <td class="text-right"><span t-field="l.amount_bw"/></td>
@@ -227,20 +248,24 @@
                                 <td></td>
                                 <td></td>
                                 <td></td>
+                                <t t-if="o.full">
                                 <td></td>
 
                                 <td class="text-right"></td>
                                 <td class="text-right"></td>
                                 <td class="text-right"></td>
                                 <td class="text-right"></td>
+                                </t>
                                 <td class="text-right"></td>
                                 <td class="text-right" colspan="2"><strong>Total IN-OUT</strong></td>
                                 <td class="text-right"><strong><span t-field="o.amount"/></strong></td>
 
+                                <t t-if="o.full">
                                 <td class="text-right"></td>
                                 <td class="text-right"></td>
                                 <td class="text-right"></td>
                                 <td class="text-right"></td>
+                                </t>
                                 <td class="text-right"></td>
                                 <td class="text-right" colspan="2"><strong>Total BET-WIN</strong></td>
                                 <td class="text-right"><strong><span t-field="o.amount_bw"/></strong></td>
@@ -248,47 +273,6 @@
                         </tbody>
                     </table>
 
-                    <!--<div class="row">-->
-                        <!--<div class="col-xs-4 pull-right">-->
-                            <!--<table class="table table-condensed">-->
-                                <!--<tr class="border-black">-->
-                                    <!--<td><strong>Subtotal</strong></td>-->
-                                    <!--<td class="text-right">-->
-                                        <!--<span t-field="o.amount_untaxed" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                    <!--</td>-->
-                                <!--</tr>-->
-                                <!--<t t-foreach="o._get_tax_amount_by_group()" t-as="amount_by_group">-->
-                                    <!--<tr>-->
-                                        <!--<td><span t-esc="amount_by_group[0] if len(o.tax_line_ids) > 1 else (o.tax_line_ids.tax_id.description or o.tax_line_ids.tax_id.name)"/></td>-->
-                                        <!--<td class="text-right">-->
-                                            <!--<span t-esc="amount_by_group[1]" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                        <!--</td>-->
-                                    <!--</tr>-->
-                                <!--</t>-->
-                                <!--<tr class="border-black">-->
-                                    <!--<td><strong>Total</strong></td>-->
-                                    <!--<td class="text-right">-->
-                                         <!--<span t-field="o.amount_total" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>-->
-                                    <!--</td>-->
-                                <!--</tr>-->
-                            <!--</table>-->
-                        <!--</div>-->
-                    <!--</div>-->
-
-
-<!--
-                    <p t-if="o.comment">
-                        <strong>Comment:</strong>
-                        <span t-field="o.comment"/>
-                    </p>
-                    <p t-if="o.payment_term_id">
-                        <span t-field="o.payment_term_id.note"/>
-                    </p>
-                    <p t-if="o.fiscal_position_id.note">
-                        <strong>Fiscal Position Remark:</strong>
-                        <span t-field="o.fiscal_position_id.note"/>
-                    </p>
--->
                 </div>
 
             </t>

@@ -59,12 +59,18 @@ class Slot(models.Model):
     dev_sn = fields.Char("SN Mega")
     slot_sn = fields.Char("SN Slot")
     type = fields.Char("Game type")
-    denomenation = fields.Monetary("Denomenation")
+    boardrate  = fields.Integer("Board Rate", default=1)
+    denom      = fields.Monetary("Denomenation")
+    denomenation = fields.Monetary("Denomenation",compute='_compute_denomenation', readonly=True, store=True)
     currency_id = fields.Many2one('res.currency', related='hall_id.company_id.currency_id', readonly=True,
         help='Utility field to express amount currency')
     hall_id = fields.Many2one("slot_machine_counters.hall","Hall")
     active = fields.Boolean('Active?', default=True)
 
+    @api.depends('boardrate','denom')
+    def _compute_denomenation(self):
+        for rec in self:
+            rec.denomenation = (rec.denom * rec.boardrate)
     # @api.depends('dev_sn')
     # def _compute_name(self):
     #     for rec in self:
@@ -263,6 +269,7 @@ class HallReport(models.TransientModel):
     hall_id = fields.Many2one("slot_machine_counters.hall","Hall", required=True)
     date_beg = fields.Date("From", required=True)
     date_end = fields.Date("To", required=True)
+    full = fields.Boolean("Full report", default=False)
     hallreport_lines = fields.One2many('slot_machine_counters.hallreport.line', 'hallreport_id', string='Slotshot Lines')
     # credit     = fields.Integer("Credit",compute='_compute_total', readonly=True, store=True)
     amount     = fields.Monetary("Cash",compute='_compute_total', readonly=True, store=True)
