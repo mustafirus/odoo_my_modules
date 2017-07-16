@@ -380,6 +380,7 @@
                                 <td class="text-right"><span t-field="l.credit_bw"/></td>
                                 <td class="text-right"><span t-field="l.amount_bw"/></td>
                             </tr>
+<!--
                             <tr>
                                 <td></td>
                                 <td></td>
@@ -407,6 +408,7 @@
                                 <td class="text-right" colspan="2"><strong>Total BET-WIN</strong></td>
                                 <td class="text-right"><strong><span t-field="o.amount_bw"/></strong></td>
                             </tr>
+-->
                         </tbody>
                     </table>
 
