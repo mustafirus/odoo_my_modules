@@ -92,14 +92,14 @@
             <!--<field name="priority">15</field>-->
             <field name="arch" type="xml">
                 <form>
-                    <field name="repair_slotshot_id" invisible="1"/>
+                    <field name="maintshot_id" invisible="1"/>
                     <header>
                                 <!--attrs="{'invisible': [('repair_slotshot_id', '=', True)]}"-->
                         <button name="repair_begin" type="object" string="Begin Maintenance"
-                                attrs="{'invisible': [('repair_slotshot_id', '!=', False)]}"
+                                attrs="{'invisible': [('maintshot_id', '!=', False)]}"
                         />
                         <button name="repair_end" type="object" string="End Maintenance"
-                                attrs="{'invisible': [('repair_slotshot_id', '=', False)]}"
+                                attrs="{'invisible': [('maintshot_id', '=', False)]}"
                         />
                     </header>
                     <div class="oe_button_box" name="button_box">

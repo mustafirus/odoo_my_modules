@@ -17,6 +17,34 @@
             </field>
         </record>
 
+        <record model="ir.ui.view" id="maintshot_list">
+            <field name="name">Maintshots</field>
+            <field name="model">slot_machine_counters.maintshot.line</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="slot_id"/>
+                    <field name="date_beg"/>
+                    <field name="date_end"/>
+                    <field name="iin_beg"/>
+                    <field name="iin_end"/>
+                    <field name="out_beg"/>
+                    <field name="out_end"/>
+                    <field name="iin"/>
+                    <field name="out"/>
+                    <field name="credit"/>
+                    <field name="amount" widget="monetary"/>
+                    <field name="bet_beg"/>
+                    <field name="bet_end"/>
+                    <field name="win_beg"/>
+                    <field name="win_end"/>
+                    <field name="bet"/>
+                    <field name="win"/>
+                    <field name="credit_bw"/>
+                    <field name="amount_bw" widget="monetary"/>
+                </tree>
+            </field>
+        </record>
+
         <record model="ir.ui.view" id="slotshot_form">
             <field name="model">slot_machine_counters.slotshot</field>
             <!--<field name="priority">15</field>-->
@@ -320,6 +348,12 @@
             <field name="view_mode">tree,form</field>
         </record>
 
+        <record model="ir.actions.act_window" id="slot_machine_counters.action_window_maintshots">
+            <field name="name">Maintenance Shots</field>
+            <field name="res_model">slot_machine_counters.maintshot.line</field>
+            <field name="view_mode">tree</field>
+        </record>
+
         <record model="ir.actions.act_window" id="slot_machine_counters.action_window_hallreport">
             <field name="name">Hall Report</field>
             <field name="res_model">slot_machine_counters.hallreport</field>
@@ -331,8 +365,10 @@
         <menuitem name="Counters" id="slot_machine_counters.counters" parent="slot_machine_counters.menu_root"/>
         <!-- actions -->
         <menuitem name="Slot Shots" id="slot_machine_counters.menu_slotshots" parent="slot_machine_counters.counters"
-                  action="slot_machine_counters.action_window_slotshots"/>
+                  sequence="5" action="slot_machine_counters.action_window_slotshots"/>
+        <menuitem name="Maintenance Shots" id="slot_machine_counters.menu_maintshots" parent="slot_machine_counters.counters"
+                  sequence="10" action="slot_machine_counters.action_window_maintshots"/>
         <menuitem name="Hall Reports" id="slot_machine_counters.menu_hallreport" parent="slot_machine_counters.counters"
-                  action="slot_machine_counters.action_window_hallreport"/>
+                  sequence="15" action="slot_machine_counters.action_window_hallreport"/>
     </data>
 </odoo>
