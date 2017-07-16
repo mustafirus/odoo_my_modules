@@ -7,6 +7,34 @@ import urllib2
 import werkzeug.urls
 
 
+def get_data_rrd(devid, date_beg=lambda self: fields.datetime.now(), date_end=lambda self: fields.datetime.now()):
+    GAMBLING_ENDPOINT = 'http://localhost:4000/counters'
+    GAMBLING_ENDPOINT = 'http://rrd.odoo.bla:4000/counters?'
+    headers = {"Content-type": "application/x-www-form-urlencoded"}
+
+    date_b = fields.Datetime.from_string(date_beg)
+    date_e = fields.Datetime.from_string(date_end)
+    date_b = int(mktime(date_b.timetuple()))
+    date_e = int(mktime(date_e.timetuple()))
+
+    reqargs = werkzeug.url_encode({
+        'dateB': date_b,
+        'dateE': date_e,
+        'devid': devid,
+    })
+    try:
+        req = urllib2.Request(GAMBLING_ENDPOINT + reqargs, None, headers)
+        content = urllib2.urlopen(req, timeout=200).read()
+    except urllib2.HTTPError:
+        raise
+    content = json.loads(content)
+    err = content.get('error')
+    if err:
+        e = urllib2.HTTPError(req.get_full_url(), 999, err, headers, None)
+        raise e
+    return content
+
+
 class Hall(models.Model):
     _name = 'slot_machine_counters.hall'
 
@@ -65,13 +93,48 @@ class Slot(models.Model):
     currency_id = fields.Many2one('res.currency', related='hall_id.company_id.currency_id', readonly=True,
         help='Utility field to express amount currency')
     hall_id = fields.Many2one("slot_machine_counters.hall","Hall")
+    repair_slotshot_id = fields.Many2one('slot_machine_counters.slotshot.line', string='Repair Slotshot')
     active = fields.Boolean('Active?', default=True)
 
     @api.depends('boardrate','denom')
     def _compute_denomenation(self):
         for rec in self:
             rec.denomenation = (rec.denom * rec.boardrate)
-    # @api.depends('dev_sn')
+
+    @api.multi
+    def repair_begin(self):
+        slotline = self.env['slot_machine_counters.slotshot.line']
+        rrd = get_data_rrd(self.dev_sn)
+        self.repair_slotshot_id = slotline.create({
+            'slot_id': self.id,
+            'index':   self.index,
+            'iin_beg': rrd['iinB'] if rrd['iinB'] else rrd['betB'],
+            'out_beg': rrd['outB'] if rrd['outB'] else rrd['winB'],
+            'bet_beg': rrd['betB'],
+            'bet_end': rrd['betE'],
+            'win_beg': rrd['winB'],
+            'win_end': rrd['winE'],
+        })
+
+    @api.multi
+    def repair_end(self):
+        rrd = get_data_rrd(self.dev_sn)
+        self.repair_slotshot_id.write({
+            'slot_id': self.id,
+            'index':   self.index,
+            'iin_beg': rrd['iinB'] if rrd['iinB'] else rrd['betB'],
+            'iin_end':   rrd['iinE'] if rrd['iinE'] else rrd['betE'],
+            'out_beg': rrd['outB'] if rrd['outB'] else rrd['winB'],
+            'out_end':   rrd['outE'] if rrd['outE'] else rrd['winE'],
+            'bet_beg': rrd['betB'],
+            'bet_end': rrd['betE'],
+            'win_beg': rrd['winB'],
+            'win_end': rrd['winE'],
+        })
+        self.repair_slotshot_id = None
+        return
+
+            # @api.depends('dev_sn')
     # def _compute_name(self):
     #     for rec in self:
     #         rec.name = rec.dev_sn if rec.dev_sn else "Unknown"
@@ -134,33 +197,18 @@ class SlotShot(models.Model):
     #     for rec in self:
     #         rec.name = "%s/%s" % (rec.hall_id.name, rec.date_end) if rec.date_end and rec.hall_id else "---"
 
-
-    def _get_data_rrd(self, devid):
-        GAMBLING_ENDPOINT = 'http://localhost:4000/counters'
-        GAMBLING_ENDPOINT = 'http://rrd.odoo.bla:4000/counters?'
-        headers = {"Content-type": "application/x-www-form-urlencoded"}
-
-        date_b = fields.Datetime.from_string(self.date_beg)
-        date_e = fields.Datetime.from_string(self.date_end)
-        date_b = int(mktime(date_b.timetuple()))
-        date_e = int(mktime(date_e.timetuple()))
-
-        reqargs = werkzeug.url_encode({
-            'dateB': date_b,
-            'dateE': date_e,
-            'devid': devid,
+    @api.multi
+    def print_data (self):
+        self.ensure_one()
+        rep = self.env['slot_machine_counters.hallreport']
+        rep = rep.create({
+            'hall_id':  self.hall_id.id,
+            'date_beg': self.date_beg,
+            'date_end': self.date_end,
+            'full':     True,
         })
-        try:
-            req = urllib2.Request(GAMBLING_ENDPOINT + reqargs, None, headers)
-            content = urllib2.urlopen(req, timeout=200).read()
-        except urllib2.HTTPError:
-            raise
-        content = json.loads(content)
-        err = content.get('error')
-        if err:
-            e = urllib2.HTTPError(req.get_full_url(), 999, err, headers, None)
-            raise e
-        return content
+        return rep.print_rep(self)
+
 
     @api.multi
     def get_data(self):
@@ -176,7 +224,7 @@ class SlotShot(models.Model):
         existing = slotline.browse(self.slotshot_lines._ids)
         existing.unlink()
         for slot in ids:
-            rrd = self._get_data_rrd(slot.dev_sn)
+            rrd = get_data_rrd(slot.dev_sn, self.date_beg, self.date_end)
             vals = {
                 'slotshot_id': self.id,
                 'slot_id': slot.id,
@@ -191,14 +239,14 @@ class SlotShot(models.Model):
                 'win_end': rrd['winE'],
             }
             slotline.create(vals)
-        a=1
+
 
 class SlotShotLine(models.Model):
     _name = 'slot_machine_counters.slotshot.line'
     _description = 'SlotShot Line'
     _order = 'slotshot_id,index'
 
-    slotshot_id = fields.Many2one('slot_machine_counters.slotshot', string='SlotShot Reference', required=True, ondelete='cascade', index=True, copy=False)
+    slotshot_id = fields.Many2one('slot_machine_counters.slotshot', string='SlotShot Reference', required=False, ondelete='cascade', index=True, copy=False)
     index     = fields.Integer("Index")
     slot_id   = fields.Many2one("slot_machine_counters.slot","Slot")
     iin_beg   = fields.Integer("in")
@@ -220,6 +268,7 @@ class SlotShotLine(models.Model):
     currency_id = fields.Many2one('res.currency', related='slot_id.hall_id.company_id.currency_id', readonly=True,
         help='Utility field to express amount currency')
 #################
+
     @api.depends('iin_beg','iin_end')
     def _compute_iin(self):
         for rec in self:
@@ -240,6 +289,7 @@ class SlotShotLine(models.Model):
         for rec in self:
             rec.amount = rec.credit * rec.slot_id.denomenation
 #################
+
     @api.depends('bet_beg','bet_end')
     def _compute_bet(self):
         for rec in self:
@@ -267,8 +317,8 @@ class HallReport(models.TransientModel):
     _description = 'HallReport'
 
     hall_id = fields.Many2one("slot_machine_counters.hall","Hall", required=True)
-    date_beg = fields.Date("From", required=True)
-    date_end = fields.Date("To", required=True)
+    date_beg = fields.Datetime("From", required=True)
+    date_end = fields.Datetime("To", required=True)
     full = fields.Boolean("Full report", default=False)
     hallreport_lines = fields.One2many('slot_machine_counters.hallreport.line', 'hallreport_id', string='Slotshot Lines')
     # credit     = fields.Integer("Credit",compute='_compute_total', readonly=True, store=True)
@@ -300,6 +350,10 @@ class HallReport(models.TransientModel):
                 rec.amount_bw += line.amount_bw
 
 
+    # def hallreport_print(self):
+    #     return self._hallreport_print()
+
+
     @api.multi
     def hallreport_print(self):
         self.ensure_one()
@@ -307,8 +361,8 @@ class HallReport(models.TransientModel):
         date_end = fields.Date.from_string(self.date_end)
         if date_end <= date_beg:
             date_end = date_beg + datetime.timedelta(days=1)
-        date_beg = fields.Datetime.to_string(date_beg)
-        date_end = fields.Datetime.to_string(date_end + datetime.timedelta(days=1))
+        date_beg = fields.Date.to_string(date_beg)
+        date_end = fields.Date.to_string(date_end + datetime.timedelta(days=1))
         shots = self.env['slot_machine_counters.slotshot'].search([
             ('hall_id.id', '=', self.hall_id.id),
             ('date_beg', '>=', date_beg),
@@ -320,6 +374,10 @@ class HallReport(models.TransientModel):
         lt = shots[-1]
         self.date_beg = ft.date_beg
         self.date_end = lt.date_end
+        return self.print_rep(shots)
+
+    @api.multi
+    def print_rep(self, shots):
         self.env.cr.execute("""
             SELECT slot_id, string_agg(distinct cast(index as text), ','),
             min(iin_beg) as iin_beg, max(iin_end) as iin_end, sum(iin) as iin,

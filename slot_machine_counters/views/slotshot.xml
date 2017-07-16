@@ -26,6 +26,9 @@
                         <button name="get_data" type="object" string="Get data"
                                 attrs="{'invisible': [('date_end', '=', False)]}"
                         />
+                        <button name="print_data" type="object" string="Print"
+                                attrs="{'invisible': [('date_end', '=', False)]}"
+                        />
                     </header>
                     <sheet>
                         <group name="left">
@@ -101,10 +104,10 @@
                             </group>
                         <group>
                             <group name="left">
-                                <field name="date_beg"/>
+                                <field name="date_beg" widget="date"/>
                             </group>
                             <group name="right">
-                                <field name="date_end"/>
+                                <field name="date_end" widget="date"/>
                             </group>
                             <field name="full"/>
                             <!--<field name="gps" readonly="1"/>-->
