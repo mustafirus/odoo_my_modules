@@ -55,13 +55,16 @@
                         <group>
                             <group name="left">
                                 <field name="hub_sn"/>
-                                <field name="hub_sim"/>
-                                <field name="phone"/>
-                            </group>
-                            <group name="right">
                                 <field name="description"/>
                                 <field name="gpslat"/>
                                 <field name="gpslng"/>
+                            </group>
+                            <group name="right">
+                                <field name="hub_sim"/>
+                                <field name="phone"/>
+                                <field name="AlarmSms"/>
+                                <field name="AlarmPhone1" attrs="{'readonly':[('AlarmSms','!=',True)]}"/>
+                                <field name="AlarmPhone2" attrs="{'readonly':[('AlarmSms','!=',True)]}"/>
                             </group>
                         </group>
                         <notebook>

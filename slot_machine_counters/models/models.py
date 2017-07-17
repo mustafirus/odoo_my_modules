@@ -6,13 +6,16 @@ import json
 import urllib2
 import werkzeug.urls
 
+GAMBLING_ENDPOINT = 'http://localhost:4000/counters'
+GAMBLING_ENDPOINT = 'http://rrd.odoo.bla:4000'
+
+
 def get_now():
     return fields.datetime.now().replace(second=0, microsecond=0).strftime(fields.DATETIME_FORMAT)
 
 
 def get_data_rrd(devid, date_beg, date_end):
-    GAMBLING_ENDPOINT = 'http://localhost:4000/counters'
-    GAMBLING_ENDPOINT = 'http://rrd.odoo.bla:4000/counters?'
+    url = GAMBLING_ENDPOINT + '/counters?'
     headers = {"Content-type": "application/x-www-form-urlencoded"}
 
     date_b = fields.Datetime.from_string(date_beg)
@@ -26,7 +29,7 @@ def get_data_rrd(devid, date_beg, date_end):
         'devid': devid,
     })
     try:
-        req = urllib2.Request(GAMBLING_ENDPOINT + reqargs, None, headers)
+        req = urllib2.Request(url + reqargs, None, headers)
         content = urllib2.urlopen(req, timeout=200).read()
     except urllib2.HTTPError:
         raise
@@ -46,6 +49,9 @@ class Hall(models.Model):
     hub_sn = fields.Char("Hub SN")
     hub_sim = fields.Char("Hub SIM")
     phone = fields.Char("Phone of admin")
+    AlarmSms = fields.Boolean("Sms Alarm")
+    AlarmPhone1 = fields.Char("Alarm Phone 1")
+    AlarmPhone2 = fields.Char("Alarm Phone 2")
     gpslat = fields.Float("Geo Lat")
     gpslng = fields.Float("Geo Long")
     slot_ids = fields.One2many("slot_machine_counters.slot","hall_id","Slots")
@@ -55,15 +61,14 @@ class Hall(models.Model):
 
 
     def get_info(self):
-        GAMBLING_ENDPOINT = 'http://localhost:4000/counters'
-        GAMBLING_ENDPOINT = 'http://rrd.odoo.bla:4000/hubinfo?'
+        url = GAMBLING_ENDPOINT + '/hubinfo?'
         headers = {"Content-type": "application/x-www-form-urlencoded"}
 
         reqargs = werkzeug.url_encode({
             'hubid': fields.Datetime.from_string(self.hub_sn),
         })
         try:
-            req = urllib2.Request(GAMBLING_ENDPOINT + reqargs, None, headers)
+            req = urllib2.Request(url + reqargs, None, headers)
             content = urllib2.urlopen(req, timeout=200).read()
         except urllib2.HTTPError:
             raise
@@ -77,7 +82,38 @@ class Hall(models.Model):
             'gpslng': content.get('gpslng'),
         })
 
+    def _set_config(self):
+        url = GAMBLING_ENDPOINT + '/hubconfig'
 
+        data = json.dumps({
+            'hubid': self.hub_sn,
+            'name': self.name,
+            'AlarmSms':    self.AlarmSms,
+            'AlarmPhone1': self.AlarmPhone1,
+            'AlarmPhone2': self.AlarmPhone2,
+            'slots': self.slot_ids.get_sns()
+        })
+
+        try:
+            req = urllib2.Request(url, data, {'Content-Type': 'application/json'})
+            content = urllib2.urlopen(req, timeout=200).read()
+        except urllib2.HTTPError:
+            raise
+        content = json.loads(content)
+        err = content.get('error')
+        if err:
+            e = urllib2.HTTPError(req.get_full_url(), 999, err, None, None)
+            raise e
+
+    @api.multi
+    def write(self, vals):
+        if 'slot_ids' in vals:
+            for i in range(0,len(vals['slot_ids'])):
+                if vals['slot_ids'][i][0] == 2:
+                    vals['slot_ids'][i][0] = 3
+        ret = super(Hall, self).write(vals)
+        self._set_config()
+        return ret
 
 
 
@@ -103,6 +139,14 @@ class Slot(models.Model):
     def _compute_denomenation(self):
         for rec in self:
             rec.denomenation = (rec.denom * rec.boardrate)
+
+    @api.multi
+    def get_sns(self):
+        sns = list()
+        for rec in self:
+            sns.append(rec.dev_sn)
+        return sns
+
 
     @api.multi
     def repair_begin(self):
