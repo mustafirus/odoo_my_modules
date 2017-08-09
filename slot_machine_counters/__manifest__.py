@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': "slot_machine_counters",
-    'version': "0.1",
+    'version': '2.1',
     'author': "Golubev",
     'license':'OPL-1',
     'summary': """
