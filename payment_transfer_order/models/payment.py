@@ -14,6 +14,6 @@ class TransferPaymentAcquirer(models.Model):
     def render(self, reference, amount, currency_id, partner_id=False, values=None):
         rec = self
         if self.provider == 'transfer':
-            rec = self.with_context(submit_txt='Order Now')
+            rec = self.with_context(submit_txt=_('Order Now'))
         return super(TransferPaymentAcquirer, rec).render(reference, amount, currency_id, partner_id, values)
 
