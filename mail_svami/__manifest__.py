@@ -8,6 +8,7 @@
     'description': """
         Configure mail for  account on svami.in.ua
         You must have account on svami.in.ua
+        need python-dnspython debian module
     """,
     'author': "Svami",
     'website': "http://www.svami.in.ua",
