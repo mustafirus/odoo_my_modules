@@ -1,0 +1,59 @@
+<odoo>
+  <data>
+    <!-- explicit list view definition -->
+    <!--
+    <record model="ir.ui.view" id="auth_signup_ldap.list">
+      <field name="name">auth_signup_ldap list</field>
+      <field name="model">auth_signup_ldap.auth_signup_ldap</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="value"/>
+          <field name="value2"/>
+        </tree>
+      </field>
+    </record>
+    -->
+
+    <!-- actions opening views on models -->
+    <!--
+    <record model="ir.actions.act_window" id="auth_signup_ldap.action_window">
+      <field name="name">auth_signup_ldap window</field>
+      <field name="res_model">auth_signup_ldap.auth_signup_ldap</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+    -->
+
+    <!-- server action to the one above -->
+    <!--
+    <record model="ir.actions.server" id="auth_signup_ldap.action_server">
+      <field name="name">auth_signup_ldap server</field>
+      <field name="model_id" ref="model_auth_signup_ldap_auth_signup_ldap"/>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "tree,form",
+          "res_model": self._name,
+        }
+      </field>
+    </record>
+    -->
+
+    <!-- Top menu item -->
+    <!--
+    <menuitem name="auth_signup_ldap" id="auth_signup_ldap.menu_root"/>
+    -->
+    <!-- menu categories -->
+    <!--
+    <menuitem name="Menu 1" id="auth_signup_ldap.menu_1" parent="auth_signup_ldap.menu_root"/>
+    <menuitem name="Menu 2" id="auth_signup_ldap.menu_2" parent="auth_signup_ldap.menu_root"/>
+    -->
+    <!-- actions -->
+    <!--
+    <menuitem name="List" id="auth_signup_ldap.menu_1_list" parent="auth_signup_ldap.menu_1"
+              action="auth_signup_ldap.action_window"/>
+    <menuitem name="Server to list" id="auth_signup_ldap" parent="auth_signup_ldap.menu_2"
+              action="auth_signup_ldap.action_server"/>
+    -->
+  </data>
+</odoo>

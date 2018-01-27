@@ -7,8 +7,8 @@ from odoo.service.db import dump_db, exp_drop, restore_db
 from odoo.exceptions import AccessError
 import os
 import errno
-import odoo
 from os.path import expanduser
+from odoo.http import request
 
 backup_dir = "unknown"
 
@@ -66,64 +66,13 @@ class BackupRestore(models.TransientModel):
 
         dbname = self._cr.dbname
         restore_name = self.restore_name
-
+        request.session.logout()
+        request.disable_db = True
+        request._cr = None
         exp_drop(dbname)
         restore_db(dbname, restore_name)
-
-
-
-#        restore_db(db, dump_file, copy=False)
-    # @api.model
-    # def get_default_use_svami(self, fields):
-    #     use_svami = self.env["ir.config_parameter"].get_param("svami.use_svami", default=False)
-    #     return {'use_svami': use_svami}
-    #
-    # @api.one
-    # def set_use_svami(self):
-    #     use_svami = self.use_svami
-    #     alias_domain = self.alias_domain
-    #     alias_domain_old = self.env['ir.config_parameter'].get_param("svami.use_svami")
-    #     mail_server= self.env['ir.mail_server'].sudo().search([('name', '=', 'svami')])
-    #     fetchmail_server= self.env['fetchmail.server'].sudo().search([('name', '=', 'svami')])
-    #     if not use_svami or not is_alias_on_svami(alias_domain):
-    #         if len(mail_server) > 0:
-    #             mail_server.unlink()
-    #             fetchmail_server.unlink()
-    #         self.env['ir.config_parameter'].set_param("svami.use_svami", False)
-    #         return
-    #     if (alias_domain !=  alias_domain_old and len(mail_server) > 0) or len(mail_server) > 1:
-    #         mail_server.unlink()
-    #         fetchmail_server.unlink()
-    #
-    #     mail_server.create(
-    #         {'name': "svami", 'smtp_host': "mail.svami.in.ua", 'smtp_port': "587",
-    #          'smtp_encryption': "starttls"}
-    #     )
-    #     fetchmail_server.create(
-    #         {'name': "svami", 'server': "mail.svami.in.ua", 'port': "993",
-    #          'type': 'imap', 'is_ssl': True}
-    #     )
-    #     self.env['ir.config_parameter'].set_param("svami.use_svami", alias_domain)
-
-
-    # @api.depends('use_svami')
-    # def onchange_use_svami(self):
-    #     a = self.use_svami
-    #     if self.use_svami:
-    #         return {
-    #             'warning': {
-    #                 'title': _('Warning!'),
-    #                 'message': _('Check creditials in svami outgoing and incoming servers settings \n'),
-    #             }
-    #         }
-
-
-    #    @api.onchange('alias_domain')
-#    def onchange_svami(self):
-#        c = self.alias_domain_changed
-#        if self.use_svami:
-#            if self.alias_domain != self.env['ir.config_parameter'].get_param("mail.catchall.domain"):
-#                self.alias_domain_changed = True
-#        c = self.alias_domain_changed
-#        a=1
-
+        return {
+            'type': 'ir.actions.act_url',
+            'url': '/web/login',
+            'target': 'self',
+        }

@@ -23,8 +23,8 @@
                 <tree>
                     <field name="dev_sn"/>
                     <field name="type"/>
-                    <field name="denomenation"/>
-                    <field name="currency_id" invisible="1"/>
+                    <!--<field name="denomenation"/>-->
+                    <!--<field name="currency_id" invisible="1"/>-->
                     <field name="hall_id"/>
                 </tree>
             </field>
@@ -55,13 +55,16 @@
                         <group>
                             <group name="left">
                                 <field name="hub_sn"/>
-                                <field name="hub_sim"/>
-                                <field name="phone"/>
-                            </group>
-                            <group name="right">
                                 <field name="description"/>
                                 <field name="gpslat"/>
                                 <field name="gpslng"/>
+                            </group>
+                            <group name="right">
+                                <field name="hub_sim"/>
+                                <field name="phone"/>
+                                <field name="AlarmSms"/>
+                                <field name="AlarmPhone1" attrs="{'readonly':[('AlarmSms','!=',True)]}"/>
+                                <field name="AlarmPhone2" attrs="{'readonly':[('AlarmSms','!=',True)]}"/>
                             </group>
                         </group>
                         <notebook>
@@ -92,6 +95,16 @@
             <!--<field name="priority">15</field>-->
             <field name="arch" type="xml">
                 <form>
+                    <field name="maintshot_id" invisible="1"/>
+                    <header>
+                                <!--attrs="{'invisible': [('repair_slotshot_id', '=', True)]}"-->
+                        <button name="repair_begin" type="object" string="Begin Maintenance"
+                                attrs="{'invisible': [('maintshot_id', '!=', False)]}"
+                        />
+                        <button name="repair_end" type="object" string="End Maintenance"
+                                attrs="{'invisible': [('maintshot_id', '=', False)]}"
+                        />
+                    </header>
                     <div class="oe_button_box" name="button_box">
                         <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
                             <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
@@ -111,8 +124,9 @@
                             <field name="type"/>
                         </group>
                         <group name="right">
-                            <field name="denomenation"/>
-                            <field name="currency_id" invisible="1"/>
+                            <field name="boardrate"/>
+                            <field name="denom"/>
+                            <!--<field name="currency_id" invisible="1"/>-->
                             <field name="hall_id"/>
                         </group>
                     </group>
