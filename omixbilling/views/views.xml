@@ -16,13 +16,11 @@
     -->
 
     <!-- actions opening views on models -->
-    <!--
-    <record model="ir.actions.act_window" id="omixbilling.action_window">
-      <field name="name">omixbilling window</field>
-      <field name="res_model">omixbilling.omixbilling</field>
+    <record model="ir.actions.act_window" id="omixbilling.subscriptions">
+      <field name="name">Subscriptions</field>
+      <field name="res_model">omixbilling.subscription</field>
       <field name="view_mode">tree,form</field>
     </record>
-    -->
 
     <!-- server action to the one above -->
     <!--
@@ -40,20 +38,100 @@
     -->
 
     <!-- Top menu item -->
-    <!--
-    <menuitem name="omixbilling" id="omixbilling.menu_root"/>
-    -->
+    <menuitem name="Billing" id="omixbilling.menu_root"/>
     <!-- menu categories -->
-    <!--
-    <menuitem name="Menu 1" id="omixbilling.menu_1" parent="omixbilling.menu_root"/>
-    <menuitem name="Menu 2" id="omixbilling.menu_2" parent="omixbilling.menu_root"/>
-    -->
-    <!-- actions -->
-    <!--
-    <menuitem name="List" id="omixbilling.menu_1_list" parent="omixbilling.menu_1"
-              action="omixbilling.action_window"/>
-    <menuitem name="Server to list" id="omixbilling" parent="omixbilling.menu_2"
-              action="omixbilling.action_server"/>
-    -->
+    <menuitem name="Subscriptions" id="omixbilling.subscriptions_section" parent="omixbilling.menu_root"/>
+     <!--actions -->
+    <menuitem name="Subscriptions" id="omixbilling.subscriptions_action" parent="omixbilling.subscriptions_section"
+              action="omixbilling.subscriptions"/>
+    <!--<menuitem name="Server to list" id="omixbilling" parent="omixbilling.menu_2"-->
+              <!--action="omixbilling.action_server"/>-->
+
+    <record id="subscriptions_tree" model="ir.ui.view">
+        <field name="name">omixbillingertert.subscriptions.tree</field>
+        <field name="model">omixbilling.subscription</field>
+        <!--<field name="priority">2</field>-->
+        <field name="arch" type="xml">
+            <tree string="Subsription">
+                <field name="name" string="Subsription Number"/>
+                <field name="product_id"/>
+                <field name="partner_id"/>
+                <field name="price"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="started"/>
+                <field name="torenew"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_subscription_filter" model="ir.ui.view">
+        <field name="name">subscription.list.select</field>
+        <field name="model">omixbilling.subscription</field>
+        <field name="arch" type="xml">
+            <search string="Search Sales Order">
+                <field name="name" string="Subscription" filter_domain="[('name','ilike',self)]"/>
+                <field name="product_id" operator="child_of"/>
+                <field name="partner_id" operator="child_of"/>
+                <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                <group expand="0" string="Group By">
+                    <filter name="customer" string="Customer" domain="[]" context="{'group_by':'partner_id'}"/>
+                    <filter name="product" string="Product" domain="[]" context="{'group_by':'product_id'}"/>
+                    <filter string="Order Month" domain="[]" context="{'group_by':'started'}"/>
+                </group>
+           </search>
+        </field>
+    </record>
+
+    <record id="view_subscription_form" model="ir.ui.view">
+        <field name="name">subscription.form</field>
+        <field name="model">omixbilling.subscription</field>
+        <field name="arch" type="xml">
+            <form string="Subscription" class="o_sale_order">
+            <sheet>
+                <div class="oe_button_box" name="button_box">
+                    <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                        <field name="active" widget="boolean_button" options="{&quot;terminology&quot;: &quot;archive&quot;}"/>
+                    </button>
+                </div>
+                <div class="oe_title">
+                    <h1>
+                        <field name="name" readonly="1"/>
+                    </h1>
+                </div>
+                <group>
+                    <group>
+                        <field name="partner_id" domain="[('customer','=',True)]" context="{'show_address': 1}" options='{"always_reload": True}'/>
+                        <field name="product_id" domain="[('subscription_ok','=',True)]"/>
+                        <field name="price"/>
+                    </group>
+                    <group>
+                        <field name="started" />
+                        <field name="torenew"/>
+                    </group>
+                </group>
+            </sheet>
+<!--
+            <div class="oe_chatter">
+                <field name="message_follower_ids" widget="mail_followers"/>
+                <field name="message_ids" widget="mail_thread"/>
+            </div>
+-->
+            </form>
+        </field>
+    </record>
+
+    <record id="subscription_product_template_form" model="ir.ui.view">
+         <field name="name">product.template.subscription.form.inherit</field>
+         <field name="model">product.template</field>
+         <field name="inherit_id" ref="sale.product_template_form_view_invoice_policy" />
+         <field name="arch" type="xml">
+            <field name="invoice_policy" position="before">
+                <field name="subscription_ok" />
+            </field>
+         </field>
+    </record>
+
+
   </data>
 </odoo>
+
