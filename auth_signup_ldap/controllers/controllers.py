@@ -33,16 +33,9 @@ class AuthSignupLdap(AuthSignupHome):
                 self.do_signup(qcontext)
                 return super(AuthSignupLdap, self).web_login(*args, **kw)
             except (SignupError, AssertionError), e:
-                # u'duplicate key value violates unique constraint "res_users_login_key"
-                # DETAIL:  Key(login) = (aas11 @ svami. in.ua) already
-                # exists.
-                # '
-                # if request.env["res.users"].sudo().search_count([("login", "=", qcontext.get("login"))]):
-                #     qcontext["login"] = qcontext.get("login").replace("@svami.in.ua","")
-                #     qcontext["error"] = _("Another user is already registered using this email address.")
-                # else:
                 qcontext["login"] = qcontext.get("login").replace("@svami.in.ua", "")
-                if e.message.find("duplicate key value violates unique constraint") != -1:
+                if e.message.find("duplicate key value violates unique constraint") != -1\
+                        or e.message == 'User Exists.':
                     qcontext["error"] = _("Another user is already registered using this email address.")
                 else:
                     _logger.error(e.message)
@@ -67,13 +60,16 @@ class AuthSignupLdap(AuthSignupHome):
                 assert qcontext.get('password'), "Password empty; please retype it."
                 assert qcontext.get('password') == qcontext.get(
                     'confirm_password'), "Passwords do not match; please retype them."
-                vals = {
-                    'login': request.env.user.login,
-                    'oldpassword': qcontext.get('oldpassword'),
-                    'password': qcontext.get('password'),
-                }
-                request.env.user.write(vals)
-                return request.redirect('/my/home')
+                if request.env['res.company.ldap'].authenticate0(request.env.user.login, qcontext.get('oldpassword')):
+                    vals = {
+                        'login': request.env.user.login,
+                        'password': qcontext.get('password'),
+                        'raise': True,
+                    }
+                    request.env.user.write(vals)
+                    return request.redirect('/my/home')
+                else:
+                    qcontext['error'] = _('Old password incorrect')
             except SignupError:
                 qcontext['error'] = _("Could not reset your password")
                 _logger.exception('error when resetting password')

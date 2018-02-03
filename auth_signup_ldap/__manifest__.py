@@ -3,12 +3,14 @@
     'name': "Signup into LDAP",
 
     'summary': """
-        Create entry in LDAP on signup
-        Short (1 phrase/line) summary of the module's purpose, used as
+        LDAP backend for signup
         """,
 
     'description': """
-        Create entry in LDAP on signup
+        Create entry in LDAP on signup or create user
+        Modify password in ldap on reset password(dont store in db)
+        Modify cn, givenName, sn in ldap on change name 
+        Uses auth_ldap for config 
     """,
 
     'author': "Golubev",
@@ -18,16 +20,16 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Extra Tools',
-    'version': '0.1',
+    'version': '0.2',
 
     # any module necessary for this one to work correctly
-    'depends': ['auth_signup' ,'auth_ldap'], #
+    'depends': ['auth_signup' ,'auth_ldap', 'website_portal'], #
 
     # always loaded
     'data': [
-        # 'security/ir.model.access.csv',
-        'views/views.xml',
         'views/templates.xml',
     ],
-    # only loaded in demonstration mode
+    'external_dependencies' : {
+        'python' : ['ldap'],
+    }
 }
