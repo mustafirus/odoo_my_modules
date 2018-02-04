@@ -2,30 +2,32 @@
     <data>
         <template id="auth_signup_ldap.fields" inherit_id="auth_signup.fields" name="Auth Signup/ResetPassword form fields">
             <xpath expr="//input[@name='login']" position="replace">
-                <div>
-                    <input type="text" name="login" t-att-value="login" id="login" class="form-control" autofocus="autofocus"
-                        autocapitalize="off" required="required" t-att-readonly="'readonly' if only_passwords else None" style="width: 50%; float: left;"/>
-                    <span style="font-size: 150%;">@svami.in.ua</span>
-                </div>
+                <t t-if="signup">
+                    <div>
+                        <input type="text" name="login" t-att-value="login" id="login" class="form-control" autofocus="autofocus"
+                            autocapitalize="off" required="required" t-att-readonly="'readonly' if only_passwords else None" style="width: 50%; float: left;"/>
+                        <span style="font-size: 150%;">@svami.in.ua</span>
+                    </div>
+                </t>
+                <t t-else="">
+                        <input type="text" name="login" t-att-value="login" id="login" class="form-control" autofocus="autofocus"
+                            autocapitalize="off" required="required" t-att-readonly="'readonly' if only_passwords else None" style="float: left;"/>
+                </t>
+            </xpath>
+            <xpath expr="//div[input/@name='password']" position="before">
+                <t t-if="token == 'reset_password_auth_user'">
+                    <div class="form-group field-password">
+                        <label for="oldpassword" class="control-label">Old Password</label>
+                        <input type="password" name="oldpassword" id="oldpassword" class="form-control"
+                            required="required" t-att-autofocus="'autofocus' if only_passwords else None"/>
+                    </div>
+                </t>
             </xpath>
         </template>
-        <!-- <template id="listing"> -->
-        <!--   <ul> -->
-        <!--     <li t-foreach="objects" t-as="object"> -->
-        <!--       <a t-attf-href="#{ root }/objects/#{ object.id }"> -->
-        <!--         <t t-esc="object.display_name"/> -->
-        <!--       </a> -->
-        <!--     </li> -->
-        <!--   </ul> -->
-        <!-- </template> -->
-        <!-- <template id="object"> -->
-        <!--   <h1><t t-esc="object.display_name"/></h1> -->
-        <!--   <dl> -->
-        <!--     <t t-foreach="object._fields" t-as="field"> -->
-        <!--       <dt><t t-esc="field"/></dt> -->
-        <!--       <dd><t t-esc="object[field]"/></dd> -->
-        <!--     </t> -->
-        <!--   </dl> -->
-        <!-- </template> -->
+        <template id="reset_password_button" inherit_id="website_portal.portal_layout" name="ResetPassword button">
+            <xpath expr="//div[@id='wrap']//a[@href='/my/account']" position="after">
+                <a href="/my/reset_password" class="btn btn-default btn-xs">Reset Password</a>
+            </xpath>
+        </template>
     </data>
 </odoo>

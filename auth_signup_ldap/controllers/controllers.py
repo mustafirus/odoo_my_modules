@@ -33,41 +33,50 @@ class AuthSignupLdap(AuthSignupHome):
                 self.do_signup(qcontext)
                 return super(AuthSignupLdap, self).web_login(*args, **kw)
             except (SignupError, AssertionError), e:
-                if request.env["res.users"].sudo().search([("login", "=", qcontext.get("login"))]):
-                    qcontext["login"] = qcontext.get("login").replace("@svami.in.ua","")
+                qcontext["login"] = qcontext.get("login").replace("@svami.in.ua", "")
+                if e.message.find("duplicate key value violates unique constraint") != -1\
+                        or e.message == 'User Exists.':
                     qcontext["error"] = _("Another user is already registered using this email address.")
                 else:
                     _logger.error(e.message)
                     qcontext['error'] = _("Could not create a new account.")
 
+        qcontext["signup"] = True
         return request.render('auth_signup.signup', qcontext)
 
-    # def get_auth_signup_qcontext(self):
-    #     qcontext = super(AuthSignupLdap, self).get_auth_signup_qcontext()
-    #     if request.httprequest.method == 'POST':
-    #     return qcontext
+    @http.route('/my/reset_password', type='http', auth='user', website=True)
+    def web_my_reset_password(self, *args, **kw):
+        qcontext = request.params.copy()
+        qcontext.update(self.get_auth_signup_config())
+        qcontext['token'] = 'reset_password_auth_user'
+        qcontext['login'] = request.env.user.login
+        qcontext['name'] = request.env.user.name
 
-    # def _signup_with_values(self, token, values):
-    #     if '@' in values['login']:
-    #         values['login'] = re.sub("@.*$", "", values['login'])
-    #     values['login'] = '%s@svami.in.ua' % values['login']
-    #     super(AuthSignupLdap, self)._signup_with_values(token, values)
+        if not qcontext.get('reset_password_enabled'):
+            raise werkzeug.exceptions.NotFound()
 
+        if 'error' not in qcontext and request.httprequest.method == 'POST':
+            try:
+                assert qcontext.get('password'), "Password empty; please retype it."
+                assert qcontext.get('password') == qcontext.get(
+                    'confirm_password'), "Passwords do not match; please retype them."
+                if request.env['res.company.ldap'].authenticate0(request.env.user.login, qcontext.get('oldpassword')):
+                    vals = {
+                        'login': request.env.user.login,
+                        'password': qcontext.get('password'),
+                        'raise': True,
+                    }
+                    request.env.user.write(vals)
+                    return request.redirect('/my/home')
+                else:
+                    qcontext['error'] = _('Old password incorrect')
+            except SignupError:
+                qcontext['error'] = _("Could not reset your password")
+                _logger.exception('error when resetting password')
+            except AssertionError, e:
+                qcontext['error'] = e.message or e.name
+            except Exception, e:
+                _logger.exception('error when resetting password: {}'.format(e.message or e.name))
+                qcontext['error'] = _("Could not reset your password")
 
-                # class AuthSignupLdap(http.Controller):
-#     @http.route('/auth_signup_ldap/auth_signup_ldap/', auth='public')
-#     def index(self, **kw):
-#         return "Hello, world"
-
-#     @http.route('/auth_signup_ldap/auth_signup_ldap/objects/', auth='public')
-#     def list(self, **kw):
-#         return http.request.render('auth_signup_ldap.listing', {
-#             'root': '/auth_signup_ldap/auth_signup_ldap',
-#             'objects': http.request.env['auth_signup_ldap.auth_signup_ldap'].search([]),
-#         })
-
-#     @http.route('/auth_signup_ldap/auth_signup_ldap/objects/<model("auth_signup_ldap.auth_signup_ldap"):obj>/', auth='public')
-#     def object(self, obj, **kw):
-#         return http.request.render('auth_signup_ldap.object', {
-#             'object': obj
-#         })
+        return request.render('auth_signup.reset_password', qcontext)
