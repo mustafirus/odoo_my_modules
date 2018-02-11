@@ -1,33 +1,25 @@
 <odoo>
-    <template id="portal_layout" name="Portal layout: Subscriptions menu entry" inherit_id="website_portal.portal_layout"
+    <template id="portal_layout" name="Portal layout: Subscriptions menu entry" inherit_id="portal.portal_layout"
               priority="30">
-        <xpath expr="//ul[contains(@class,'o_portal_submenu')]" position="inside">
-            <li t-att-class="page_name == 'subscriptions' and 'active' or ''">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'subscriptions'">
+                <a href="/my/subscriptions?{{ keep_query() }}">Subscriptions</a>
+            </li>
+        </xpath>
+    </template>
+
+    <template id="portal_my_home" name="Portal My Home: Subscription entries" inherit_id="portal.portal_my_home"
+              priority="30">
+        <xpath expr="//ul[hasclass('o_portal_docs')]" position="inside">
+            <li t-if="subscription_count" class="list-group-item">
+                <span class="badge" t-esc="quotation_count"/>
                 <a href="/my/subscriptions">Subscriptions</a>
             </li>
         </xpath>
     </template>
-    <template id="portal_my_home" name="Portal My Home: Subscription entries" inherit_id="website_portal.portal_my_home"
-              priority="30">
-        <xpath expr="//div[contains(@class,'o_my_home_content')]" position="inside">
-            <h3 class="page-header">
-                <a href="/my/subscriptions">Your Subscriptions
-                    <small class="ml8">
-                        <t t-if="subscription_count">
-                            <span class='badge'>
-                                <t t-esc="subscription_count"/>
-                            </span>
-                        </t>
-                        <t t-if="not subscription_count">
-                            There are currently no subscriptions for your account.
-                        </t>
-                    </small>
-                </a>
-            </h3>
-        </xpath>
-    </template>
+
     <template id="my_subscriptions" name="My Subscriptions">
-        <t t-call="website_portal.portal_layout">
+        <t t-call="portal.portal_layout">
             <h3 class="page-header">
                 Your Subscriptions
                 <div class="dropdown pull-right mr8">

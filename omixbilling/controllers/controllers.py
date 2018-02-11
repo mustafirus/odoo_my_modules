@@ -4,14 +4,14 @@
 from collections import OrderedDict
 
 from odoo import http, _
-from odoo.addons.website_portal.controllers.main import website_account
+from odoo.addons.portal.controllers.portal import CustomerPortal, get_records_pager
 from odoo.http import request
 
 
-class WebsiteAccount(website_account):
+class CustomerPortal(CustomerPortal):
 
     def _prepare_portal_layout_values(self):
-        values = super(WebsiteAccount, self)._prepare_portal_layout_values()
+        values = super(CustomerPortal , self)._prepare_portal_layout_values()
         # domain is needed to hide non portal project for employee
         # portal users can't see the privacy_visibility, fetch the domain for them in sudo
         subscription_count = request.env['omixbilling.subscription'].search_count([])
