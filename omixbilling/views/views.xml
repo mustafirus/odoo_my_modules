@@ -1,19 +1,5 @@
 <odoo>
   <data>
-    <!-- explicit list view definition -->
-    <!--
-    <record model="ir.ui.view" id="omixbilling.list">
-      <field name="name">omixbilling list</field>
-      <field name="model">omixbilling.omixbilling</field>
-      <field name="arch" type="xml">
-        <tree>
-          <field name="name"/>
-          <field name="value"/>
-          <field name="value2"/>
-        </tree>
-      </field>
-    </record>
-    -->
 
     <!-- actions opening views on models -->
     <record model="ir.actions.act_window" id="omixbilling.subscriptions">
@@ -22,20 +8,6 @@
       <field name="view_mode">tree,form</field>
     </record>
 
-    <!-- server action to the one above -->
-    <!--
-    <record model="ir.actions.server" id="omixbilling.action_server">
-      <field name="name">omixbilling server</field>
-      <field name="model_id" ref="model_omixbilling_omixbilling"/>
-      <field name="code">
-        action = {
-          "type": "ir.actions.act_window",
-          "view_mode": "tree,form",
-          "res_model": self._name,
-        }
-      </field>
-    </record>
-    -->
 
     <!-- Top menu item -->
     <menuitem name="Billing" id="omixbilling.menu_root"/>
@@ -56,8 +28,8 @@
                 <field name="name" string="Subsription Number"/>
                 <field name="product_id"/>
                 <field name="partner_id"/>
-                <field name="price"/>
-                <field name="currency_id" invisible="1"/>
+                <!--<field name="price"/>-->
+                <!--<field name="currency_id" invisible="1"/>-->
                 <field name="started"/>
                 <field name="torenew"/>
             </tree>
@@ -102,7 +74,7 @@
                     <group>
                         <field name="partner_id" domain="[('customer','=',True)]" context="{'show_address': 1}" options='{"always_reload": True}'/>
                         <field name="product_id" domain="[('subscription_ok','=',True)]"/>
-                        <field name="price"/>
+                        <!--<field name="price"/>-->
                     </group>
                     <group>
                         <field name="started" />
