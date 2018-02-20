@@ -7,42 +7,22 @@ from odoo import models, fields, api, _
 from odoo.tools import float_is_zero, float_compare, DEFAULT_SERVER_DATETIME_FORMAT
 from odoo.exceptions import UserError, AccessError
 
-class Contract(models.Model):
-    _name = 'omixbilling.contract'
-
-    partner_id = fields.Many2one('res.partner')
-    active = fields.Boolean(default=True)
 
 
-class ProductTemplate(models.Model):
-    _inherit = 'product.template'
+class SaleOrder(models.Model):
+    _inherit = "sale.order"
 
-    subscription_ok = fields.Boolean(string='Subscription', default=False,
-                               help="Check this box if this product is a subscription.")
+    contract_id = fields.Many2one('omixbilling.contract')
 
-
-class Partner(models.Model):
-    _inherit = "res.partner"
-
-    def get_default_contract_id(self):
-        self.ensure_one()
-        for contract in self.commercial_partner_id.contract_ids:
-            if contract.active:
-                return contract
-        return None
-
-    contract_ids = fields.One2many('omixbilling.contract', 'partner_id')
-
-    @api.model
-    def create(self, vals):
-        p = super(Partner, self).create(vals)
-        if not p.commercial_partner_id.contract_ids:
-            self.env['omixbilling.contract'].create({'partner_id': p.commercial_partner_id.id})
-        return p
+    @api.onchange('partner_id')
+    def _onchange_contract_id(self):
+        if self.partner_id:
+            self.contract_id = self.partner_id.get_default_contract_id()
+        pass
 
     @api.multi
     def write(self, vals):
-        return super(Partner, self).write(vals)
+        return super(SaleOrder, self).write(vals)
 
     # @api.multi
     # def action_done(self):
@@ -62,22 +42,6 @@ class Partner(models.Model):
     #                     # company_id:
     #                     })
     #     return super(SaleOrder, self).action_done()
-
-
-class SaleOrder(models.Model):
-    _inherit = "sale.order"
-
-    contract_id = fields.Many2one('omixbilling.contract')
-
-    @api.onchange('partner_id')
-    def _onchange_contract_id(self):
-        if self.partner_id:
-            self.contract_id = self.partner_id.get_default_contract_id()
-        pass
-
-    @api.multi
-    def write(self, vals):
-        return super(SaleOrder, self).write(vals)
 
 
 
