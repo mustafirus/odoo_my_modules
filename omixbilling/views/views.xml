@@ -1,8 +1,7 @@
 <odoo>
   <data>
 
-<!--
-    &lt;!&ndash; actions opening views on models &ndash;&gt;
+    <!-- actions opening views on models -->
     <record model="ir.actions.act_window" id="omixbilling.subscriptions">
       <field name="name">Subscriptions</field>
       <field name="res_model">omixbilling.subscription</field>
@@ -10,29 +9,29 @@
     </record>
 
 
-    &lt;!&ndash; Top menu item &ndash;&gt;
+    <!-- Top menu item -->
     <menuitem name="Billing" id="omixbilling.menu_root"/>
-    &lt;!&ndash; menu categories &ndash;&gt;
+    <!-- menu categories -->
     <menuitem name="Subscriptions" id="omixbilling.subscriptions_section" parent="omixbilling.menu_root"/>
-     &lt;!&ndash;actions &ndash;&gt;
+     <!--actions -->
     <menuitem name="Subscriptions" id="omixbilling.subscriptions_action" parent="omixbilling.subscriptions_section"
               action="omixbilling.subscriptions"/>
-    &lt;!&ndash;<menuitem name="Server to list" id="omixbilling" parent="omixbilling.menu_2"&ndash;&gt;
-              &lt;!&ndash;action="omixbilling.action_server"/>&ndash;&gt;
+    <!--<menuitem name="Server to list" id="omixbilling" parent="omixbilling.menu_2"-->
+              <!--action="omixbilling.action_server"/>-->
 
     <record id="subscriptions_tree" model="ir.ui.view">
-        <field name="name">omixbillingertert.subscriptions.tree</field>
+        <field name="name">omixbilling.subscriptions.tree</field>
         <field name="model">omixbilling.subscription</field>
-        &lt;!&ndash;<field name="priority">2</field>&ndash;&gt;
+        <!--<field name="priority">2</field>-->
         <field name="arch" type="xml">
             <tree string="Subsription">
                 <field name="name" string="Subsription Number"/>
                 <field name="product_id"/>
                 <field name="partner_id"/>
-                &lt;!&ndash;<field name="price"/>&ndash;&gt;
-                &lt;!&ndash;<field name="currency_id" invisible="1"/>&ndash;&gt;
-                <field name="started"/>
-                <field name="torenew"/>
+                <!--<field name="price"/>-->
+                <!--<field name="currency_id" invisible="1"/>-->
+                <field name="date_begin"/>
+                <field name="date_end"/>
             </tree>
         </field>
     </record>
@@ -75,24 +74,23 @@
                     <group>
                         <field name="partner_id" domain="[('customer','=',True)]" context="{'show_address': 1}" options='{"always_reload": True}'/>
                         <field name="product_id" domain="[('subscription_ok','=',True)]"/>
-                        &lt;!&ndash;<field name="price"/>&ndash;&gt;
+                        <!--<field name="price"/>-->
                     </group>
                     <group>
-                        <field name="started" />
-                        <field name="torenew"/>
+                        <field name="date_begin" />
+                        <field name="date_end"/>
                     </group>
                 </group>
             </sheet>
-&lt;!&ndash;
+<!--
             <div class="oe_chatter">
                 <field name="message_follower_ids" widget="mail_followers"/>
                 <field name="message_ids" widget="mail_thread"/>
             </div>
-&ndash;&gt;
+-->
             </form>
         </field>
     </record>
--->
 
     <record id="subscription_product_template_form" model="ir.ui.view">
          <field name="name">product.template.subscription.form.inherit</field>

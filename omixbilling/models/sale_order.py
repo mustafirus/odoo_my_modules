@@ -21,6 +21,12 @@ class SaleOrder(models.Model):
         pass
 
     @api.multi
+    def _action_confirm(self):
+        lines = self.mapped('order_line')
+        lines.subsribe()
+        return super(SaleOrder, self)._action_confirm()
+
+    @api.multi
     def write(self, vals):
         return super(SaleOrder, self).write(vals)
 
@@ -48,36 +54,6 @@ class SaleOrder(models.Model):
 class SaleOrderLine(models.Model):
     _inherit = 'sale.order.line'
 
-    @api.depends('date_start', 'date_end')
-    def _get_qty_subscribed(self):
-        def last_day_of_month(date):
-            if date.month == 12:
-                return date.replace(day=31)
-            return date.replace(month=date.month + 1, day=1) - datetime.timedelta(days=1)
-
-        for line in self:
-            if not line.date_start or not line.date_end:
-                line.qty_subscribed = 0.0
-                continue
-            start = fields.Date.from_string(line.date_start)
-            end = fields.Date.from_string(line.date_end)
-
-            s = start
-            r = True
-            qty = 0.0
-            if start > end:
-                r = False
-            while (r):
-                l = last_day_of_month(s)
-                e = l + datetime.timedelta(days=1)
-                if e > end:
-                    e = end
-                    r = False
-                mdays = l.day
-                qty += (e - s).days / mdays
-                s = e
-            self.qty_subscribed = qty
-            pass
 
     @api.depends('qty_invoiced', 'qty_delivered', 'product_uom_qty', 'order_id.state')
     def _get_to_invoice_qty(self):
@@ -98,6 +74,16 @@ class SaleOrderLine(models.Model):
         compute='_get_qty_subscribed', store=True, readonly=True,
         digits=dp.get_precision('Product Unit of Measure'))
 
-    renew_qty = fields.Float(string='Quantity to renew', digits=dp.get_precision('Product Unit of Measure'), required=True, default=1.0)
+    @api.multi
+    def subsribe(self):
+        sub = self.env["omixbilling.subscription"]
+        for line in self:
+            if line.product_id.type == 'service' and line.product_id.subscription_ok:
+                sub.create({
+                    'order_line_id': line.id,
+                    'qty_subscribed': line.product_uom_qty,
+                })
 
 
+
+    # float_round(value, precision_digits=None, precision_rounding=None, rounding_method='HALF-UP'):
