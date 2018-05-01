@@ -163,19 +163,31 @@ class Slot(models.Model):
         date_beg = self.maintshot_id.date_beg
         date_end = get_now()
         rrd = get_data_rrd(self.dev_sn, date_beg, date_end)
+        iin_beg = rrd['iinB'] if rrd['iinB'] else rrd['betB']
+        iin_end = rrd['iinE'] if rrd['iinE'] else rrd['betE']
+        out_beg = rrd['outB'] if rrd['outB'] else rrd['winB']
+        out_end = rrd['outE'] if rrd['outE'] else rrd['winE']
+        bet_beg = rrd['betB']
+        bet_end = rrd['betE']
+        win_beg = rrd['winB']
+        win_end = rrd['winE']
         self.maintshot_id.write({
             'slot_id': self.id,
             'index':   self.index,
             'date_beg': date_beg,
             'date_end': date_end,
-            'iin_beg': rrd['iinB'] if rrd['iinB'] else rrd['betB'],
-            'iin_end':   rrd['iinE'] if rrd['iinE'] else rrd['betE'],
-            'out_beg': rrd['outB'] if rrd['outB'] else rrd['winB'],
-            'out_end':   rrd['outE'] if rrd['outE'] else rrd['winE'],
-            'bet_beg': rrd['betB'],
-            'bet_end': rrd['betE'],
-            'win_beg': rrd['winB'],
-            'win_end': rrd['winE'],
+            'iin_beg': iin_beg,
+            'iin_end': iin_end,
+            'out_beg': out_beg,
+            'out_end': out_end,
+            'iin': iin_end - iin_beg,
+            'out': out_end - out_beg,
+            'bet_beg': bet_beg,
+            'bet_end': bet_end,
+            'win_beg': win_beg,
+            'win_end': win_end,
+            'bet': bet_end - bet_beg,
+            'win': win_end - win_beg,
         })
         self.maintshot_id = None
         return
