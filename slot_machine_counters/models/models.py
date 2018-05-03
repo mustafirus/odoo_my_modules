@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 from time import gmtime,localtime, mktime
 import datetime
+
+
 from odoo import models, fields, api
 import json
 import urllib2
+import logging
 import werkzeug.urls
 
 from odoo.exceptions import UserError
@@ -11,6 +14,7 @@ from odoo.exceptions import UserError
 GAMBLING_ENDPOINT = 'http://localhost:4000/counters'
 GAMBLING_ENDPOINT = 'http://rrd.odoo.bla:4000'
 
+_logger = logging.getLogger(__name__)
 
 def get_now():
     return fields.datetime.now().replace(second=0, microsecond=0).strftime(fields.DATETIME_FORMAT)
@@ -550,7 +554,7 @@ class HallReport(models.TransientModel):
             FROM slot_machine_counters_slotshot_line where slotshot_id in %s group by slot_id ;
         """, (tuple(shots.ids),))
         line_res = self.env.cr.fetchall()
-        print line_res
+        _logger.debug(line_res)
         slots = zip(*line_res)[0]
 
         self.env.cr.execute("""
@@ -565,7 +569,7 @@ class HallReport(models.TransientModel):
             group by slot_id ;
         """, (tuple(slots), self.date_beg, self.date_end, ))
         maint_res = self.env.cr.fetchall()
-        print maint_res
+        _logger.debug(maint_res)
         maint_dict = dict(map(lambda x: (x[0],x),maint_res))
 
         for line in line_res:
