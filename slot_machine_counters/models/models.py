@@ -554,6 +554,7 @@ class HallReport(models.TransientModel):
             FROM slot_machine_counters_slotshot_line where slotshot_id in %s group by slot_id ;
         """, (tuple(shots.ids),))
         line_res = self.env.cr.fetchall()
+        _logger.debug("line_res")
         _logger.debug(line_res)
         slots = zip(*line_res)[0]
 
@@ -569,6 +570,7 @@ class HallReport(models.TransientModel):
             group by slot_id ;
         """, (tuple(slots), self.date_beg, self.date_end, ))
         maint_res = self.env.cr.fetchall()
+        _logger.debug("maint_res")
         _logger.debug(maint_res)
         maint_dict = dict(map(lambda x: (x[0],x),maint_res))
 
@@ -601,23 +603,23 @@ class HallReport(models.TransientModel):
             vals = {
                 'hallreport_id':  self.id,
                 'slot_id':    maint[0],
-                'index': maint[1],
-                'iin_beg': maint[2],
-                'iin_end': maint[3],
-                'iin': maint[4] - maint[4],
-                'out_beg': maint[5],
-                'out_end': maint[6],
-                'out': maint[7] - maint[7],
-                'credit': maint[8] - maint[8],
-                'amount': maint[9] - maint[9],
-                'bet_beg': maint[10],
-                'bet_end': maint[11],
-                'bet': maint[12] - maint[12],
-                'win_beg': maint[13],
-                'win_end': maint[14],
-                'win': maint[15] - maint[15],
-                'credit_bw': maint[16] - maint[16],
-                'amount_bw': maint[17] - maint[17],
+                'index':        maint[1],
+                'iin_beg':    maint[2],
+                'iin_end':    maint[3],
+                'iin':    int(maint[4] - maint[4]),
+                'out_beg':    maint[5],
+                'out_end':    maint[6],
+                'out':    int(maint[7] - maint[7]),
+                'credit':     maint[8] - maint[8],
+                'amount':     maint[9] - maint[9],
+                'bet_beg':    maint[10],
+                'bet_end':    maint[11],
+                'bet':    int(maint[12] - maint[12]),
+                'win_beg':    maint[13],
+                'win_end':    maint[14],
+                'win':    int(maint[15] - maint[15]),
+                'credit_bw':  maint[16] - maint[16],
+                'amount_bw':  maint[17] - maint[17],
             }
             maint_model.create(vals)
 
@@ -635,18 +637,18 @@ class HallReportLine(models.TransientModel):
     iin_end   = fields.Integer()
     out_beg   = fields.Integer()
     out_end   = fields.Integer()
-    iin       = fields.Integer(readonly=True, store=True)
-    out       = fields.Integer(readonly=True, store=True)
-    credit = fields.Integer(readonly=True, store=True)
-    amount = fields.Monetary(readonly=True, store=True)
+    iin       = fields.Integer()
+    out       = fields.Integer()
+    credit = fields.Integer()
+    amount = fields.Monetary()
     bet_beg   = fields.Integer()
     bet_end   = fields.Integer()
     win_beg   = fields.Integer()
     win_end   = fields.Integer()
-    bet       = fields.Integer(readonly=True, store=True)
-    win       = fields.Integer(readonly=True, store=True)
-    credit_bw = fields.Integer(readonly=True, store=True)
-    amount_bw = fields.Monetary(readonly=True, store=True)
+    bet       = fields.Integer()
+    win       = fields.Integer()
+    credit_bw = fields.Integer()
+    amount_bw = fields.Monetary()
     currency_id = fields.Many2one('res.currency', related='hallreport_id.hall_id.company_id.currency_id', readonly=True,
         help='Utility field to express amount currency')
 
@@ -662,17 +664,17 @@ class HallReportMaint(models.TransientModel):
     iin_end   = fields.Integer()
     out_beg   = fields.Integer()
     out_end   = fields.Integer()
-    iin       = fields.Integer(readonly=True, store=True)
-    out       = fields.Integer(readonly=True, store=True)
-    credit = fields.Integer(readonly=True, store=True)
-    amount = fields.Monetary(readonly=True, store=True)
+    iin       = fields.Integer()
+    out       = fields.Integer()
+    credit = fields.Integer()
+    amount = fields.Monetary()
     bet_beg   = fields.Integer()
     bet_end   = fields.Integer()
     win_beg   = fields.Integer()
     win_end   = fields.Integer()
-    bet       = fields.Integer(readonly=True, store=True)
-    win       = fields.Integer(readonly=True, store=True)
-    credit_bw = fields.Integer(readonly=True, store=True)
-    amount_bw = fields.Monetary(readonly=True, store=True)
+    bet       = fields.Integer()
+    win       = fields.Integer()
+    credit_bw = fields.Integer()
+    amount_bw = fields.Monetary()
     currency_id = fields.Many2one('res.currency', related='hallreport_id.hall_id.company_id.currency_id', readonly=True,
         help='Utility field to express amount currency')
