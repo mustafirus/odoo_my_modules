@@ -6,6 +6,8 @@ import json
 import urllib2
 import werkzeug.urls
 
+from odoo.exceptions import UserError
+
 GAMBLING_ENDPOINT = 'http://localhost:4000/counters'
 GAMBLING_ENDPOINT = 'http://rrd.odoo.bla:4000'
 
@@ -152,9 +154,19 @@ class Slot(models.Model):
     def repair_begin(self):
 #        slotline = self.env['slot_machine_counters.maintshot.line']
 #        rrd = get_data_rrd(self.dev_sn)
+        date_beg = get_now()
+        rrd = get_data_rrd(self.dev_sn, date_beg, date_beg)
+        iin_beg = rrd['iinB'] if rrd['iinB'] else rrd['betB']
+        out_beg = rrd['outB'] if rrd['outB'] else rrd['winB']
+        bet_beg = rrd['betB']
+        win_beg = rrd['winB']
         self.maintshot_id = self.maintshot_id.create({
             'slot_id': self.id,
             'date_beg': get_now(),
+            'iin_beg': iin_beg,
+            'out_beg': out_beg,
+            'bet_beg': bet_beg,
+            'win_beg': win_beg,
         })
         return
 
@@ -180,14 +192,14 @@ class Slot(models.Model):
             'iin_end': iin_end,
             'out_beg': out_beg,
             'out_end': out_end,
-            'iin': iin_end - iin_beg,
-            'out': out_end - out_beg,
+            # 'iin': iin_end - iin_beg,
+            # 'out': out_end - out_beg,
             'bet_beg': bet_beg,
             'bet_end': bet_end,
             'win_beg': win_beg,
             'win_end': win_end,
-            'bet': bet_end - bet_beg,
-            'win': win_end - win_beg,
+            # 'bet': bet_end - bet_beg,
+            # 'win': win_end - win_beg,
         })
         self.maintshot_id = None
         return
@@ -282,6 +294,8 @@ class SlotShot(models.Model):
         existing = slotline.browse(self.slotshot_lines._ids)
         existing.unlink()
         for slot in ids:
+            if slot.maintshot_id:
+                raise UserError("Maintance in progress! Try again later.")
             rrd = get_data_rrd(slot.dev_sn, self.date_beg, self.date_end)
             vals = {
                 'slotshot_id': self.id,
@@ -406,43 +420,51 @@ class MaintShotLine(models.Model):
     @api.depends('iin_beg','iin_end')
     def _compute_iin(self):
         for rec in self:
-            rec.iin = (rec.iin_end - rec.iin_beg)
+            if rec.date_end is not None:
+                rec.iin = (rec.iin_end - rec.iin_beg)
 
     @api.depends('out_beg','out_end')
     def _compute_out(self):
         for rec in self:
-            rec.out = (rec.out_end - rec.out_beg)
+            if rec.date_end is not None:
+                rec.out = (rec.out_end - rec.out_beg)
 
     @api.depends('iin','out')
     def _compute_credit(self):
         for rec in self:
-            rec.credit = rec.iin - rec.out
+            if rec.date_end is not None:
+                rec.credit = rec.iin - rec.out
 
     @api.depends('credit')
     def _compute_amount(self):
         for rec in self:
-            rec.amount = rec.credit * rec.slot_id.denomenation
+            if rec.date_end is not None:
+                rec.amount = rec.credit * rec.slot_id.denomenation
 #################
 
     @api.depends('bet_beg','bet_end')
     def _compute_bet(self):
         for rec in self:
-            rec.bet = (rec.bet_end - rec.bet_beg)
+            if rec.date_end is not None:
+                rec.bet = (rec.bet_end - rec.bet_beg)
 
     @api.depends('win_beg','win_end')
     def _compute_win(self):
         for rec in self:
-            rec.win = (rec.win_end - rec.win_beg)
+            if rec.date_end is not None:
+                rec.win = (rec.win_end - rec.win_beg)
 
     @api.depends('bet','win')
     def _compute_credit_bw(self):
         for rec in self:
-            rec.credit_bw = rec.bet - rec.win
+            if rec.date_end is not None:
+                rec.credit_bw = rec.bet - rec.win
 
     @api.depends('credit_bw')
     def _compute_amount_bw(self):
         for rec in self:
-            rec.amount_bw = rec.credit_bw * rec.slot_id.denomenation
+            if rec.date_end is not None:
+                rec.amount_bw = rec.credit_bw * rec.slot_id.denomenation
 #################
 
 
