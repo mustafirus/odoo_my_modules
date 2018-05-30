@@ -16,13 +16,17 @@
     -->
 
     <!-- actions opening views on models -->
-    <!--
-    <record model="ir.actions.act_window" id="omixtory.action_window">
-      <field name="name">omixtory window</field>
-      <field name="res_model">omixtory.omixtory</field>
+    <record model="ir.actions.act_window" id="omixtory.action_service">
+      <field name="name">omixtory service</field>
+      <field name="res_model">omixtory.service</field>
       <field name="view_mode">tree,form</field>
     </record>
-    -->
+
+    <record model="ir.actions.act_window" id="omixtory.action_servicetype">
+      <field name="name">omixtory service.type</field>
+      <field name="res_model">omixtory.service.type</field>
+      <field name="view_mode">tree,form</field>
+    </record>
 
     <!-- server action to the one above -->
     <!--
@@ -40,20 +44,18 @@
     -->
 
     <!-- Top menu item -->
-    <!--
     <menuitem name="omixtory" id="omixtory.menu_root"/>
-    -->
     <!-- menu categories -->
-    <!--
-    <menuitem name="Menu 1" id="omixtory.menu_1" parent="omixtory.menu_root"/>
-    <menuitem name="Menu 2" id="omixtory.menu_2" parent="omixtory.menu_root"/>
-    -->
+    <menuitem name="Omixtory" id="omixtory.menu_omixtory" parent="omixtory.menu_root"/>
+    <menuitem name="Config"   id="omixtory.menu_config"   parent="omixtory.menu_root"/>
     <!-- actions -->
-    <!--
-    <menuitem name="List" id="omixtory.menu_1_list" parent="omixtory.menu_1"
-              action="omixtory.action_window"/>
+    <menuitem name="Service" id="omixtory.menu_service" parent="omixtory.menu_omixtory"
+              action="omixtory.action_service"/>
+    <menuitem name="Service Type" id="omixtory.servicetype" parent="omixtory.menu_config"
+              action="omixtory.action_servicetype"/>
+<!--
     <menuitem name="Server to list" id="omixtory" parent="omixtory.menu_2"
               action="omixtory.action_server"/>
-    -->
+-->
   </data>
 </odoo>
