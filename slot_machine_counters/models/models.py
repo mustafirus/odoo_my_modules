@@ -49,10 +49,12 @@ def get_data_rrd(devid, date_beg, date_end):
 
 class Hall(models.Model):
     _name = 'slot_machine_counters.hall'
+    _inherit = ['mail.thread', 'ir.needaction_mixin']
 
     name = fields.Char('Name of hall')
     description = fields.Text('Description')
-    hub_sn = fields.Char("Hub SN")
+    hub_sn = fields.Char("Hub SN", readonly=False,
+                         states={'running': [('readonly', True)]})
     hub_sim = fields.Char("Hub SIM")
     phone = fields.Char("Phone of admin")
     AlarmSms = fields.Boolean("Sms Alarm")
@@ -60,7 +62,13 @@ class Hall(models.Model):
     AlarmPhone2 = fields.Char("Alarm Phone 2")
     gpslat = fields.Float("Geo Lat")
     gpslng = fields.Float("Geo Long")
-    slot_ids = fields.One2many("slot_machine_counters.slot","hall_id","Slots")
+    slot_ids = fields.One2many("slot_machine_counters.slot","hall_id","Slots",
+                               readonly=False, states={'running': [('readonly', True)]})
+    state = fields.Selection([
+        ('stopped', 'Stopped'),
+        ('running', 'Running'),
+        ], string='Status', index=True, readonly=True, default='stopped',
+        track_visibility='onchange', copy=False)
     active = fields.Boolean('Active?', default=True)
     company_id = fields.Many2one('res.company', string='Company',
                                  default=lambda self: self.env.user.company_id)
@@ -87,6 +95,9 @@ class Hall(models.Model):
             'gpslat': content.get('gpslat'),
             'gpslng': content.get('gpslng'),
         })
+
+    def shot(self):
+        pass
 
     def _set_config(self):
         url = GAMBLING_ENDPOINT + '/hubconfig'
@@ -118,9 +129,12 @@ class Hall(models.Model):
                 if vals['slot_ids'][i][0] == 2:
                     vals['slot_ids'][i][0] = 3
         ret = super(Hall, self).write(vals)
-        self._set_config()
+        # self._set_config()
         return ret
 
+    @api.onchange('slot_ids')
+    def _onchange_slot_ids(self):
+        pass
 
 
 class Slot(models.Model):
@@ -137,9 +151,14 @@ class Slot(models.Model):
     denomenation = fields.Monetary("Denomenation",compute='_compute_denomenation', readonly=True, store=True)
     currency_id = fields.Many2one('res.currency', related='hall_id.company_id.currency_id', readonly=True,
         help='Utility field to express amount currency')
-    hall_id = fields.Many2one("slot_machine_counters.hall","Hall")
+    hall_id = fields.Many2one("slot_machine_counters.hall","Hall", ondelete='set null')
     maintshot_id = fields.Many2one('slot_machine_counters.maintshot.line', string='Maintenance Slotshot')
     active = fields.Boolean('Active?', default=True)
+
+    @api.multi
+    def unlink(self):
+        return super(Slot,self).unlink()
+
 
     @api.depends('boardrate','denom')
     def _compute_denomenation(self):
@@ -235,10 +254,19 @@ class SlotShot(models.Model):
         help='Utility field to express amount currency')
 
     @api.model
+    def shot(self, hall_id):
+        if hall_id.state == 'running':
+            pass
+        elif hall_id.state == 'stopped':
+            pass
+        else:
+            return
+        # self.create(vals)
+
+    @api.model
     def create(self, vals):
         vals['name'] = self.env['ir.sequence'].next_by_code('slot_machine_counters.slotshot')
         return super(SlotShot, self.with_context(self.env.context)).create(vals)
-
 
     @api.onchange('hall_id')  # if these fields are changed, call method
     def _set_date_beg(self):

@@ -8,6 +8,7 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
+                    <field name="state"/>
                     <field name="hub_sn"/>
                     <field name="hub_sim"/>
                     <field name="phone"/>
@@ -36,10 +37,10 @@
             <field name="arch" type="xml">
                 <form>
                     <header>
-                        <button name="get_data" type="object" string="Get info(gps)"
-                        />
+                        <button name="shot" type="object" string="Shot it!"/>
+                        <field name="state" widget="statusbar" clickable="1"/>
                     </header>
-                    <sheet>
+                    <sheet readonly="1">
                         <div class="oe_button_box" name="button_box">
                             <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
                                 <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
@@ -56,25 +57,25 @@
                             <group name="left">
                                 <field name="hub_sn"/>
                                 <field name="description"/>
-                                <field name="gpslat"/>
-                                <field name="gpslng"/>
+                                <!--<field name="gpslat"/>-->
+                                <!--<field name="gpslng"/>-->
                             </group>
                             <group name="right">
-                                <field name="hub_sim"/>
+                                <!--<field name="hub_sim"/>-->
                                 <field name="phone"/>
-                                <field name="AlarmSms"/>
-                                <field name="AlarmPhone1" attrs="{'readonly':[('AlarmSms','!=',True)]}"/>
-                                <field name="AlarmPhone2" attrs="{'readonly':[('AlarmSms','!=',True)]}"/>
+                                <!--<field name="AlarmSms"/>-->
+                                <!--<field name="AlarmPhone1" attrs="{'readonly':[('AlarmSms','!=',True)]}"/>-->
+                                <!--<field name="AlarmPhone2" attrs="{'readonly':[('AlarmSms','!=',True)]}"/>-->
                             </group>
                         </group>
                         <notebook>
                             <page name="slots" string="Slots">
-                                <field name="slot_ids" widget="many2many">
-                                    <tree string="Slotshot Lines" default_order="index">
-                                        <field name="index"/>
-                                        <field name="dev_sn"/>
-                                        <field name="type"/>
-                                        <field name="denomenation"/>
+                                <field name="slot_ids" widget="many2many_list">
+                                    <tree default_order="index" attrs="{'editable':'bottom'}">
+                                        <field name="index" help="The number of slot in the hall"/>
+                                        <field name="dev_sn" readonly="1" help="S/N of counter device" />
+                                        <field name="type" readonly="1"/>
+                                        <field name="denomenation" readonly="1"/>
                                         <field name="currency_id" invisible="1"/>
                                     </tree>
                                 </field>
@@ -86,9 +87,27 @@
                             </page>
                         </notebook>
                     </sheet>
+                    <div class="oe_chatter">
+                       <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                       <field name="message_ids" widget="mail_thread"/>
+                    </div>
                 </form>
             </field>
         </record>
+
+<!--
+        <record model="ir.rule" id="no_edit_in_running_state">
+            <field name="name">No Edit in running state</field>
+            <field name="model_id" ref="model_slot_machine_counters_hall"/>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+            <field eval="0" name="perm_unlink"/>
+            <field eval="0" name="perm_write"/>
+            <field eval="1" name="perm_read"/>
+            <field eval="0" name="perm_create"/>
+            <field name="domain_force">[('state', '=', 'running')]</field>
+        </record>
+-->
+
 
         <record model="ir.ui.view" id="slot_form">
             <field name="model">slot_machine_counters.slot</field>
