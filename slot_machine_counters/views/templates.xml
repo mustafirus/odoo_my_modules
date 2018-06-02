@@ -1,5 +1,15 @@
 <odoo>
     <data>
+        <template id="assets_backend" inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+<!--
+                <link href="/slot_machine_counters/static/src/css/one2many_select.css"
+                      rel="stylesheet" type="text/css"/>
+-->
+                <script src="/slot_machine_counters/static/src/js/one2many_sel.js"
+                        type="text/javascript"/>
+            </xpath>
+        </template>
         <!-- <template id="listing"> -->
         <!--   <ul> -->
         <!--     <li t-foreach="objects" t-as="object"> -->

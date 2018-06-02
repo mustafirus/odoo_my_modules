@@ -50,25 +50,30 @@ def get_data_rrd(devid, date_beg, date_end):
 class Hall(models.Model):
     _name = 'slot_machine_counters.hall'
     _inherit = ['mail.thread', 'ir.needaction_mixin']
+    _description = 'Slot Machines Hall'
 
     name = fields.Char('Name of hall')
     description = fields.Text('Description')
     hub_sn = fields.Char("Hub SN", readonly=False,
+                         track_visibility='onchange',
                          states={'running': [('readonly', True)]})
-    hub_sim = fields.Char("Hub SIM")
     phone = fields.Char("Phone of admin")
+    #deprecated
+    hub_sim = fields.Char("Hub SIM")
     AlarmSms = fields.Boolean("Sms Alarm")
     AlarmPhone1 = fields.Char("Alarm Phone 1")
     AlarmPhone2 = fields.Char("Alarm Phone 2")
     gpslat = fields.Float("Geo Lat")
     gpslng = fields.Float("Geo Long")
+    #deprecated
     slot_ids = fields.One2many("slot_machine_counters.slot","hall_id","Slots",
+                               track_visibility='onchange',
                                readonly=False, states={'running': [('readonly', True)]})
     state = fields.Selection([
         ('stopped', 'Stopped'),
         ('running', 'Running'),
         ], string='Status', index=True, readonly=True, default='stopped',
-        track_visibility='onchange', copy=False)
+        track_visibility='always', copy=False)
     active = fields.Boolean('Active?', default=True)
     company_id = fields.Many2one('res.company', string='Company',
                                  default=lambda self: self.env.user.company_id)
@@ -97,6 +102,9 @@ class Hall(models.Model):
         })
 
     def shot(self):
+        self.ensure_one()
+        slotshot = self.env['slot_machine_counters.slotshot']
+        slotshot.shot(self)
         pass
 
     def _set_config(self):
@@ -124,10 +132,18 @@ class Hall(models.Model):
 
     @api.multi
     def write(self, vals):
+        self.ensure_one()
+        if 'active' in vals:
+            if self.state == 'running':
+                del vals['active']
+
         if 'slot_ids' in vals:
             for i in range(0,len(vals['slot_ids'])):
                 if vals['slot_ids'][i][0] == 2:
                     vals['slot_ids'][i][0] = 3
+        # for i in range(0, len(vals['slot_conf_ids'])):
+        #     if vals['slot_ids'][i][0] == 4:
+        #         del vals['slot_ids'][i]
         ret = super(Hall, self).write(vals)
         # self._set_config()
         return ret
@@ -171,6 +187,16 @@ class Slot(models.Model):
         for rec in self:
             sns.append(rec.dev_sn)
         return sns
+
+    @api.multi
+    def write(self, vals):
+        self.ensure_one()
+        if 'active' in vals:
+            if self.hall_id:
+                del vals['active']
+
+        ret = super(Slot, self).write(vals)
+        return ret
 
 
     @api.multi
@@ -261,7 +287,10 @@ class SlotShot(models.Model):
             pass
         else:
             return
-        # self.create(vals)
+        vals = {
+            'hall_id': hall_id.id,
+        }
+        self.create(vals)
 
     @api.model
     def create(self, vals):

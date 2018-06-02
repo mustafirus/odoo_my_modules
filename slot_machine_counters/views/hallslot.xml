@@ -70,16 +70,30 @@
                         </group>
                         <notebook>
                             <page name="slots" string="Slots">
-                                <field name="slot_ids" widget="many2many_list">
-                                    <tree default_order="index" attrs="{'editable':'bottom'}">
-                                        <field name="index" help="The number of slot in the hall"/>
+                                <field name="slot_ids" widget="one2many_sel"
+                                       domain="[('hall_id','=',False)]">
+                                    <tree default_order="index" editable="bottom">
+                                        <field name="index" attrs="{'readonly':[('hall_id','=',False)]}"
+                                               help="The number of slot in the hall"/>
                                         <field name="dev_sn" readonly="1" help="S/N of counter device" />
                                         <field name="type" readonly="1"/>
                                         <field name="denomenation" readonly="1"/>
                                         <field name="currency_id" invisible="1"/>
+                                        <field name="hall_id" invisible="1"/>
                                     </tree>
                                 </field>
                             </page>
+                            <!--<page name="conf" string="Config">-->
+                                <!--<field name="slot_conf_ids" widget="one2many">-->
+                                    <!--<tree default_order="index" editable="bottom" create="false" delete="false">-->
+                                        <!--<field name="index" help="The number of slot in the hall"/>-->
+                                        <!--<field name="dev_sn" readonly="1" help="S/N of counter device" />-->
+                                        <!--<field name="type" readonly="1"/>-->
+                                        <!--<field name="denomenation" readonly="1"/>-->
+                                        <!--<field name="currency_id" invisible="1"/>-->
+                                    <!--</tree>-->
+                                <!--</field>-->
+                            <!--</page>-->
                             <page string="More Info" name="more_info" groups="base.group_no_one">
                                 <group string="Company" groups="base.group_multi_company">
                                     <field name="company_id" options="{'no_create': True}"/>
@@ -124,31 +138,36 @@
                                 attrs="{'invisible': [('maintshot_id', '=', False)]}"
                         />
                     </header>
-                    <div class="oe_button_box" name="button_box">
-                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
-                            <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
-                        </button>
-                    </div>
-                    <div class="oe_title">
-                        <label for="dev_sn" class="oe_edit_only" string="SN Mega"/>
-                        <h1>
-                            <field name="dev_sn" placeholder="Slot SN ....."/>
-                        </h1>
-                        <div name="options_active"/>
-                    </div>
-                    <group>
-                        <group name="left">
-                            <field name="index"/>
-                            <field name="slot_sn"/>
-                            <field name="type"/>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <h1 style="display: inline-block; margin: 0px 8px 0px 0px;">
+                                <field name="hall_id" readonly="1"/>
+                            </h1>
+                            <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <label for="dev_sn" class="oe_edit_only" string="SN Mega"/>
+                            <h1>
+                                <span class="text-left">
+                                    <field name="dev_sn" placeholder="Slot SN ....." attrs="{'readonly':[('hall_id','!=',False)]}"/>
+                                </span>
+                            </h1>
+                            <div name="options_active"/>
+                        </div>
+                        <group>
+                            <group name="left">
+                                <field name="slot_sn" attrs="{'readonly':[('hall_id','!=',False)]}"/>
+                                <field name="type" attrs="{'readonly':[('hall_id','!=',False)]}"/>
+                            </group>
+                            <group name="right">
+                                <field name="boardrate" attrs="{'readonly':[('hall_id','!=',False)]}"/>
+                                <field name="denom" attrs="{'readonly':[('hall_id','!=',False)]}"/>
+                                <!--<field name="currency_id" invisible="1"/>-->
+                            </group>
                         </group>
-                        <group name="right">
-                            <field name="boardrate"/>
-                            <field name="denom"/>
-                            <!--<field name="currency_id" invisible="1"/>-->
-                            <field name="hall_id"/>
-                        </group>
-                    </group>
+                    </sheet>
                 </form>
             </field>
         </record>
