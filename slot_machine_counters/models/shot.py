@@ -20,6 +20,9 @@ _logger = logging.getLogger(__name__)
 def get_now():
     return fields.datetime.now().replace(second=0, microsecond=0).strftime(fields.DATETIME_FORMAT)
 
+def get_midnight():
+    return fields.datetime.now().replace(hour=0,minute=0,second=0, microsecond=0).strftime(fields.DATETIME_FORMAT)
+
 
 class SlotShot(models.Model):
     _name = 'slot_machine_counters.slotshot'
@@ -42,32 +45,59 @@ class SlotShot(models.Model):
         help='Utility field to express amount currency')
 
     @api.model
-    def shot(self, hall_id):
-        if hall_id.state == 'running':
+    def shot(self, hall_id, type):
+        if not hall_id:
+            return
+        if type == 'start':
+            date_beg = get_now()
+            date_end = get_now()
             pass
-        elif hall_id.state == 'stopped':
+        elif type == 'stop':
+            date_beg = self._get_date_beg(hall_id)
+            date_end = get_now()
+            pass
+        elif type == 'daily':
+            date_beg = self._get_date_beg(hall_id)
+            date_end = get_midnight()
+            pass
+        elif type == 'now':
+            date_beg = self._get_date_beg(hall_id)
+            date_end = get_now()
             pass
         else:
             return
+
+        if type != 'start' and date_beg == date_end:
+            return
+
         vals = {
             'hall_id': hall_id.id,
+            'date_beg': date_beg,
+            'date_end': date_end,
         }
-        self.create(vals)
+        shot = self.create(vals)
+        shot.get_data()
 
     @api.model
     def create(self, vals):
         vals['name'] = self.env['ir.sequence'].next_by_code('slot_machine_counters.slotshot')
         return super(SlotShot, self.with_context(self.env.context)).create(vals)
 
+    def _get_date_beg(self, hall_id):
+        try:
+            prevshot = self.env['slot_machine_counters.slotshot'].sudo(). \
+                search([('hall_id.id', '=', hall_id.id), ('date_end', '!=', False)], limit=1, order='date_end desc')
+            prevshot.ensure_one()
+            return prevshot.date_end
+        except:
+            pass
+
     @api.onchange('hall_id')  # if these fields are changed, call method
     def _set_date_beg(self):
         try:
             if not self.hall_id:
                 return
-            prevshot = self.env['slot_machine_counters.slotshot'].sudo(). \
-                search([('hall_id.id', '=', self.hall_id.id), ('date_end', '!=', False)], limit=1, order='date_end desc')
-            prevshot.ensure_one()
-            self.date_beg = prevshot.date_end
+            self.date_beg = self._get_date_beg(self.hall_id)
         except:
             pass
 

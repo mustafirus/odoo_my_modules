@@ -30,6 +30,8 @@ class HallReport(models.TransientModel):
     hallreport_maint = fields.One2many('slot_machine_counters.hallreport.maint', 'hallreport_id', string='Slotshot Lines')
     # credit     = fields.Integer("Credit",compute='_compute_total', readonly=True, store=True)
     amount     = fields.Monetary("Cash",compute='_compute_total', readonly=True, store=True)
+    amount_maint     = fields.Monetary("Cash",compute='_compute_total', readonly=True, store=True)
+    amount_total     = fields.Monetary("Cash",compute='_compute_total', readonly=True, store=True)
     # credit_bw  = fields.Integer("Credit",compute='_compute_total', readonly=True, store=True)
     amount_bw  = fields.Monetary("Cash",compute='_compute_total', readonly=True, store=True)
     currency_id = fields.Many2one('res.currency', related='hall_id.company_id.currency_id', readonly=True,
@@ -43,7 +45,7 @@ class HallReport(models.TransientModel):
             return
         self.gps = "%s,%s" % (self.hall_id.gpslat,self.hall_id.gpslng)
 
-    @api.depends('hallreport_lines.credit', 'hallreport_lines.credit_bw')
+    @api.depends('hallreport_lines.credit', 'hallreport_lines.credit_bw', 'hallreport_maint.credit')
     def _compute_total(self):
         for rec in self:
             # rec.credit = 0
@@ -55,6 +57,11 @@ class HallReport(models.TransientModel):
                 rec.amount += line.amount
                 # rec.credit_bw += line.credit_bw
                 rec.amount_bw += line.amount_bw
+            rec.amount_maint = 0.0
+            for maint in rec.hallreport_maint:
+                rec.amount_maint += maint.amount
+
+            rec.amount_total = rec.amount - rec.amount_maint
 
 
     # def hallreport_print(self):
@@ -121,27 +128,27 @@ class HallReport(models.TransientModel):
         maint_dict = dict(map(lambda x: (x[0],x),maint_res))
 
         for line in line_res:
-            maint = maint_dict.get(line[0], (line[0], u'', 0, 0, 0, 0, 0, 0, 0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0.0))
+            # maint = maint_dict.get(line[0], (line[0], u'', 0, 0, 0, 0, 0, 0, 0, 0.0, 0, 0, 0, 0, 0, 0, 0, 0.0))
             vals = {
                 'hallreport_id':  self.id,
                 'slot_id':    line[0],
                 'index': line[1],
                 'iin_beg': line[2],
                 'iin_end': line[3],
-                'iin': line[4] - maint[4],
+                'iin': line[4],
                 'out_beg': line[5],
                 'out_end': line[6],
-                'out': line[7] - maint[7],
-                'credit': line[8] - maint[8],
-                'amount': line[9] - maint[9],
+                'out': line[7],
+                'credit': line[8],
+                'amount': line[9],
                 'bet_beg': line[10],
                 'bet_end': line[11],
-                'bet': line[12] - maint[12],
+                'bet': line[12],
                 'win_beg': line[13],
                 'win_end': line[14],
-                'win': line[15] - maint[15],
-                'credit_bw': line[16] - maint[16],
-                'amount_bw': line[17] - maint[17],
+                'win': line[15],
+                'credit_bw': line[16],
+                'amount_bw': line[17],
             }
             line_model.create(vals)
 

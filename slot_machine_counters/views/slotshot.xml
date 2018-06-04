@@ -6,7 +6,7 @@
             <field name="name">Slotshots</field>
             <field name="model">slot_machine_counters.slotshot</field>
             <field name="arch" type="xml">
-                <tree>
+                <tree create="false">
                     <field name="name"/>
                     <field name="hall_id"/>
                     <field name="date_beg"/>
@@ -21,7 +21,7 @@
             <field name="name">Maintshots</field>
             <field name="model">slot_machine_counters.maintshot.line</field>
             <field name="arch" type="xml">
-                <tree>
+                <tree create="false">
                     <field name="slot_id"/>
                     <field name="date_beg"/>
                     <field name="date_end"/>
@@ -33,6 +33,7 @@
                     <field name="out"/>
                     <field name="credit"/>
                     <field name="amount" widget="monetary"/>
+<!--
                     <field name="bet_beg"/>
                     <field name="bet_end"/>
                     <field name="win_beg"/>
@@ -41,6 +42,8 @@
                     <field name="win"/>
                     <field name="credit_bw"/>
                     <field name="amount_bw" widget="monetary"/>
+-->
+                    <field name="currency_id" invisible="1"/>
                 </tree>
             </field>
         </record>
@@ -49,11 +52,10 @@
             <field name="model">slot_machine_counters.slotshot</field>
             <!--<field name="priority">15</field>-->
             <field name="arch" type="xml">
-                <form>
+                <form create="false" edit="false">
                     <header>
-                        <button name="get_data" type="object" string="Get data"
-                                attrs="{'invisible': [('date_end', '=', False)]}"
-                        />
+                        <!--<button name="get_data" type="object" string="Get data"-->
+                                <!--attrs="{'invisible': [('date_end', '=', False)]}"/>-->
                         <button name="print_data" type="object" string="Print"
                                 attrs="{'invisible': [('date_end', '=', False)]}"
                         />
@@ -86,6 +88,7 @@
                                         <field name="out"/>
                                         <field name="credit"/>
                                         <field name="amount" widget="monetary"/>
+<!--
                                         <field name="bet_end"/>
                                         <field name="bet_beg"/>
                                         <field name="win_end"/>
@@ -94,6 +97,7 @@
                                         <field name="win"/>
                                         <field name="credit_bw"/>
                                         <field name="amount_bw" widget="monetary"/>
+-->
                                         <field name="currency_id" invisible="1"/>
                                     </tree>
                                 </field>
@@ -157,298 +161,6 @@
         </record>
 -->
 
-        <template id="hallreport_document">
-            <t t-call="report.external_layout">
-                <div class="page">
-                    <h2>
-                        <span>Hall Report</span>
-                    </h2>
-
-                    <div class="row mt32 mb32">
-                        <div class="col-xs-2">
-                            <strong>Hall:</strong>
-                            <p t-field="o.hall_id"/>
-                        </div>
-                        <div class="col-xs-2">
-                            <strong>From:</strong>
-                            <p t-field="o.date_beg"/>
-                        </div>
-                        <div class="col-xs-2">
-                            <strong>To:</strong>
-                            <p t-field="o.date_end"/>
-                        </div>
-                    </div>
-                    <div class="row mt32 mb32">
-                        <p>
-                            <strong>SN:</strong>
-                            <span t-field="o.hall_id.hub_sn"/>
-                        </p>
-                        <p>
-                            <strong>Phone:</strong>
-                            <span t-field="o.hall_id.phone"/>
-                        </p>
-                        <p>
-                            <strong>SIM:</strong>
-                            <span t-field="o.hall_id.hub_sim"/>
-                        </p>
-                        <p>
-                            <strong>GPS:</strong>
-                            <span t-field="o.gps"/>
-                        </p>
-                        <p>
-                            <strong>Description:</strong>
-                            <div t-field="o.hall_id.description"/>
-                        </p>
-                    </div>
-
-
-                    <table class="table table-condensed">
-                        <thead>
-                            <tr>
-                                <th class="text-left">Nr.</th>
-                                <t t-if="o.full">
-                                    <th class="text-left">S/N Mega</th>
-                                </t>
-                                <th class="text-left">S/N Slot</th>
-                                <th class="text-left">Name</th>
-                                <th class="text-right">Denom.</th>
-                                <t t-if="o.full">
-                                    <th class="text-right">IN</th>
-                                    <th class="text-right">in</th>
-                                </t>
-                                <th class="text-right">IN-in</th>
-                                <t t-if="o.full">
-                                    <th class="text-right">OUT</th>
-                                    <th class="text-right">out</th>
-                                </t>
-                                <th class="text-right">OUT-out</th>
-                                <th class="text-right">credit</th>
-                                <th class="text-right">$</th>
-                                <t t-if="o.full">
-                                    <th class="text-right">BET</th>
-                                    <th class="text-right">bet</th>
-                                </t>
-                                <th class="text-right">BET-bet</th>
-                                <t t-if="o.full">
-                                    <th class="text-right">WIN</th>
-                                    <th class="text-right">win</th>
-                                </t>
-                                <th class="text-right">WIN-win</th>
-                                <th class="text-right">credit</th>
-                                <th class="text-right">$</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr t-foreach="o.hallreport_lines" t-as="l">
-                                <td><span t-field="l.index"/></td>
-                                <t t-if="o.full">
-                                    <td><span t-field="l.slot_id"/></td>
-                                </t>
-                                <td><span t-field="l.slot_id.slot_sn"/></td>
-                                <td><span t-field="l.slot_id.type"/></td>
-                                <td class="text-right"><span t-field="l.slot_id.denomenation" t-field-options="{&quot;widget&quot;: &quot;False&quot;}"/></td>
-
-                                <t t-if="o.full">
-                                    <td class="text-right"><span t-field="l.iin_end"/></td>
-                                    <td class="text-right"><span t-field="l.iin_beg"/></td>
-                                </t>
-                                <td class="text-right"><span t-field="l.iin"/></td>
-                                <t t-if="o.full">
-                                    <td class="text-right"><span t-field="l.out_end"/></td>
-                                    <td class="text-right"><span t-field="l.out_beg"/></td>
-                                </t>
-                                <td class="text-right"><span t-field="l.out"/></td>
-                                <td class="text-right"><span t-field="l.credit"/></td>
-                                <td class="text-right"><span t-field="l.amount"/></td>
-
-                                <t t-if="o.full">
-                                    <td class="text-right"><span t-field="l.bet_end"/></td>
-                                    <td class="text-right"><span t-field="l.bet_beg"/></td>
-                                </t>
-                                <td class="text-right"><span t-field="l.bet"/></td>
-                                <t t-if="o.full">
-                                    <td class="text-right"><span t-field="l.win_end"/></td>
-                                    <td class="text-right"><span t-field="l.win_beg"/></td>
-                                </t>
-                                <td class="text-right"><span t-field="l.win"/></td>
-                                <td class="text-right"><span t-field="l.credit_bw"/></td>
-                                <td class="text-right"><span t-field="l.amount_bw"/></td>
-                            </tr>
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <t t-if="o.full">
-                                <td></td>
-
-                                <td class="text-right"></td>
-                                <td class="text-right"></td>
-                                <td class="text-right"></td>
-                                <td class="text-right"></td>
-                                </t>
-                                <td class="text-right"></td>
-                                <td class="text-right" colspan="2"><strong>Total IN-OUT</strong></td>
-                                <td class="text-right"><strong><span t-field="o.amount"/></strong></td>
-
-                                <t t-if="o.full">
-                                <td class="text-right"></td>
-                                <td class="text-right"></td>
-                                <td class="text-right"></td>
-                                <td class="text-right"></td>
-                                </t>
-                                <td class="text-right"></td>
-                                <td class="text-right" colspan="2"><strong>Total BET-WIN</strong></td>
-                                <td class="text-right"><strong><span t-field="o.amount_bw"/></strong></td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <h3>
-                        <span>Maintenance</span>
-                    </h3>
-
-                    <table class="table table-condensed">
-                        <thead>
-                            <tr>
-                                <th class="text-left">Nr.</th>
-                                <t t-if="o.full">
-                                    <th class="text-left">S/N Mega</th>
-                                </t>
-                                <th class="text-left">S/N Slot</th>
-                                <th class="text-left">Name</th>
-                                <th class="text-right">Denom.</th>
-                                <t t-if="o.full">
-                                    <th class="text-right">IN</th>
-                                    <th class="text-right">in</th>
-                                </t>
-                                <th class="text-right">IN-in</th>
-                                <t t-if="o.full">
-                                    <th class="text-right">OUT</th>
-                                    <th class="text-right">out</th>
-                                </t>
-                                <th class="text-right">OUT-out</th>
-                                <th class="text-right">credit</th>
-                                <th class="text-right">$</th>
-                                <t t-if="o.full">
-                                    <th class="text-right">BET</th>
-                                    <th class="text-right">bet</th>
-                                </t>
-                                <th class="text-right">BET-bet</th>
-                                <t t-if="o.full">
-                                    <th class="text-right">WIN</th>
-                                    <th class="text-right">win</th>
-                                </t>
-                                <th class="text-right">WIN-win</th>
-                                <th class="text-right">credit</th>
-                                <th class="text-right">$</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr t-foreach="o.hallreport_maint" t-as="l">
-                                <td><span t-field="l.index"/></td>
-                                <t t-if="o.full">
-                                    <td><span t-field="l.slot_id"/></td>
-                                </t>
-                                <td><span t-field="l.slot_id.slot_sn"/></td>
-                                <td><span t-field="l.slot_id.type"/></td>
-                                <td class="text-right"><span t-field="l.slot_id.denomenation" t-field-options="{&quot;widget&quot;: &quot;False&quot;}"/></td>
-
-                                <t t-if="o.full">
-                                    <td class="text-right"><span t-field="l.iin_end"/></td>
-                                    <td class="text-right"><span t-field="l.iin_beg"/></td>
-                                </t>
-                                <td class="text-right"><span t-field="l.iin"/></td>
-                                <t t-if="o.full">
-                                    <td class="text-right"><span t-field="l.out_end"/></td>
-                                    <td class="text-right"><span t-field="l.out_beg"/></td>
-                                </t>
-                                <td class="text-right"><span t-field="l.out"/></td>
-                                <td class="text-right"><span t-field="l.credit"/></td>
-                                <td class="text-right"><span t-field="l.amount"/></td>
-
-                                <t t-if="o.full">
-                                    <td class="text-right"><span t-field="l.bet_end"/></td>
-                                    <td class="text-right"><span t-field="l.bet_beg"/></td>
-                                </t>
-                                <td class="text-right"><span t-field="l.bet"/></td>
-                                <t t-if="o.full">
-                                    <td class="text-right"><span t-field="l.win_end"/></td>
-                                    <td class="text-right"><span t-field="l.win_beg"/></td>
-                                </t>
-                                <td class="text-right"><span t-field="l.win"/></td>
-                                <td class="text-right"><span t-field="l.credit_bw"/></td>
-                                <td class="text-right"><span t-field="l.amount_bw"/></td>
-                            </tr>
-<!--
-                            <tr>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                                <t t-if="o.full">
-                                <td></td>
-
-                                <td class="text-right"></td>
-                                <td class="text-right"></td>
-                                <td class="text-right"></td>
-                                <td class="text-right"></td>
-                                </t>
-                                <td class="text-right"></td>
-                                <td class="text-right" colspan="2"><strong>Total IN-OUT</strong></td>
-                                <td class="text-right"><strong><span t-field="o.amount"/></strong></td>
-
-                                <t t-if="o.full">
-                                <td class="text-right"></td>
-                                <td class="text-right"></td>
-                                <td class="text-right"></td>
-                                <td class="text-right"></td>
-                                </t>
-                                <td class="text-right"></td>
-                                <td class="text-right" colspan="2"><strong>Total BET-WIN</strong></td>
-                                <td class="text-right"><strong><span t-field="o.amount_bw"/></strong></td>
-                            </tr>
--->
-                        </tbody>
-                    </table>
-
-                </div>
-
-            </t>
-        </template>
-
-        <template id="hallreport_multi">
-            <t t-call="report.html_container">
-                <t t-foreach="docs" t-as="o">
-                    <t t-call="slot_machine_counters.hallreport_document"/>
-                </t>
-            </t>
-        </template>
-
-        <record id="paperformat_hallreport" model="report.paperformat">
-            <field name="name">Hall Report</field>
-            <field name="format">A4</field>
-            <field name="orientation">Landscape</field>
-            <field name="header_line" eval="True"/>
-            <field name="margin_top">10</field>
-            <field name="margin_bottom">10</field>
-            <field name="margin_left">20</field>
-            <field name="margin_right">10</field>
-            <field name="dpi">120</field>
-        </record>
-
-        <report
-            id="hallreport_report"
-            model="slot_machine_counters.hallreport"
-            string="Hal Reports"
-            report_type="qweb-pdf"
-            name="slot_machine_counters.hallreport_multi"
-            file="slot_machine_counters.hallreport"
-            attachment_use="False"
-            paperformat="slot_machine_counters.paperformat_hallreport"
-        />
-            <!--paperformat="slot_machine_counters.paperformat_hallreport"-->
-
         <!-- actions opening views on models -->
         <record model="ir.actions.act_window" id="slot_machine_counters.action_window_slotshots">
             <field name="name">Slot Shots</field>
@@ -462,12 +174,6 @@
             <field name="view_mode">tree</field>
         </record>
 
-        <record model="ir.actions.act_window" id="slot_machine_counters.action_window_hallreport">
-            <field name="name">Hall Report</field>
-            <field name="res_model">slot_machine_counters.hallreport</field>
-            <field name="view_mode">form</field>
-            <field name="target">inline</field>
-        </record>
 
         <!-- menu categories -->
         <menuitem name="Counters" id="slot_machine_counters.counters" parent="slot_machine_counters.menu_root"/>
@@ -476,7 +182,5 @@
                   sequence="5" action="slot_machine_counters.action_window_slotshots"/>
         <menuitem name="Maintenance Shots" id="slot_machine_counters.menu_maintshots" parent="slot_machine_counters.counters"
                   sequence="10" action="slot_machine_counters.action_window_maintshots"/>
-        <menuitem name="Hall Reports" id="slot_machine_counters.menu_hallreport" parent="slot_machine_counters.counters"
-                  sequence="15" action="slot_machine_counters.action_window_hallreport"/>
     </data>
 </odoo>

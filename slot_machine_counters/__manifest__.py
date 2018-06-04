@@ -17,8 +17,9 @@
     'data': [
         # 'security/ir.model.access.csv',
         'views/hallslot.xml',
-        'views/templates.xml',
         'views/slotshot.xml',
+        'views/report.xml',
+        'views/templates.xml',
         'data/sequence.xml',
     ],
     'demo': [

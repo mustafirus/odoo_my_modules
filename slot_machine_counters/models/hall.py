@@ -72,10 +72,10 @@ class Hall(models.Model):
             'gpslng': content.get('gpslng'),
         })
 
-    def shot(self):
+    def shot(self, type):
         self.ensure_one()
         slotshot = self.env['slot_machine_counters.slotshot']
-        slotshot.shot(self)
+        slotshot.shot(self, type=type)
         pass
 
     def _set_config(self):
@@ -108,13 +108,16 @@ class Hall(models.Model):
             if self.state == 'running':
                 del vals['active']
 
+        if 'state' in vals:
+            if vals['state'] == 'running':
+                self.shot('start')
+            elif vals['state'] == 'stopped':
+                self.shot('stop')
+
         if 'slot_ids' in vals:
             for i in range(0,len(vals['slot_ids'])):
                 if vals['slot_ids'][i][0] == 2:
                     vals['slot_ids'][i][0] = 3
-        # for i in range(0, len(vals['slot_conf_ids'])):
-        #     if vals['slot_ids'][i][0] == 4:
-        #         del vals['slot_ids'][i]
         ret = super(Hall, self).write(vals)
         # self._set_config()
         return ret
