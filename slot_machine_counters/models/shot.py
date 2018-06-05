@@ -70,6 +70,9 @@ class SlotShot(models.Model):
         if type != 'start' and date_beg == date_end:
             return
 
+        if not date_beg:
+            return
+
         vals = {
             'hall_id': hall_id.id,
             'date_beg': date_beg,
