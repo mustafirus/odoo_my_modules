@@ -1,0 +1,93 @@
+<odoo>
+    <data>
+        <!-- explicit list view definition -->
+
+        <record model="ir.ui.view" id="jackconf_list">
+            <field name="name">Jackpot Config</field>
+            <field name="model">slot_machine_counters.jackconf</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="sequence"/>
+                    <field name="name"/>
+                    <field name="scope"/>
+                    <field name="start"/>
+                    <field name="max"/>
+                    <field name="coeficient"/>
+                    <field name="count"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="jackpot_list">
+            <field name="name">Jackpot</field>
+            <field name="model">slot_machine_counters.jackpot</field>
+            <field name="arch" type="xml">
+                <tree create="false">
+                    <field name="hall_id"/>
+                    <field name="conf_id"/>
+                    <field name="date"/>
+                    <field name="jack"/>
+                    <field name="pot"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="jackconf_form">
+            <field name="model">slot_machine_counters.jackconf</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                    </header>
+                    <sheet>
+<!--
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                            </button>
+                        </div>
+-->
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only" string="Name"/>
+                            <h1>
+                                <span class="text-left">
+                                    <field name="name" placeholder="Name ....."/>
+                                </span>
+                            </h1>
+                        </div>
+                        <group>
+                            <group name="left">
+                                <field name="scope"/>
+                            </group>
+                            <group name="right">
+                                <field name="start"/>
+                                <field name="max"/>
+                                <field name="coeficient"/>
+                                <field name="count"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="slot_machine_counters.action_window_jackconf">
+            <field name="name">Jackpot Config</field>
+            <field name="res_model">slot_machine_counters.jackconf</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="slot_machine_counters.action_window_jackpot">
+            <field name="name">Jackpot</field>
+            <field name="res_model">slot_machine_counters.jackpot</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+        <!-- Top menu item -->
+        <menuitem name="Jackpot" id="slot_machine_counters.menu_jackconf" parent="slot_machine_counters.menu_config"
+                  action="slot_machine_counters.action_window_jackconf"/>
+        <menuitem name="Jackpots" id="slot_machine_counters.menu_jackpot" parent="slot_machine_counters.counters"
+                  action="slot_machine_counters.action_window_jackpot"/>
+    </data>
+</odoo>

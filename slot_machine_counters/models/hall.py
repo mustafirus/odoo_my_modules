@@ -37,6 +37,9 @@ class Hall(models.Model):
     gpslat = fields.Float("Geo Lat")
     gpslng = fields.Float("Geo Long")
     #deprecated
+    jackpot = fields.Boolean("Jackpot", default=False,
+                             track_visibility='onchange',
+                             readonly=False, states={'running': [('readonly', True)]})
     slot_ids = fields.One2many("slot_machine_counters.slot","hall_id","Slots",
                                track_visibility='onchange',
                                readonly=False, states={'running': [('readonly', True)]})
@@ -48,6 +51,10 @@ class Hall(models.Model):
     active = fields.Boolean('Active?', default=True)
     company_id = fields.Many2one('res.company', string='Company',
                                  default=lambda self: self.env.user.company_id)
+
+    @api.one
+    def toggle_jackpot(self):
+        self.jackpot = not self.jackpot
 
 
     def get_info(self):
@@ -107,6 +114,8 @@ class Hall(models.Model):
         if 'active' in vals:
             if self.state == 'running':
                 del vals['active']
+            if not vals['active']:
+                vals['jackpot'] = False
 
         if 'state' in vals:
             if vals['state'] == 'running':
@@ -119,6 +128,8 @@ class Hall(models.Model):
                 if vals['slot_ids'][i][0] == 2:
                     vals['slot_ids'][i][0] = 3
         ret = super(Hall, self).write(vals)
+        if 'jackpot' in vals:
+            self.env['slot_machine_counters.jackconf'].update_jackpots()
         # self._set_config()
         return ret
 
@@ -148,7 +159,6 @@ class Slot(models.Model):
     @api.multi
     def unlink(self):
         return super(Slot,self).unlink()
-
 
     @api.depends('boardrate','denom')
     def _compute_denomenation(self):

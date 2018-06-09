@@ -67,6 +67,16 @@
                                 <!--<field name="AlarmPhone1" attrs="{'readonly':[('AlarmSms','!=',True)]}"/>-->
                                 <!--<field name="AlarmPhone2" attrs="{'readonly':[('AlarmSms','!=',True)]}"/>-->
                             </group>
+                                <div class="oe_button_box" name="button_box">
+                                    <button name="toggle_jackpot" type="object" class="oe_stat_button" icon="fa-gift">
+                                        <field name="jackpot" widget="boolean_button" options='{"terminology": {
+                                            "string_true": "Jackpot on",
+                                            "hover_true": "Switch off",
+                                            "string_false": "Jackpot off",
+                                            "hover_false": "Switch on"
+                                        }}'/>
+                                    </button>
+                                </div>
                         </group>
                         <notebook>
                             <page name="slots" string="Slots">
@@ -185,7 +195,6 @@
             <field name="res_model">slot_machine_counters.slot</field>
             <field name="view_mode">tree,form</field>
         </record>
-
 
         <!-- Top menu item -->
         <menuitem name="Slot Machine Counters" id="slot_machine_counters.menu_root"/>

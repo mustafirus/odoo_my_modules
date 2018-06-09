@@ -78,6 +78,8 @@ class SlotShot(models.Model):
             'date_beg': date_beg,
             'date_end': date_end,
         }
+        jp = self.env['slot_machine_counters.jackpot'].by_hall(hall_id)
+        jp.update(date_end)
         shot = self.create(vals)
         shot.get_data()
 

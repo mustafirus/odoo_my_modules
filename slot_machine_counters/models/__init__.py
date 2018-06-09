@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 
-from . import hall, shot, rep
+from . import hall, shot, rep, jackpot

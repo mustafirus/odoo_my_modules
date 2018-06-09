@@ -19,6 +19,7 @@
         'views/hallslot.xml',
         'views/slotshot.xml',
         'views/report.xml',
+        'views/jackpot.xml',
         'views/templates.xml',
         'data/sequence.xml',
     ],
