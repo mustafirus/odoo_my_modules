@@ -155,14 +155,18 @@ class SlotShot(models.Model):
             if slot.maintshot_id:
                 raise UserError("Maintance in progress! Try again later.")
             rrd = get_data_rrd(slot.dev_sn, self.date_beg, self.date_end)
+
+            if not rrd['iinB'] or not rrd['iinE'] or not rrd['outB'] or not rrd['outE']:
+                raise UserError("Hub is not connected! Try again later.")
+
             vals = {
                 'slotshot_id': self.id,
                 'slot_id': slot.id,
                 'index': slot.index,
                 'iin_beg': rrd['iinB'] if rrd['iinB'] else rrd['betB'],
-                'iin_end':   rrd['iinE'] if rrd['iinE'] else rrd['betE'],
+                'iin_end': rrd['iinE'] if rrd['iinE'] else rrd['betE'],
                 'out_beg': rrd['outB'] if rrd['outB'] else rrd['winB'],
-                'out_end':   rrd['outE'] if rrd['outE'] else rrd['winE'],
+                'out_end': rrd['outE'] if rrd['outE'] else rrd['winE'],
                 'bet_beg': rrd['betB'],
                 'bet_end': rrd['betE'],
                 'win_beg': rrd['winB'],

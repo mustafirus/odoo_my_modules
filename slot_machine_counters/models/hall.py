@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import subprocess
+import tempfile
 from time import gmtime,localtime, mktime
 import datetime
 
@@ -13,6 +15,16 @@ from odoo.exceptions import UserError
 from slot_machine_counters.rrd import get_data_rrd, GAMBLING_ENDPOINT
 
 _logger = logging.getLogger(__name__)
+HALLCONFFILE = "Slot_settings.ini"
+HALLCONFBODY="""[Settings]
+NameHall={}
+SmsAlarm=0
+PhoneAlarm1=
+PhoneAlarm2=
+[CounterSettings]
+size={}
+"""
+HALLCONFLINE = "{}\uid={}\n"
 
 def get_now():
     return fields.datetime.now().replace(second=0, microsecond=0).strftime(fields.DATETIME_FORMAT)
@@ -25,7 +37,7 @@ class Hall(models.Model):
 
     name = fields.Char('Name of hall')
     description = fields.Text('Description')
-    hub_sn = fields.Char("Hub SN", readonly=False,
+    hub_sn = fields.Char("Hub SN", readonly=False, index=True,
                          track_visibility='onchange',
                          states={'running': [('readonly', True)]})
     phone = fields.Char("Phone of admin")
@@ -56,61 +68,30 @@ class Hall(models.Model):
     def toggle_jackpot(self):
         self.jackpot = not self.jackpot
 
-
-    def get_info(self):
-        url = GAMBLING_ENDPOINT + '/hubinfo?'
-        headers = {"Content-type": "application/x-www-form-urlencoded"}
-
-        reqargs = werkzeug.url_encode({
-            'hubid': fields.Datetime.from_string(self.hub_sn),
-        })
-        try:
-            req = urllib2.Request(url + reqargs, None, headers)
-            content = urllib2.urlopen(req, timeout=200).read()
-        except urllib2.HTTPError:
-            raise
-        content = json.loads(content)
-        err = content.get('error')
-        if err:
-            e = urllib2.HTTPError(req.get_full_url(), 999, err, headers, None)
-            raise e
-        self.write({
-            'gpslat': content.get('gpslat'),
-            'gpslng': content.get('gpslng'),
-        })
-
     def shot(self, type):
         self.ensure_one()
         slotshot = self.env['slot_machine_counters.slotshot']
         slotshot.shot(self, type=type)
         pass
 
-    def _set_config(self):
-        url = GAMBLING_ENDPOINT + '/hubconfig'
+    def _make_config(self):
 
-        data = json.dumps({
-            'hubid': self.hub_sn,
-            'name': self.name,
-            'AlarmSms':    self.AlarmSms,
-            'AlarmPhone1': self.AlarmPhone1,
-            'AlarmPhone2': self.AlarmPhone2,
-            'slots': self.slot_ids.get_sns()
-        })
+        with tempfile.NamedTemporaryFile() as conffile:
+            conffile.write(HALLCONFBODY.format(self.name, len(self.slot_ids)))
+            for slot in self.slot_ids:
+                conffile.write(HALLCONFLINE.format(slot.index, slot.dev_sn[1:]))
+            conffile.flush()
+            # subprocess.check_call(["scp",
+            #                        "-oBatchMode=yes",
+            #                        conffile.name,
+            #                        "pi@{}.gambling.bla:/home/pi/{}".format(self.hub_sn, HALLCONFFILE)])
+            pass
 
-        try:
-            req = urllib2.Request(url, data, {'Content-Type': 'application/json'})
-            content = urllib2.urlopen(req, timeout=200).read()
-        except urllib2.HTTPError:
-            raise
-        content = json.loads(content)
-        err = content.get('error')
-        if err:
-            e = urllib2.HTTPError(req.get_full_url(), 999, err, None, None)
-            raise e
 
     @api.multi
     def write(self, vals):
         self.ensure_one()
+        make_config = False
         if 'active' in vals:
             if self.state == 'running':
                 del vals['active']
@@ -120,6 +101,7 @@ class Hall(models.Model):
         if 'state' in vals:
             if vals['state'] == 'running':
                 self.shot('start')
+                make_config = True
             elif vals['state'] == 'stopped':
                 self.shot('stop')
 
@@ -127,10 +109,11 @@ class Hall(models.Model):
             for i in range(0,len(vals['slot_ids'])):
                 if vals['slot_ids'][i][0] == 2:
                     vals['slot_ids'][i][0] = 3
-        ret = super(Hall, self).write(vals)
         if 'jackpot' in vals:
             self.env['slot_machine_counters.jackconf'].update_jackpots()
-        # self._set_config()
+        ret = super(Hall, self).write(vals)
+        if make_config:
+            self._make_config()
         return ret
 
     @api.onchange('slot_ids')

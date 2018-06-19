@@ -86,23 +86,25 @@ class Jackpot(models.Model):
         pot =  0
         for slot in hall_id.slot_ids:
             rrd = get_data_rrd(slot.dev_sn, self.date, date)
-            jack += (rrd['betB'] - rrd['betE']) * self.conf_id.coeficient * slot.denomenation
-            pot += rrd['winB'] - rrd['winE']
+            if rrd['betB'] and rrd['betE']:
+                jack += (rrd['betB'] - rrd['betE']) * self.conf_id.coeficient * slot.denomenation
+                pot += rrd['winB'] - rrd['winE']
         return jack, pot
 
     def _getjackpot(self, date):
         if self.hall_id:
-            jack, pot = self._getjackpot_one(self.hall_id, date)
+            jack, pot = self._getjackpot_delta(self.hall_id, date)
         else:
             jack, pot = 0, 0
-            for hall_id in self.env['slot_machine_counters.hall'].search(['jackpot','=',True]):
-                j, p = self._getjackpot_one(hall_id, date)
+            for hall_id in self.env['slot_machine_counters.hall'].search([('jackpot','=',True)]):
+                j, p = self._getjackpot_delta(hall_id, date)
                 jack += j
                 pot += p
         return self.jack + jack, self.pot + pot if self.pot else self.pot
 
     @api.multi
-    def getjack(self, date):
+    def getjack(self):
+        date = get_now()
         self.ensure_one()
         jack, pot = self._getjackpot(date)
         if jack > self.conf_id.max and not self.pot:
@@ -143,3 +145,8 @@ class Jackpot(models.Model):
     @api.model
     def by_hall(self, hall_id):
         return self.search(['|',('hall_id','=',hall_id.id),('hall_id','=',False)])
+
+    @api.model
+    def by_hub_sn(self, hub_sn):
+        hall_id = self.env['slot_machine_counters.hall'].search([('hub_sn', '=', hub_sn)])
+        return self.by_hall(hall_id)
