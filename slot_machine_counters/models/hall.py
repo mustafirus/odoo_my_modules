@@ -81,10 +81,10 @@ class Hall(models.Model):
             for slot in self.slot_ids:
                 conffile.write(HALLCONFLINE.format(slot.index, slot.dev_sn[1:]))
             conffile.flush()
-            # subprocess.check_call(["scp",
-            #                        "-oBatchMode=yes",
-            #                        conffile.name,
-            #                        "pi@{}.gambling.bla:/home/pi/{}".format(self.hub_sn, HALLCONFFILE)])
+            subprocess.check_call(["scp",
+                                   "-oBatchMode=yes",
+                                   conffile.name,
+                                   "pi@{}.gambling.bla:/home/pi/{}".format(self.hub_sn, HALLCONFFILE)])
             pass
 
 
