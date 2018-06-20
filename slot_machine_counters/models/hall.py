@@ -12,7 +12,7 @@ import logging
 import werkzeug.urls
 
 from odoo.exceptions import UserError
-from slot_machine_counters.rrd import get_data_rrd, GAMBLING_ENDPOINT
+from ..rrd import get_data_rrd, GAMBLING_ENDPOINT
 
 _logger = logging.getLogger(__name__)
 HALLCONFFILE = "Slot_settings.ini"

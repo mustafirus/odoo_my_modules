@@ -10,7 +10,7 @@ import logging
 import werkzeug.urls
 
 from odoo.exceptions import UserError
-from slot_machine_counters.rrd import get_data_rrd
+from ..rrd import get_data_rrd
 
 GAMBLING_ENDPOINT = 'http://localhost:4000/counters'
 GAMBLING_ENDPOINT = 'http://rrd.odoo.bla:4000'

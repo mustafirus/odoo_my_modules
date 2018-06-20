@@ -1,5 +1,5 @@
 from odoo import models, fields, api
-from slot_machine_counters.rrd import get_data_rrd
+from ..rrd import get_data_rrd
 
 
 def get_now():
