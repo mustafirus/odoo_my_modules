@@ -66,9 +66,16 @@ class Hall(models.Model):
 
     @api.one
     def toggle_jackpot(self):
-        self.jackpot = not self.jackpot
+        if self.state != 'running':
+            self.jackpot = not self.jackpot
 
-    def shot(self, type):
+    @api.model
+    def daily_shot(self):
+        slotshot = self.env['slot_machine_counters.slotshot']
+        for hall in self.search([('state','=','running')]):
+            slotshot.shot(hall, type='daily')
+
+    def _shot(self, type):
         self.ensure_one()
         slotshot = self.env['slot_machine_counters.slotshot']
         slotshot.shot(self, type=type)
@@ -100,18 +107,18 @@ class Hall(models.Model):
 
         if 'state' in vals:
             if vals['state'] == 'running':
-                self.shot('start')
+                self._shot('start')
                 make_config = True
             elif vals['state'] == 'stopped':
-                self.shot('stop')
+                self._shot('stop')
 
         if 'slot_ids' in vals:
             for i in range(0,len(vals['slot_ids'])):
                 if vals['slot_ids'][i][0] == 2:
                     vals['slot_ids'][i][0] = 3
+        ret = super(Hall, self).write(vals)
         if 'jackpot' in vals:
             self.env['slot_machine_counters.jackconf'].update_jackpots()
-        ret = super(Hall, self).write(vals)
         if make_config:
             self._make_config()
         return ret

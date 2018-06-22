@@ -37,7 +37,7 @@
             <field name="arch" type="xml">
                 <form>
                     <header>
-                        <button name="shot" type="object" string="Shot it!"/>
+                        <!--<button name="shot" type="object" string="Shot it!"/>-->
                         <field name="state" widget="statusbar" clickable="1"/>
                     </header>
                     <sheet readonly="1">
