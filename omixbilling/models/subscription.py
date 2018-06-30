@@ -11,51 +11,15 @@ import dateutil.relativedelta as relativedelta
 class Subscription(models.Model):
     _name = 'omixbilling.subscription'
 
-    def _last_day_of_month(self, qty):
-        date = datetime.date.today() + relativedelta.relativedelta(month=qty)
-        return date.replace(day=1) - datetime.timedelta(days=1)
-
-    @api.depends('date_begin', 'date_end')
-    def _get_qty_subscribed(self):
-
-        for sub in self:
-            if not sub.date_begin or not sub.date_end:
-                sub.qty_subscribed = 0.0
-                continue
-            start = fields.Date.from_string(sub.date_begin)
-            end = fields.Date.from_string(sub.date_end)
-
-            s = start
-            r = True
-            qty = 0.0
-            if start > end:
-                r = False
-            while (r):
-                l = self._last_day_of_month(s)
-                e = l + datetime.timedelta(days=1)
-                if e > end:
-                    e = end
-                    r = False
-                mdays = l.day
-                qty += (e - s).days / mdays
-                s = e
-            sub.qty_subscribed = qty
-            pass
-
     name = fields.Char(string='Subscription Reference', required=True, copy=False, readonly=True, index=True, default=lambda self: _('New'))
-    # badge_name = fields.Char(related='badge_id.name', string="Badge Name")
-    order_line_id = fields.Many2one('sale.order.line')
-    contract_id = fields.Many2one(related='order_line_id.order_id.contract_id', readonly=True)
-    partner_id = fields.Many2one(related='order_line_id.order_id.partner_id', readonly=True)
-    product_id = fields.Many2one(related='order_line_id.product_id', readonly=True)
+    contract_id = fields.Many2one('omixbilling.contract', readonly=True, index=True)
+    product_id = fields.Many2one(readonly=True, index=True)
 
     date_begin = fields.Date('Begin')
-    date_end = fields.Date('End')
-    active = fields.Boolean(default=True)
-
-    qty_subscribed = fields.Float(
-        compute='_get_qty_subscribed', store=True, readonly=True,
-        digits=dp.get_precision('Product Unit of Measure'))
+    date_torenew = fields.Date('To Renew')
+    qty_torenew = fields.Float('Months to renew', digits=dp.get_precision('Product Unit of Measure'))
+    auto_renew = fields.Boolean(default=True)
+    active = fields.Boolean()
 
     @api.model
     def create(self, vals):
@@ -64,13 +28,36 @@ class Subscription(models.Model):
                 vals['name'] = self.env['ir.sequence'].with_context(force_company=vals['company_id']).next_by_code('omixbilling.subscription') or _('New')
             else:
                 vals['name'] = self.env['ir.sequence'].next_by_code('omixbilling.subscription') or _('New')
-            qty = int(vals['qty_subscribed'])
-
-            vals.update({
-                'date_begin': fields.Date.today(),
-                'date_end': fields.Date.to_string(self._last_day_of_month(qty)),
-            })
 
         result = super(Subscription, self).create(vals)
         return result
+
+    @api.multi
+    def write(self, vals):
+        if 'active' in vals:
+            if vals['active']:
+                if not self.date_begin:
+                    today = datetime.date.today()
+                    torenew = today + relativedelta.relativedelta(month=self.qty_torenew)
+                    vals.update({
+                        'date_begin': fields.Date.to_string(today),
+                        'date_torenew': fields.Date.to_string(torenew),
+                    })
+                else:
+                    del vals['active']
+        result = super(Subscription, self).write(vals)
+        return result
+
+    @api.model
+    def autorenew(self):
+        today = fields.Date.today()
+        bycontracts = {}
+        for su in self.search([('date_torenew','<=', today),('auto_renew', '=', True)]):
+            if not su.contract_id.id in bycontracts:
+                bycontracts[su.contract_id] = []
+            bycontracts[su.contract_id].append(su)
+        for cont in bycontracts.keys():
+
+            for su in bycontracts[cont]:
+                pass
 

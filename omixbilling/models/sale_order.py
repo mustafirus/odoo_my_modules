@@ -78,7 +78,7 @@ class SaleOrderLine(models.Model):
     def subsribe(self):
         sub = self.env["omixbilling.subscription"]
         for line in self:
-            if line.product_id.type == 'service' and line.product_id.subscription_ok:
+            if line.product_id.subscription_ok:
                 sub.create({
                     'order_line_id': line.id,
                     'qty_subscribed': line.product_uom_qty,

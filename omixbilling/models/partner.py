@@ -13,7 +13,7 @@ class Partner(models.Model):
     def get_default_contract_id(self):
         self.ensure_one()
         for contract in self.commercial_partner_id.contract_ids:
-            if contract.active:
+            if contract.active and contract.company_id == self.env['res.company']._company_default_get():
                 return contract
         return None
 
