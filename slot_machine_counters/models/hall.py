@@ -107,8 +107,8 @@ class Hall(models.Model):
 
         if 'state' in vals:
             if vals['state'] == 'running':
+                self._make_config()
                 self._shot('start')
-                make_config = True
             elif vals['state'] == 'stopped':
                 self._shot('stop')
 
@@ -119,8 +119,6 @@ class Hall(models.Model):
         ret = super(Hall, self).write(vals)
         if 'jackpot' in vals:
             self.env['slot_machine_counters.jackconf'].update_jackpots()
-        if make_config:
-            self._make_config()
         return ret
 
     @api.onchange('slot_ids')
