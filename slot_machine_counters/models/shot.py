@@ -58,7 +58,7 @@ class SlotShot(models.Model):
             pass
         elif type == 'daily':
             date_beg = self._get_date_beg(hall_id)
-            date_end = get_midnight()
+            date_end = get_now() # get_midnight()
             pass
         elif type == 'now':
             date_beg = self._get_date_beg(hall_id)
