@@ -51,11 +51,10 @@ class BackupRestore(models.TransientModel):
         if not self.backup_name:
             return
 
-        self.backup_name = string.replace(self.backup_name,' ', '_')
+        self.backup_name = self.backup_name.replace(' ', '_')
 
-        file = open("%s/%s.zip" % (backup_dir,self.backup_name),"w", 0600)
-        dump_db(self._cr.dbname,file)
-        file.close()
+        with open("{}/{}.zip".format(backup_dir,self.backup_name), "wb", 0o600) as file:
+            dump_db(self._cr.dbname,file)
 
 
     @api.multi
