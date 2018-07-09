@@ -73,7 +73,10 @@ class Hall(models.Model):
     def daily_shot(self):
         slotshot = self.env['slot_machine_counters.slotshot']
         for hall in self.search([('state','=','running')]):
-            slotshot.shot(hall, type='daily')
+            try:
+                slotshot.shot(hall, type='daily')
+            except UserError as e:
+                _logger.error(e.name)
 
     def _shot(self, type):
         self.ensure_one()

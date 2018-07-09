@@ -157,7 +157,7 @@ class SlotShot(models.Model):
             rrd = get_data_rrd(slot.dev_sn, self.date_beg, self.date_end)
 
             if not rrd['iinB'] or not rrd['iinE'] or not rrd['outB'] or not rrd['outE']:
-                raise UserError("Hub is not connected! Try again later.")
+                raise UserError("Hub {} is not connected! Try again later.".format(self.hall_id.name))
 
             vals = {
                 'slotshot_id': self.id,

@@ -363,14 +363,18 @@
         <report
             id="hallreport_report"
             model="slot_machine_counters.hallreport"
-            string="Hal Reports"
-            report_type="qweb-pdf"
             name="slot_machine_counters.hallreport_multi"
-            file="slot_machine_counters.hallreport"
+            string="Hall Reports"
+            report_type="qweb-pdf"
             attachment_use="False"
             paperformat="slot_machine_counters.paperformat_hallreport"
         />
             <!--paperformat="slot_machine_counters.paperformat_hallreport"-->
+<!--
+            file="slot_machine_counters.hallreport"
+            print_report_name="fuck"
+            fuck="yes"
+-->
 
         <!-- actions opening views on models -->
         <record model="ir.actions.act_window" id="slot_machine_counters.action_window_hallreport">
