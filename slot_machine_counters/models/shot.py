@@ -18,10 +18,14 @@ GAMBLING_ENDPOINT = 'http://rrd.odoo.bla:4000'
 _logger = logging.getLogger(__name__)
 
 def get_now():
-    return fields.datetime.now().replace(second=0, microsecond=0).strftime(fields.DATETIME_FORMAT)
+    return datetime.now().replace(second=0, microsecond=0).strftime(fields.DATETIME_FORMAT)
+
+def get_now_1m():
+    return (datetime.now().replace(second=0, microsecond=0) - datetime.timedelta(minutes=1))\
+        .strftime(fields.DATETIME_FORMAT)
 
 def get_midnight():
-    return fields.datetime.now().replace(hour=0,minute=0,second=0, microsecond=0).strftime(fields.DATETIME_FORMAT)
+    return datetime.now().replace(hour=0,minute=0,second=0, microsecond=0).strftime(fields.DATETIME_FORMAT)
 
 
 class SlotShot(models.Model):
@@ -49,8 +53,7 @@ class SlotShot(models.Model):
         if not hall_id:
             return
         if type == 'start':
-            date_beg = get_now()
-            date_end = get_now()
+            date_beg = date_end = get_now()
             pass
         elif type == 'stop':
             date_beg = self._get_date_beg(hall_id)
@@ -58,12 +61,12 @@ class SlotShot(models.Model):
             pass
         elif type == 'daily':
             date_beg = self._get_date_beg(hall_id)
-            date_end = get_now() # get_midnight()
+            date_end = get_now_1m() # get_midnight()
             pass
-        elif type == 'now':
-            date_beg = self._get_date_beg(hall_id)
-            date_end = get_now()
-            pass
+        # elif type == 'now':
+        #     date_beg = self._get_date_beg(hall_id)
+        #     date_end = get_now()
+        #     pass
         else:
             return
 
