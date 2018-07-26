@@ -87,8 +87,8 @@ class Jackpot(models.Model):
         for slot in hall_id.slot_ids:
             rrd = get_data_rrd(slot.dev_sn, self.date, date)
             if rrd['betB'] and rrd['betE']:
-                jack += (rrd['betB'] - rrd['betE']) * self.conf_id.coeficient * slot.denomenation
-                pot += rrd['winB'] - rrd['winE']
+                jack += (rrd['betE'] - rrd['betB']) * self.conf_id.coeficient * slot.denomenation
+                pot += rrd['winE'] - rrd['winB']
         return jack, pot
 
     def _getjackpot(self, date):
