@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from time import gmtime,localtime, mktime
-import datetime
-
+#import datetime
+from datetime import datetime
 
 from odoo import models, fields, api
 import json
