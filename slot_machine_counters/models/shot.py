@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from time import gmtime,localtime, mktime
 #import datetime
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from odoo import models, fields, api
 import json
@@ -21,7 +21,7 @@ def get_now():
     return datetime.now().replace(second=0, microsecond=0).strftime(fields.DATETIME_FORMAT)
 
 def get_now_1m():
-    return (datetime.now().replace(second=0, microsecond=0) - datetime.timedelta(minutes=1))\
+    return (datetime.now().replace(second=0, microsecond=0) - timedelta(minutes=1))\
         .strftime(fields.DATETIME_FORMAT)
 
 def get_midnight():
