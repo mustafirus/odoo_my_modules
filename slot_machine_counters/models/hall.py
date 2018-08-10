@@ -76,7 +76,15 @@ class Hall(models.Model):
             try:
                 slotshot.shot(hall, type='daily')
             except UserError as e:
+                # ch = self.env['mail.channel'].search([('name', '=', 'general')])
+                # ch.message_post(body=e)
                 _logger.error(e.name)
+                self._cr.rollback()
+                author_id = self.env.user.partner_id.id  # message_post accept 'False' author_id, but not 'None'
+                mail_channel = self.env["mail.channel"].sudo().search([('name', 'like', 'general')], limit=1)
+                message = mail_channel.sudo().with_context(mail_create_nosubscribe=True).message_post(
+                    author_id=author_id, email_from=False, body=e, message_type='comment',
+                    subtype='mail.mt_comment', content_subtype='plaintext')
 
     def _shot(self, type):
         self.ensure_one()

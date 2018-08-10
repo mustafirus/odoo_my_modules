@@ -19,10 +19,10 @@
                             </group>
                         <group>
                             <group name="left">
-                                <field name="date_beg" widget="date"/>
+                                <field name="date_beg"/>
                             </group>
                             <group name="right">
-                                <field name="date_end" widget="date"/>
+                                <field name="date_end"/>
                             </group>
                             <field name="full"/>
                             <!--<field name="gps" readonly="1"/>-->
@@ -110,7 +110,7 @@
                                 </t>
                                 <th class="text-right">OUT-out</th>
                                 <th class="text-right">credit</th>
-                                <th class="text-right">$</th>
+                                <th class="text-right"></th>
 <!--
                                 <t t-if="o.full">
                                     <th class="text-right">BET</th>
@@ -123,7 +123,7 @@
                                 </t>
                                 <th class="text-right">WIN-win</th>
                                 <th class="text-right">credit</th>
-                                <th class="text-right">$</th>
+                                <th class="text-right"></th>
 -->
                             </tr>
                         </thead>
@@ -272,12 +272,12 @@
                                 <th class="text-right">IN-in</th>
                                 <th class="text-right">OUT-out</th>
                                 <th class="text-right">credit</th>
-                                <th class="text-right">$</th>
+                                <th class="text-right"></th>
 <!--
                                 <th class="text-right">BET-bet</th>
                                 <th class="text-right">WIN-win</th>
                                 <th class="text-right">credit</th>
-                                <th class="text-right">$</th>
+                                <th class="text-right"></th>
 -->
                             </tr>
                         </thead>

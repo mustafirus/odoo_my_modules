@@ -156,11 +156,11 @@ class SlotShot(models.Model):
         existing.unlink()
         for slot in ids:
             if slot.maintshot_id:
-                raise UserError("Maintance in progress! Try again later.")
+                raise UserError("Slot {}: Maintance in progress! Can not create slotshot.".format(slot.dev_sn))
             rrd = get_data_rrd(slot.dev_sn, self.date_beg, self.date_end)
 
             if not rrd['iinB'] or not rrd['iinE'] or not rrd['outB'] or not rrd['outE']:
-                raise UserError("Hub {} is not connected! Try again later.".format(self.hall_id.name))
+                raise UserError("Hub {} is not connected or incorret data. Can not create slotshot. Try again later.".format(self.hall_id))
 
             vals = {
                 'slotshot_id': self.id,

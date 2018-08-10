@@ -71,12 +71,14 @@ class HallReport(models.TransientModel):
     @api.multi
     def hallreport_print(self):
         self.ensure_one()
-        date_beg = fields.Date.from_string(self.date_beg)
-        date_end = fields.Date.from_string(self.date_end)
-        if date_end <= date_beg:
-            date_end = date_beg + datetime.timedelta(days=1)
-        date_beg = fields.Date.to_string(date_beg)
-        date_end = fields.Date.to_string(date_end + datetime.timedelta(days=1))
+        # date_beg = fields.Date.from_string(self.date_beg)
+        # date_end = fields.Date.from_string(self.date_end)
+        # if date_end <= date_beg:
+        #     date_end = date_beg + datetime.timedelta(days=1)
+        # date_beg = fields.Date.to_string(date_beg)
+        # date_end = fields.Date.to_string(date_end + datetime.timedelta(days=1))
+        date_beg = self.date_beg
+        date_end = self.date_end
         shots = self.env['slot_machine_counters.slotshot'].search([
             ('hall_id.id', '=', self.hall_id.id),
             ('date_beg', '>=', date_beg),

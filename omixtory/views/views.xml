@@ -16,17 +16,50 @@
     -->
 
     <!-- actions opening views on models -->
+    <act_window id="omixtory.action_client" res_model="omixtory.client"
+                name="Omixtory client" view_mode="tree,form"/>1
+    <act_window id="omixtory.action_site" res_model="omixtory.site"
+                name="Omixtory site" view_mode="tree,form"/>
+    <act_window id="omixtory.action_host" res_model="omixtory.host"
+                name="Omixtory host" view_mode="tree,form"/>
+    <act_window id="omixtory.action_service" res_model="omixtory.service"
+                name="Omixtory service" view_mode="tree,form"/>
+    <act_window id="omixtory.action_service_create" res_model="omixtory.service.create"
+                name="Omixtory service create" view_mode="form" target="new"/>
+
+<!--
+    <record model="ir.actions.act_window" id="omixtory.action_service">
+      <field name="name">omixtory client</field>
+      <field name="res_model">omixtory.client</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="omixtory.action_service">
+      <field name="name">omixtory site</field>
+      <field name="res_model">omixtory.site</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="omixtory.action_service">
+      <field name="name">omixtory host</field>
+      <field name="res_model">omixtory.site</field>
+      <field name="view_mode">tree,form</field>
+    </record>
+
     <record model="ir.actions.act_window" id="omixtory.action_service">
       <field name="name">omixtory service</field>
       <field name="res_model">omixtory.service</field>
       <field name="view_mode">tree,form</field>
     </record>
+-->
 
+<!--
     <record model="ir.actions.act_window" id="omixtory.action_servicetype">
       <field name="name">omixtory service.type</field>
       <field name="res_model">omixtory.service.type</field>
       <field name="view_mode">tree,form</field>
     </record>
+-->
 
     <!-- server action to the one above -->
     <!--
@@ -49,10 +82,20 @@
     <menuitem name="Omixtory" id="omixtory.menu_omixtory" parent="omixtory.menu_root"/>
     <menuitem name="Config"   id="omixtory.menu_config"   parent="omixtory.menu_root"/>
     <!-- actions -->
+    <menuitem name="Client" id="omixtory.menu_client" parent="omixtory.menu_omixtory"
+              action="omixtory.action_client"/>
+    <menuitem name="Site" id="omixtory.menu_site" parent="omixtory.menu_omixtory"
+              action="omixtory.action_site"/>
+    <menuitem name="Host" id="omixtory.menu_host" parent="omixtory.menu_omixtory"
+              action="omixtory.action_host"/>
     <menuitem name="Service" id="omixtory.menu_service" parent="omixtory.menu_omixtory"
               action="omixtory.action_service"/>
+    <menuitem name="Create service" id="omixtory.menu_service_create" parent="omixtory.menu_omixtory"
+              action="omixtory.action_service_create"/>
+<!--
     <menuitem name="Service Type" id="omixtory.servicetype" parent="omixtory.menu_config"
               action="omixtory.action_servicetype"/>
+-->
 <!--
     <menuitem name="Server to list" id="omixtory" parent="omixtory.menu_2"
               action="omixtory.action_server"/>
