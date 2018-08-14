@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 
-from . import service, site, wizard
+from . import hostservice, clientsite

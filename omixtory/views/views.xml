@@ -1,19 +1,80 @@
 <odoo>
     <data>
-        <!-- explicit list view definition -->
-        <record model="ir.ui.view" id="omixtory.service_list">
-            <field name="name">omixtory service list</field>
-            <field name="model">omixtory.service</field>
+
+        <record model="ir.ui.view" id="omixtory.client_list">
+            <field name="name">omixtory client list</field>
+            <field name="model">omixtory.client</field>
             <field name="arch" type="xml">
-                <tree create="false">
+                <tree>
+                    <field name="dc"/>
+                    <field name="idx"/>
+                    <field name="ad_domain"/>
+                    <field name="ldap_base"/>
+                    <field name="site_ids"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="omixtory.site_list">
+            <field name="name">omixtory site list</field>
+            <field name="model">omixtory.site</field>
+            <field name="arch" type="xml">
+                <tree>
                     <field name="client_id"/>
-                    <field name="host_id"/>
+                    <field name="dc"/>
+                    <field name="idx"/>
+                    <field name="box_network_prefix"/>
+                    <field name="host_ids"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="omixtory.host_list">
+            <field name="name">omixtory host list</field>
+            <field name="model">omixtory.host</field>
+            <field name="arch" type="xml">
+                <tree>
                     <field name="name"/>
-                    <field name="config"/>
+                    <field name="ip"/>
+                    <field name="site_id"/>
+                    <field name="template_id"/>
                     <button string="Config" name="open_config" type="object" class="oe_highlight" />
                 </tree>
             </field>
         </record>
+
+        <record model="ir.ui.view" id="omixtory.host_form">
+            <field name="name">omixtory host form</field>
+            <field name="model">omixtory.host</field>
+            <field name="arch" type="xml">
+                <form string="Host">
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="client_id"/>
+                                <field name="site_id"/>
+                                <field name="location" readonly="1"/>
+                            </group>
+                            <group attrs="{'invisible': [('id','!=',False)]}">
+                                <field name="template_id" widget="radio"/>
+                            </group>
+                            <group attrs="{'invisible': [('id','=',False)]}">
+                                <field name="ip" />
+                                <field name="vmid"/>
+                                <button string="Config" name="open_config" type="object" class="oe_highlight" />
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+<!--
+-->
 
 <!--
         <record model="ir.ui.view" id="wizard_with_step_form">
@@ -51,10 +112,14 @@
                     name="Omixtory site" view_mode="tree,form"/>
         <act_window id="omixtory.action_host" res_model="omixtory.host"
                     name="Omixtory host" view_mode="tree,form"/>
+        <act_window id="omixtory.action_host_template" res_model="omixtory.host.template"
+                    name="Omixtory host template" view_mode="tree,form"/>
+<!--
         <act_window id="omixtory.action_service" res_model="omixtory.service"
                     name="Omixtory service" view_mode="tree"/>
         <act_window id="omixtory.action_service_create" res_model="omixtory.service.create"
                     name="Omixtory service create" view_mode="form" target="new"/>
+-->
 
 
 
@@ -85,10 +150,14 @@
                   action="omixtory.action_site"/>
         <menuitem name="Host" id="omixtory.menu_host" parent="omixtory.menu_omixtory"
                   action="omixtory.action_host"/>
+        <menuitem name="Host template" id="omixtory.menu_host_template" parent="omixtory.menu_omixtory"
+                  action="omixtory.action_host_template"/>
+<!--
         <menuitem name="Service" id="omixtory.menu_service" parent="omixtory.menu_omixtory"
                   action="omixtory.action_service"/>
         <menuitem name="Create service" id="omixtory.menu_service_create" parent="omixtory.menu_omixtory"
                   action="omixtory.action_service_create"/>
+-->
         <!--
             <menuitem name="Service Type" id="omixtory.servicetype" parent="omixtory.menu_config"
                       action="omixtory.action_servicetype"/>
@@ -97,5 +166,6 @@
             <menuitem name="Server to list" id="omixtory" parent="omixtory.menu_2"
                       action="omixtory.action_server"/>
         -->
+        <function model="omixtory.host.template" name="install"/>
     </data>
 </odoo>

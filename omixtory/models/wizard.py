@@ -2,32 +2,6 @@ from odoo import models, fields, api
 from odoo.exceptions import UserError
 
 
-class ServiceTemplate(models.TransientModel):
-    _name = "omixtory.service.template"
-
-    name = fields.Char()
-    model = fields.Char()
-    siteonly = fields.Boolean()
-    host = fields.Char()
-    ip_suffix = fields.Integer()
-    vmid = fields.Char()
-
-    @api.model
-    def install(self):
-        self.search([]).unlink()
-        models = self.env['ir.model'].sudo().search([('model', 'like', 'omixtory.config.%')], order='id')
-        for model in models:
-            conf = self.env[model.model]
-            self.create({
-                'name': model.name,
-                'model': model.model,
-                'siteonly': conf.siteonly,
-                'host': conf.host,
-                'ip_suffix': conf.ip_suffix,
-                # 'vmid': conf.vmid,
-            })
-
-
 class ServiceCreate(models.TransientModel):
     _name = "omixtory.service.create"
 
