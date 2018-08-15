@@ -21,6 +21,7 @@ _logger = logging.getLogger(__name__)
 class HallReport(models.TransientModel):
     _name = 'slot_machine_counters.hallreport'
     _description = 'HallReport'
+    _order = 'id'
 
     hall_id = fields.Many2one("slot_machine_counters.hall","Hall", required=True)
     date_beg = fields.Datetime("From", required=True)
