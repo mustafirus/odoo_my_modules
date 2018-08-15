@@ -67,9 +67,10 @@
                     </div>
                     <div class="row mt32 mb32">
                         <p>
-                            <strong>SN:</strong>
+                            <strong>HUB S/N:</strong>
                             <span t-field="o.hall_id.hub_sn"/>
                         </p>
+<!--
                         <p>
                             <strong>Phone:</strong>
                             <span t-field="o.hall_id.phone"/>
@@ -82,6 +83,7 @@
                             <strong>GPS:</strong>
                             <span t-field="o.gps"/>
                         </p>
+-->
                         <p>
                             <strong>Description:</strong>
                             <div t-field="o.hall_id.description"/>

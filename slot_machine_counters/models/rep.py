@@ -106,7 +106,7 @@ class HallReport(models.TransientModel):
             min(bet_beg) as bet_beg, max(bet_end) as bet_end, sum(bet) as bet,
             min(win_beg) as win_beg, max(win_end) as win_end, sum(win) as win,
             sum(credit_bw) as credit_bw, sum(amount_bw) as amount_bw
-            FROM slot_machine_counters_slotshot_line where slotshot_id in %s group by slot_id ;
+            FROM slot_machine_counters_slotshot_line where slotshot_id in %s group by slot_id order by index;
         """, (tuple(shots.ids),))
         line_res = self.env.cr.fetchall()
         _logger.debug("line_res")
@@ -122,7 +122,7 @@ class HallReport(models.TransientModel):
             min(win_beg) as win_beg, max(win_end) as win_end, sum(win) as win,
             sum(credit_bw) as credit_bw, sum(amount_bw) as amount_bw
             FROM slot_machine_counters_maintshot_line where slot_id in %s and date_beg >= %s and date_end < %s
-            group by slot_id ;
+            group by slot_id order by index;
         """, (tuple(slots), self.date_beg, self.date_end, ))
         maint_res = self.env.cr.fetchall()
         _logger.debug("maint_res")
