@@ -17,7 +17,7 @@
     # Check https://github.com/odoo/odoo/blob/master/odoo/addons/base/module/module_data.xml
     # for the full list
     'category': 'Uncategorized',
-    'version': '0.1',
+    'version': '0.9',
 
     # any module necessary for this one to work correctly
     'depends': ['base'],
@@ -26,9 +26,7 @@
     'data': [
         # 'security/ir.model.access.csv',
         'views/views.xml',
-        # 'views/wizard.xml',
         'views/templates.xml',
-        # 'data/ir_sequence_data.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

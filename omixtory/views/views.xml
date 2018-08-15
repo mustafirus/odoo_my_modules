@@ -35,6 +35,7 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
+                    <field name="vmid"/>
                     <field name="ip"/>
                     <field name="site_id"/>
                     <field name="template_id"/>

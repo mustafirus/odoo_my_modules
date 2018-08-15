@@ -34,7 +34,7 @@ class HostTemplate(models.Model):
             if t:
                 t.write(vals)
             else:
-                self.create()
+                self.create(vals)
 
     def _hosts(self):
         return [r.name for r in self.host_ids]
@@ -65,11 +65,11 @@ class Host(models.Model):
     ip = fields.Char('IP')
     vmid = fields.Char("VMID")
     config = fields.Reference(string='Config', selection=[])
-    state = fields.Selection({
-        ('draft','Draft')
-        ('config', 'Config')
-        ('aplied', 'Aplied')
-    })
+    # state = fields.Selection({
+    #     ('draft','Draft')
+    #     ('config', 'Config')
+    #     ('aplied', 'Aplied')
+    # })
 
     @api.onchange('client_id')
     def _onchange_client(self):

@@ -33,15 +33,15 @@ class Client(models.Model):
     idx = fields.Integer("Site IDX", default=lambda self: self._next_idx())
     cloud_network_prefix = fields.Char("cloud_network_prefix")
     vpn_network_prefix = fields.Char("vpn_network_prefix")
+    site_ids = fields.One2many('omixtory.site','client_id')
+    # state = fields.Selection({
+    #     ('draft','Draft')
+    #     ('config', 'Config')
+    #     ('aplied', 'Aplied')
+    # })
 
     ad_domain = fields.Char("AD domain", config=True)
     ldap_base = fields.Char('ldap_base', config=True)
-    site_ids = fields.One2many('omixtory.site','client_id')
-    state = fields.Selection({
-        ('draft','Draft')
-        ('config', 'Config')
-        ('aplied', 'Aplied')
-    })
 
     def _next_idx(self):
         self.env.cr.execute(_next_idx_sql.format(tab='client'))
@@ -102,11 +102,11 @@ class Site(models.Model):
     idx = fields.Integer("Site IDX", default=lambda self: self._next_idx())
     box_network_prefix = fields.Char("box_network_prefix")
     host_ids = fields.One2many('omixtory.host','site_id')
-    state = fields.Selection({
-        ('draft','Draft')
-        ('config', 'Config')
-        ('aplied', 'Aplied')
-    })
+    # state = fields.Selection({
+    #     ('draft','Draft')
+    #     ('config', 'Config')
+    #     ('aplied', 'Aplied')
+    # })
 
     default_boxname = fields.Char("Default Box Hostname", config=True, default='pm1')
 
