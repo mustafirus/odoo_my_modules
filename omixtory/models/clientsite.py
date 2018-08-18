@@ -29,19 +29,19 @@ class Client(models.Model):
     _rec_name = "dc"
 
     partner_id = fields.Many2one('res.partner')
-    dc = fields.Char('Client Name')
-    idx = fields.Integer("Site IDX", default=lambda self: self._next_idx())
-    cloud_network_prefix = fields.Char("cloud_network_prefix")
-    vpn_network_prefix = fields.Char("vpn_network_prefix")
-    site_ids = fields.One2many('omixtory.site','client_id')
+    dc = fields.Char('Client Name', required=True)
+    idx = fields.Integer("Site IDX", default=lambda self: self._next_idx(), required=True)
+    cloud_network_prefix = fields.Char("cloud_network_prefix", required=True)
+    vpn_network_prefix = fields.Char("vpn_network_prefix", required=True)
+    site_ids = fields.One2many('omixtory.site', 'client_id')
     # state = fields.Selection({
     #     ('draft','Draft')
     #     ('config', 'Config')
     #     ('aplied', 'Aplied')
     # })
 
-    ad_domain = fields.Char("AD domain", config=True)
-    ldap_base = fields.Char('ldap_base', config=True)
+    ad_domain = fields.Char("AD domain", config=True, required=True)
+    ldap_base = fields.Char('ldap_base', config=True, required=True)
 
     def _next_idx(self):
         self.env.cr.execute(_next_idx_sql.format(tab='client'))
@@ -72,7 +72,7 @@ class Client(models.Model):
 
     def _cloud_hosts(self):
         return [r.name for r in self.env['omixtory.host'].
-            search([('client_id','=',self.id),('site_id','=',False)])]
+            search([('client_id', '=', self.id), ('site_id', '=', False)])]
 
     def _inventory(self):
         return {
@@ -82,10 +82,9 @@ class Client(models.Model):
 
     @api.multi
     def inventory(self):
-        inv = { r.dc: r._inventory() for r in self }
-        inv.update({ r.dc + '_cloud': { 'hosts': r._cloud_hosts()}  for r in self })
+        inv = {r.dc: r._inventory() for r in self}
+        inv.update({r.dc + '_cloud': {'hosts': r._cloud_hosts()} for r in self})
         return inv
-
 
 
 class Site(models.Model):
@@ -97,26 +96,32 @@ class Site(models.Model):
     ]
 
     # name = fields.Char('Name', compute='_compute_name')
-    client_id = fields.Many2one('omixtory.client')
-    dc = fields.Char('Site name')
-    idx = fields.Integer("Site IDX", default=lambda self: self._next_idx())
-    box_network_prefix = fields.Char("box_network_prefix")
-    host_ids = fields.One2many('omixtory.host','site_id')
+    client_id = fields.Many2one('omixtory.client', required=True)
+    dc = fields.Char('Site name', required=True)
+    idx = fields.Integer("Site IDX", default=lambda self: self._next_idx(), required=True)
+    box_network_prefix = fields.Char("box_network_prefix", required=True)
+    host_ids = fields.One2many('omixtory.host', 'site_id')
+    boxes = fields.Char("Omix box list", help="Comma separated list of boxes", required=True)
+    arc = fields.Boolean('Uses ARC',default=False)
     # state = fields.Selection({
     #     ('draft','Draft')
     #     ('config', 'Config')
     #     ('aplied', 'Aplied')
     # })
+    default_boxname = fields.Char("Default Box Hostname", config=True, default='pm1', required=True)
 
-    default_boxname = fields.Char("Default Box Hostname", config=True, default='pm1')
+    def _get_domain(self):
+        return "{}{}.omx".format(self.dc + '.' if self.dc != self.client_id.dc else '', self.client_id.dc)
 
-    # @api.depends('client_id', 'dc')
-    # def _compute_name(self):
-    #     for rec in self:
-    #         if rec.client_id:
-    #             rec.name = rec.client_id.dc
-    #             if rec.dc:
-    #                 rec.name += " " + rec.dc
+    def _get_boxes(self):
+        if not self.boxes:
+            return []
+        return [b + '.' + self._get_domain() for b in self.boxes.split(",")]
+
+    def _get_arc(self):
+        if not self.arc:
+            return []
+        return ['arc.' + self._get_domain()]
 
     def _next_idx(self):
         self.env.cr.execute(_next_idx_sql.format(tab='site'))
@@ -145,10 +150,9 @@ class Site(models.Model):
     def _inventory(self):
         return {
                 "vars": self._vars(),
-                "hosts": self._hosts()
+                "hosts": self._hosts() + self._get_boxes()
             }
 
     @api.multi
     def inventory(self):
-        return { r.group(): r._inventory() for r in self }
-
+        return {r.group(): r._inventory() for r in self}

@@ -151,8 +151,8 @@
                   action="omixtory.action_site"/>
         <menuitem name="Host" id="omixtory.menu_host" parent="omixtory.menu_omixtory"
                   action="omixtory.action_host"/>
-        <menuitem name="Host template" id="omixtory.menu_host_template" parent="omixtory.menu_omixtory"
-                  action="omixtory.action_host_template"/>
+        <!--<menuitem name="Host template" id="omixtory.menu_host_template" parent="omixtory.menu_omixtory"-->
+                  <!--action="omixtory.action_host_template"/>-->
 <!--
         <menuitem name="Service" id="omixtory.menu_service" parent="omixtory.menu_omixtory"
                   action="omixtory.action_service"/>

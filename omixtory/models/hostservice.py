@@ -3,6 +3,7 @@
 from odoo import models, fields, api
 from odoo.exceptions import UserError
 
+
 class HostTemplate(models.Model):
     _name = "omixtory.host.template"
     _sql_constraints = [
@@ -10,7 +11,7 @@ class HostTemplate(models.Model):
     ]
 
     name = fields.Char()  # Description xxx
-    model = fields.Char() #model _name: omixtory.config.xxx
+    model = fields.Char()  # model _name: omixtory.config.xxx
 
     siteonly = fields.Boolean()
     host = fields.Char()
@@ -50,7 +51,15 @@ class HostTemplate(models.Model):
 
     @api.multi
     def inventory(self):
-        return { r.name: r._inventory() for r in self }
+        inv = {r.name: r._inventory() for r in self}
+        sites = self.env['omixtory.site'].search([])
+        boxes = []
+        for s in sites:
+            boxes += s._get_boxes()
+        inv.update({
+            "pm": boxes
+        })
+        return inv
 
 
 class Host(models.Model):
@@ -60,7 +69,7 @@ class Host(models.Model):
     client_id = fields.Many2one('omixtory.client', required=True)
     site_id = fields.Many2one('omixtory.site')
     template_id = fields.Many2one('omixtory.host.template', order='id', required=True, store=True,
-                              domain="['|',('siteonly','=',site_id),('siteonly','=',False)]")
+                                  domain="['|',('siteonly','=',site_id),('siteonly','=',False)]")
     location = fields.Selection([('box', 'Box'), ('cloud', 'Cloud')], compute='_compute_location')
     ip = fields.Char('IP')
     vmid = fields.Char("VMID")
@@ -101,11 +110,11 @@ class Host(models.Model):
         for rec in self:
             if rec.config:
                 rec.config.unlink()
-        return super(Host,self).unlink()
+        return super(Host, self).unlink()
 
     @api.model
-    def create(self,vals):
-        if not 'template_id' in vals:
+    def create(self, vals):
+        if 'template_id' not in vals:
             raise UserError('Template is required!')
 
         client_id = self.env['omixtory.client'].search([('id', '=', vals['client_id'])])
@@ -133,11 +142,11 @@ class Host(models.Model):
                 'config': "{},{}".format(template_id.model, self.env[template_id.model].create({'name': fqdn}).id),
         })
 
-        return super(Host,self).create(vals)
+        return super(Host, self).create(vals)
 
     @api.multi
     def hostvars(self):
-        return { r.name: r._hostvars() for r in self }
+        return {r.name: r._hostvars() for r in self}
 
     def _hostvars(self):
         return {k: self.config[k] for k,d in self.config._fields.items() if d._attrs and d._attrs['config']}
@@ -146,37 +155,33 @@ class Host(models.Model):
 class ConfigGw(models.Model):
     _name = 'omixtory.config.gw'
     _description = "gw"
+    name = fields.Char('FQDN', readonly=True)
 
     siteonly = True
     host = 'gw'
     ip_suffix = 1
 
-    name = fields.Char('FQDN', readonly=True)
     dhcp = fields.Boolean("Enable DHCP", config=True)
 
 
 class ConfigProxy(models.Model):
     _name = 'omixtory.config.proxy'
     _description = "proxy"
-    name = fields.Char('FQDN')
+    name = fields.Char('FQDN', readonly=True)
 
     siteonly = False
     host = 'proxy'
     ip_suffix = 2
 
-    name = fields.Char('FQDN', readonly=True)
-
 
 class ConfigMail(models.Model):
     _name = 'omixtory.config.mail'
     _description = "mail"
-    name = fields.Char('FQDN')
+    name = fields.Char('FQDN', readonly=True)
 
     siteonly = False
     host = 'mail'
     ip_suffix = 3
-
-    name = fields.Char('FQDN', readonly=True)
 
     roundcube = fields.Boolean("Install roundcube", config=True)
 
@@ -184,13 +189,11 @@ class ConfigMail(models.Model):
 class ConfigWp(models.Model):
     _name = 'omixtory.config.wp'
     _description = "wp"
-    name = fields.Char('FQDN')
+    name = fields.Char('FQDN', readonly=True)
 
     siteonly = False
     host = 'wp'
     ip_suffix = 4
-
-    name = fields.Char('FQDN', readonly=True)
 
     # list of proxy sites
 
@@ -198,35 +201,28 @@ class ConfigWp(models.Model):
 class ConfigOdoo(models.Model):
     _name = 'omixtory.config.odoo'
     _description = "odoo"
-    name = fields.Char('FQDN')
+    name = fields.Char('FQDN', readonly=True)
 
     siteonly = False
     host = 'odoo'
     ip_suffix = 5
 
-    name = fields.Char('FQDN', readonly=True)
-
 
 class ConfigDc(models.Model):
     _name = 'omixtory.config.dc'
     _description = "dc"
-    name = fields.Char('FQDN')
+    name = fields.Char('FQDN', readonly=True)
 
     siteonly = False
     host = 'dc1'
     ip_suffix = 8
 
-    name = fields.Char('FQDN', readonly=True)
-
 
 class ConfigFiles(models.Model):
     _name = 'omixtory.config.files'
     _description = "files"
-    name = fields.Char('FQDN')
+    name = fields.Char('FQDN', readonly=True)
 
     siteonly = False
     host = 'files'
     ip_suffix = 9
-
-    name = fields.Char('FQDN', readonly=True)
-
