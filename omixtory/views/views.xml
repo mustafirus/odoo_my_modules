@@ -2,7 +2,7 @@
     <data>
 
         <record model="ir.ui.view" id="omixtory.client_list">
-            <field name="name">omixtory client list</field>
+            <field name="name">omixtory.client.list</field>
             <field name="model">omixtory.client</field>
             <field name="arch" type="xml">
                 <tree>
@@ -10,13 +10,71 @@
                     <field name="idx"/>
                     <field name="ad_domain"/>
                     <field name="ldap_base"/>
+                    <field name="state"/>
                     <field name="site_ids"/>
                 </tree>
             </field>
         </record>
 
+        <!-- page search view  -->
+        <record id="omixtory.client_search" model="ir.ui.view">
+            <field name="name">omixtory.client.search</field>
+            <field name="model">omixtory.client</field>
+            <field name="arch" type="xml">
+                <search string="Client">
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                    <field name="dc"/>
+                </search>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="omixtory.client_form">
+            <field name="name">omixtory.client.form</field>
+            <field name="model">omixtory.client</field>
+            <field name="arch" type="xml">
+                <form string="Client">
+                    <header>
+                        <field name="state" widget="statusbar" clickable="True"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                            </button>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="dc"/>
+                                <field name="partner_id"/>
+                            </group>
+                            <group>
+                                <field name="idx"/>
+                                <field name="cloud_network_prefix"/>
+                                <field name="vpn_network_prefix"/>
+                            </group>
+                            <newline/>
+                            <field colspan="4" name="site_ids"
+                                   context="{'default_client_id': id, 'one2many':True}"
+                                   attrs="{'readonly': [('id','=',False)]}"
+                            />
+                            <field colspan="4" name="host_ids"
+                                   context="{'default_client_id': id, 'one2many':True}"
+                                   attrs="{'readonly': [('id','=',False)]}"
+                            />
+                            <newline/>
+                            <group>
+                                <field name="ad_domain"/>
+                                <field name="ldap_base"/>
+                            </group>
+                            <separator/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
         <record model="ir.ui.view" id="omixtory.site_list">
-            <field name="name">omixtory site list</field>
+            <field name="name">omixtory.site.list</field>
             <field name="model">omixtory.site</field>
             <field name="arch" type="xml">
                 <tree>
@@ -24,8 +82,65 @@
                     <field name="dc"/>
                     <field name="idx"/>
                     <field name="box_network_prefix"/>
+                    <field name="state"/>
                     <field name="host_ids"/>
                 </tree>
+            </field>
+        </record>
+
+        <!-- page search view  -->
+        <record id="omixtory.site_search" model="ir.ui.view">
+            <field name="name">omixtory.site.search</field>
+            <field name="model">omixtory.site</field>
+            <field name="arch" type="xml">
+                <search string="Site">
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                    <field name="dc"/>
+                    <field name="client_id"/>
+                </search>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="omixtory.site_form">
+            <field name="name">omixtory.site.form</field>
+            <field name="model">omixtory.site</field>
+            <field name="arch" type="xml">
+                <form string="Site">
+                    <header>
+                        <field name="state" widget="statusbar" clickable="True"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                            </button>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="client_id" invisible="context.get('one2many')"/>
+                                <field name="dc"/>
+                                <field name="partner_id" options="{'no_create': True}"/>
+                                <field name="address_ids" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="idx"/>
+                                <field name="box_network_prefix"/>
+                            </group>
+                            <newline/>
+                            <field name="host_ids" colspan="4"
+                                   context="{'default_client_id': client_id, 'default_site_id': id, 'one2many':True}"
+                                   attrs="{'readonly': [('id','=',False)]}">
+                            </field>
+                            <newline />
+                            <group>
+                                <field name="boxes" />
+                                <field name="default_boxname" />
+                                <field name="arc" />
+                            </group>
+                            <separator />
+                        </group>
+                    </sheet>
+                </form>
             </field>
         </record>
 
@@ -35,12 +150,37 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
+                    <field name="site_id"/>
                     <field name="vmid"/>
                     <field name="ip"/>
-                    <field name="site_id"/>
                     <field name="template_id"/>
+                    <field name="state"/>
                     <button string="Config" name="open_config" type="object" class="oe_highlight" />
                 </tree>
+            </field>
+        </record>
+
+        <!-- page search view  -->
+        <record id="omixtory.host_search" model="ir.ui.view">
+            <field name="name">omixtory.host.search</field>
+            <field name="model">omixtory.host</field>
+            <field name="arch" type="xml">
+                <search string="Host">
+                    <field name="client_id"/>
+                    <field name="template_id"/>
+                    <field name="name"/>
+                    <filter string="Normal" domain="[('state','=','normal')]"/>
+                    <filter string="Draft" domain="[('state','=','draft')]"/>
+                    <separator/>
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                    <group string="Group By">
+                        <filter string="Client" domain="[]" context="{'group_by':'client_id'}"/>
+                        <filter string="Site" domain="[]" context="{'group_by':'site_id'}"/>
+                        <filter string="Template" domain="[]" context="{'group_by':'template_id'}"/>
+                        <!--<filter string="Location" domain="[]" context="{'group_by':'location'}"/>-->
+                        <filter string="State" domain="[]" context="{'group_by':'state'}"/>
+                    </group>
+                </search>
             </field>
         </record>
 
@@ -49,14 +189,22 @@
             <field name="model">omixtory.host</field>
             <field name="arch" type="xml">
                 <form string="Host">
+                    <header>
+                        <field name="state" widget="statusbar" clickable="True"/>
+                    </header>
                     <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                            </button>
+                        </div>
                         <div class="oe_title">
                             <h1>
                                 <field name="name" readonly="1"/>
                             </h1>
                         </div>
                         <group>
-                            <group>
+                            <group invisible="context.get('one2many')">
                                 <field name="client_id"/>
                                 <field name="site_id"/>
                                 <field name="location" readonly="1"/>
@@ -74,37 +222,35 @@
                 </form>
             </field>
         </record>
-<!--
--->
 
-<!--
-        <record model="ir.ui.view" id="wizard_with_step_form">
-            <field name="name">omixtory.service.create.form</field>
-            <field name="model">omixtory.service.create</field>
-            <field name="type">form</field>
-            <field name="arch" type="xml">
-                <form string="Create service">
+        <!--
+                <record model="ir.ui.view" id="wizard_with_step_form">
+                    <field name="name">omixtory.service.create.form</field>
+                    <field name="model">omixtory.service.create</field>
+                    <field name="type">form</field>
+                    <field name="arch" type="xml">
+                        <form string="Create service">
 
-                    <group>
-                        <group>
-                            <field name="client_id"/>
-                            <field name="site_id"/>
-                            <field name="location" readonly="1"/>
-                        </group>
+                            <group>
+                                <group>
+                                    <field name="client_id"/>
+                                    <field name="site_id"/>
+                                    <field name="location" readonly="1"/>
+                                </group>
 
-                        <group>
-                            <field name="config" widget="radio"/>
-                        </group>
-                    </group>
+                                <group>
+                                    <field name="config" widget="radio"/>
+                                </group>
+                            </group>
 
-                    <footer>
-                        <button name="create_service" string="Create" type="object"/>
-                    </footer>
+                            <footer>
+                                <button name="create_service" string="Create" type="object"/>
+                            </footer>
 
-                </form>
-            </field>
-        </record>
--->
+                        </form>
+                    </field>
+                </record>
+        -->
 
         <!-- actions opening views on models -->
         <act_window id="omixtory.action_client" res_model="omixtory.client"
@@ -115,12 +261,12 @@
                     name="Omixtory host" view_mode="tree,form"/>
         <act_window id="omixtory.action_host_template" res_model="omixtory.host.template"
                     name="Omixtory host template" view_mode="tree,form"/>
-<!--
-        <act_window id="omixtory.action_service" res_model="omixtory.service"
-                    name="Omixtory service" view_mode="tree"/>
-        <act_window id="omixtory.action_service_create" res_model="omixtory.service.create"
-                    name="Omixtory service create" view_mode="form" target="new"/>
--->
+        <!--
+                <act_window id="omixtory.action_service" res_model="omixtory.service"
+                            name="Omixtory service" view_mode="tree"/>
+                <act_window id="omixtory.action_service_create" res_model="omixtory.service.create"
+                            name="Omixtory service create" view_mode="form" target="new"/>
+        -->
 
 
 
@@ -152,13 +298,13 @@
         <menuitem name="Host" id="omixtory.menu_host" parent="omixtory.menu_omixtory"
                   action="omixtory.action_host"/>
         <!--<menuitem name="Host template" id="omixtory.menu_host_template" parent="omixtory.menu_omixtory"-->
-                  <!--action="omixtory.action_host_template"/>-->
-<!--
-        <menuitem name="Service" id="omixtory.menu_service" parent="omixtory.menu_omixtory"
-                  action="omixtory.action_service"/>
-        <menuitem name="Create service" id="omixtory.menu_service_create" parent="omixtory.menu_omixtory"
-                  action="omixtory.action_service_create"/>
--->
+        <!--action="omixtory.action_host_template"/>-->
+        <!--
+                <menuitem name="Service" id="omixtory.menu_service" parent="omixtory.menu_omixtory"
+                          action="omixtory.action_service"/>
+                <menuitem name="Create service" id="omixtory.menu_service_create" parent="omixtory.menu_omixtory"
+                          action="omixtory.action_service_create"/>
+        -->
         <!--
             <menuitem name="Service Type" id="omixtory.servicetype" parent="omixtory.menu_config"
                       action="omixtory.action_servicetype"/>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields, api
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
 
 
 class HostTemplate(models.Model):
@@ -17,11 +17,11 @@ class HostTemplate(models.Model):
     host = fields.Char()
     ip_suffix = fields.Integer()
     host_ids = fields.One2many('omixtory.host', 'template_id')
+    active = fields.Boolean(default=True)
 
     @api.model
     def install(self):
-        # self.search([]).unlink()
-        models = self.env['ir.model'].sudo().search([('model', 'like', 'omixtory.config.%')], order='id')
+        models = self.env['ir.model'].search([('model', 'like', 'omixtory.config.%')], order='id') #sudo().
         for model in models:
             conf = self.env[model.model]
             vals = {
@@ -36,9 +36,12 @@ class HostTemplate(models.Model):
                 t.write(vals)
             else:
                 self.create(vals)
+        for template in self.search([]):
+            if not self.env['ir.model'].search_count([('model', '=', template.model)]):
+                template.unlink()
 
     def _hosts(self):
-        return [r.name for r in self.host_ids]
+        return [r.name for r in self.host_ids if r.state == 'normal']
 
     def _vars(self):
         return {k: self[k] for k, d in self._fields.items() if d._attrs and d._attrs['config']}
@@ -54,10 +57,14 @@ class HostTemplate(models.Model):
         inv = {r.name: r._inventory() for r in self}
         sites = self.env['omixtory.site'].search([])
         boxes = []
+        arcs = []
         for s in sites:
             boxes += s._get_boxes()
+            if s.arc:
+                arcs += ["arc." + s._get_domain()]
         inv.update({
-            "pm": boxes
+            "pm": {'hosts': boxes},
+            "arc": {'hosts': arcs},
         })
         return inv
 
@@ -67,27 +74,47 @@ class Host(models.Model):
 
     name = fields.Char('FQDN')
     client_id = fields.Many2one('omixtory.client', required=True)
-    site_id = fields.Many2one('omixtory.site')
+    site_id = fields.Many2one('omixtory.site', domain="[('client_id', '=', client_id)]")
     template_id = fields.Many2one('omixtory.host.template', order='id', required=True, store=True,
                                   domain="['|',('siteonly','=',site_id),('siteonly','=',False)]")
     location = fields.Selection([('box', 'Box'), ('cloud', 'Cloud')], compute='_compute_location')
     ip = fields.Char('IP')
     vmid = fields.Char("VMID")
     config = fields.Reference(string='Config', selection=[])
-    # state = fields.Selection({
-    #     ('draft','Draft')
-    #     ('config', 'Config')
-    #     ('aplied', 'Aplied')
-    # })
+
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('normal', 'Normal')
+    ], default='draft')
+    active = fields.Boolean(default=True)
 
     @api.onchange('client_id')
     def _onchange_client(self):
-        self.site_id = False
+        if self.site_id and self.site_id.client_id != self.client_id:
+            self.site_id = False
         self.template_id = False
 
     @api.onchange('site_id')
     def _onchange_site(self):
         self.template_id = False
+
+    @api.constrains('state')
+    def _validate_state(self):
+        for rec in self:
+            if rec.state == 'normal':
+                if rec.client_id.state == 'draft':
+                    raise ValidationError('Client is draft - cant change!')
+                if rec.site_id.state == 'draft':
+                    raise ValidationError('Site is draft - cant change!')
+
+    @api.constrains('active')
+    def _validate_active(self):
+        for rec in self:
+            if rec.active:
+                if not rec.client_id.active:
+                    raise ValidationError('Unarchive Client first!')
+                if rec.site_id and not rec.site_id.active:
+                    raise ValidationError('Unarchive Site first!')
 
     @api.depends('site_id')
     def _compute_location(self):
@@ -146,7 +173,7 @@ class Host(models.Model):
 
     @api.multi
     def hostvars(self):
-        return {r.name: r._hostvars() for r in self}
+        return {r.name: r._hostvars() for r in self if r.state == 'normal'}
 
     def _hostvars(self):
         return {k: self.config[k] for k,d in self.config._fields.items() if d._attrs and d._attrs['config']}
@@ -164,14 +191,14 @@ class ConfigGw(models.Model):
     dhcp = fields.Boolean("Enable DHCP", config=True)
 
 
-class ConfigProxy(models.Model):
-    _name = 'omixtory.config.proxy'
-    _description = "proxy"
-    name = fields.Char('FQDN', readonly=True)
-
-    siteonly = False
-    host = 'proxy'
-    ip_suffix = 2
+# class ConfigProxy(models.Model):
+#     _name = 'omixtory.config.proxy'
+#     _description = "proxy"
+#     name = fields.Char('FQDN', readonly=True)
+#
+#     siteonly = False
+#     host = 'proxy'
+#     ip_suffix = 2
 
 
 class ConfigMail(models.Model):
@@ -186,26 +213,26 @@ class ConfigMail(models.Model):
     roundcube = fields.Boolean("Install roundcube", config=True)
 
 
-class ConfigWp(models.Model):
-    _name = 'omixtory.config.wp'
-    _description = "wp"
-    name = fields.Char('FQDN', readonly=True)
+# class ConfigWp(models.Model):
+#     _name = 'omixtory.config.wp'
+#     _description = "wp"
+#     name = fields.Char('FQDN', readonly=True)
+#
+#     siteonly = False
+#     host = 'wp'
+#     ip_suffix = 4
+#
+#     # list of proxy sites
+#
 
-    siteonly = False
-    host = 'wp'
-    ip_suffix = 4
-
-    # list of proxy sites
-
-
-class ConfigOdoo(models.Model):
-    _name = 'omixtory.config.odoo'
-    _description = "odoo"
-    name = fields.Char('FQDN', readonly=True)
-
-    siteonly = False
-    host = 'odoo'
-    ip_suffix = 5
+# class ConfigOdoo(models.Model):
+#     _name = 'omixtory.config.odoo'
+#     _description = "odoo"
+#     name = fields.Char('FQDN', readonly=True)
+#
+#     siteonly = False
+#     host = 'odoo'
+#     ip_suffix = 5
 
 
 class ConfigDc(models.Model):

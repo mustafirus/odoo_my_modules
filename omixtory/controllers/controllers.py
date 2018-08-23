@@ -12,23 +12,29 @@ class Omixtory(http.Controller):
         sites = env['omixtory.site'].sudo()
         hosts = env['omixtory.host'].sudo()
         templates = env['omixtory.host.template'].sudo()
+        allhosts = hosts.search([('state', '=', 'normal')])
+        allclients = clients.search([('state', '=', 'normal')])
+        allsites = sites.search([('state', '=', 'normal')])
+        alltemplates = templates.search([])
 
         inventory = {
             "_meta": {
-                "hostvars": hosts.search([]).hostvars()
+                "hostvars": allhosts.hostvars()
             },
             "all": {
-                "hosts": [r.name for r in hosts.search([])],
+                "hosts": [r.name for r in allhosts],
                 "children": [
-                    "ungrouped"
-                ] + [r.dc for r in clients.search([])] +
-                            [r.group() for r in sites.search([])]
+                    "ungrouped",
+                    "pm",
+                    "arc",
+                ] + [r.dc for r in allclients] +
+                            [r.group() for r in allsites] + [r.name for r in alltemplates]
             },
             "ungrouped": {}
         }
-        inventory.update(clients.search([]).inventory())
-        inventory.update(sites.search([]).inventory())
-        inventory.update(templates.search([]).inventory())
+        inventory.update(allclients.inventory())
+        inventory.update(allsites.inventory())
+        inventory.update(alltemplates.inventory())
 
 
         return json.dumps(inventory, indent=True)
