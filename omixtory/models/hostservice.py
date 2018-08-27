@@ -78,9 +78,12 @@ class Host(models.Model):
     template_id = fields.Many2one('omixtory.host.template', order='id', required=True, store=True,
                                   domain="['|',('siteonly','=',site_id),('siteonly','=',False)]")
     location = fields.Selection([('box', 'Box'), ('cloud', 'Cloud')], compute='_compute_location')
+
     ip = fields.Char('IP')
     vmid = fields.Char("VMID")
     config = fields.Reference(string='Config', selection=[])
+
+    ssh_url = fields.Char('ssh', compute='_compute_ssh_url')
 
     state = fields.Selection([
         ('draft', 'Draft'),
@@ -121,16 +124,9 @@ class Host(models.Model):
         self.location = 'box' if self.site_id else 'cloud'
 
     @api.multi
-    def open_config(self):
-        return {
-            'type': 'ir.actions.act_window',
-            'res_model': self.config._name,
-            'view_mode': 'form',
-            'view_type': 'form',
-            'res_id': self.config.id,
-            'views': [(False, 'form')],
-            # 'target': 'new',
-             }
+    def _compute_ssh_url(self):
+        for rec in self:
+            rec.ssh_url = 'ssh://root@' + self.name
 
     @api.multi
     def unlink(self):
@@ -178,6 +174,27 @@ class Host(models.Model):
     def _hostvars(self):
         return {k: self.config[k] for k,d in self.config._fields.items() if d._attrs and d._attrs['config']}
 
+    @api.multi
+    def open_config(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': self.config._name,
+            'view_mode': 'form',
+            'view_type': 'form',
+            'res_id': self.config.id,
+            'views': [(False, 'form')],
+            # 'target': 'new',
+             }
+
+    @api.multi
+    def open_ssh(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_url',
+            'url': 'ssh://root@' + self.name,
+            # 'target': 'new',
+             }
 
 class ConfigGw(models.Model):
     _name = 'omixtory.config.gw'

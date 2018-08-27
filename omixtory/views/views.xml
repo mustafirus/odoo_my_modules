@@ -172,6 +172,9 @@
                     <filter string="Normal" domain="[('state','=','normal')]"/>
                     <filter string="Draft" domain="[('state','=','draft')]"/>
                     <separator/>
+                    <filter string="Box" domain="[('site_id','!=',False)]"/>
+                    <filter string="Cloud" domain="[('site_id','=',False)]"/>
+                    <separator/>
                     <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
                     <group string="Group By">
                         <filter string="Client" domain="[]" context="{'group_by':'client_id'}"/>
@@ -200,7 +203,10 @@
                         </div>
                         <div class="oe_title">
                             <h1>
-                                <field name="name" readonly="1"/>
+                                <field name="name" readonly="1"/><span>   </span>
+                            </h1>
+                            <h1>
+                                <field name="ssh_url" widget="link_button" readonly="1" icon="fa-terminal"/>
                             </h1>
                         </div>
                         <group>
