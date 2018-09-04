@@ -1,0 +1,80 @@
+<odoo>
+    <data>
+        <template id="add" name="Add Todo Task">
+            <t t-call="website.layout">
+                <t t-set="additional_title">Add Todo</t>
+                <div id="wrap" class="container">
+                    <div class="row">
+                        <section id="forms">
+
+                            <form method="post"
+                                  class="s_website_form container-fluid form-horizontal"
+                                  action="/website_form/"
+                                  data-model_name="rootfscalc.rootfscalc"
+                                  data-success_page="/todo"
+                                  enctype="multipart/form-data" >
+
+
+                                <!-- Form fields will go here! -->
+
+                                <!-- Description text field, required -->
+                                <div class="form-group form-field">
+                                    <div class="col-md-3 col-sm-4 text-right">
+                                        <label class="control-label" for="name">Workstations*</label>
+                                    </div>
+                                    <div class="col-md-7 col-sm-8">
+                                        <input name="workstations" type="number" required="True"
+                                               class="o_website_from_input form-control" />
+                                    </div>
+                                </div>
+
+
+                                <!-- Form fields will go here! -->
+
+
+                                <!-- Submit button -->
+                                <div class="form-group">
+                                    <div class="col-md-offset-3 col-md-7 col-sm-offset-4 col-sm-8">
+                                        <a class="o_website_form_send btn btn-primary btn-lg">
+                                            Save
+                                        </a>
+                                        <span id="o_website_form_result"></span>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </section>
+                    </div> <!-- rows -->
+                </div> <!-- container -->
+            </t> <!-- website.layout -->
+        </template>
+
+        <template id="listing">
+            <t t-call="website.layout">
+                <ul>
+                    <li t-foreach="objects" t-as="object">
+                        <a t-attf-href="#{ root }/objects/#{ object.id }">
+                            <t t-esc="object.display_name"/>
+                        </a>
+                    </li>
+                </ul>
+            </t>
+        </template>
+        <template id="object">
+            <t t-call="website.layout">
+                <div class="container">
+                    <div class="panel panel-default">
+
+                        <h1><t t-esc="object.display_name"/></h1>
+                        <dl>
+                            <t t-foreach="object._fields" t-as="field">
+                                <dt><t t-esc="field"/></dt>
+                                <dd><t t-esc="object[field]"/></dd>
+                            </t>
+                        </dl>
+                    </div>
+                </div>
+            </t>
+        </template>
+    </data>
+</odoo>
