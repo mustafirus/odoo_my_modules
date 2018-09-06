@@ -3,15 +3,15 @@
 
         <!-- actions opening views on models -->
         <act_window id="omixtory.action_client" res_model="omixtory.client"
-                    name="Omixtory client" view_mode="tree,form"/>1
+                    name="Clients" view_mode="tree,form"/>1
         <act_window id="omixtory.action_site" res_model="omixtory.site"
-                    name="Omixtory site" view_mode="tree,form"/>
+                    name="Sites" view_mode="tree,form"/>
         <act_window id="omixtory.action_host" res_model="omixtory.host"
-                    name="Omixtory host" view_mode="tree,form"/>
+                    name="Hosts" view_mode="tree,form"/>
         <act_window id="omixtory.action_host_template" res_model="omixtory.host.template"
-                    name="Omixtory host template" view_mode="tree,form"/>
+                    name="Host templates" view_mode="tree,form"/>
         <act_window id="omixtory.action_box" res_model="omixtory.box"
-                    name="Omixtory box" view_mode="tree,form"/>
+                    name="Boxes" view_mode="tree,form"/>
 
         <!-- Top menu item -->
         <menuitem name="omixtory" id="omixtory.menu_root"/>
