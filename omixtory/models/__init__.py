@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 
-from . import hostservice, clientsite
+from . import client, site, box, host, service

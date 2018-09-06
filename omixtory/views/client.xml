@@ -1,0 +1,86 @@
+<odoo>
+    <data>
+
+        <record model="ir.ui.view" id="omixtory.client_list">
+            <field name="name">omixtory.client.list</field>
+            <field name="model">omixtory.client</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="dc"/>
+                    <field name="idx"/>
+                    <field name="ad_domain"/>
+                    <field name="ldap_base"/>
+                    <field name="site_ids"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- page search view  -->
+        <record id="omixtory.client_search" model="ir.ui.view">
+            <field name="name">omixtory.client.search</field>
+            <field name="model">omixtory.client</field>
+            <field name="arch" type="xml">
+                <search string="Client">
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                    <field name="dc"/>
+                </search>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="omixtory.client_form">
+            <field name="name">omixtory.client.form</field>
+            <field name="model">omixtory.client</field>
+            <field name="arch" type="xml">
+                <form string="Client">
+                    <header>
+                        <field name="state" widget="statusbar" clickable="True"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                            </button>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="dc"/>
+                                <field name="partner_id"/>
+                                <field name="ad_domain"/>
+                                <field name="ldap_base"/>
+                            </group>
+                            <group>
+                                <field name="idx"/>
+                                <field name="cloud_network_prefix"/>
+                                <field name="vpn_network_prefix"/>
+                            </group>
+                            <newline/>
+                            <group colspan="2" attrs="{'invisible': [('id','=',False)]}">
+                                <field name="site_ids" context="{'default_client_id': id, 'one2many':True}">
+                                    <tree>
+                                        <field name="dc"/>
+                                        <field name="idx"/>
+                                        <field name="box_network_prefix"/>
+                                        <field name="host_ids"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                                <field name="host_ids" context="{'default_client_id': id, 'one2many':True}">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="vmid"/>
+                                        <field name="ip"/>
+                                        <field name="template_id"/>
+                                        <field name="state"/>
+                                        <button string="Config" name="open_config" type="object" class="oe_highlight" />
+                                    </tree>
+                                </field>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

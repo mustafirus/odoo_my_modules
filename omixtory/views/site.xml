@@ -1,0 +1,88 @@
+<odoo>
+    <data>
+
+        <record model="ir.ui.view" id="omixtory.site_list">
+            <field name="name">omixtory.site.list</field>
+            <field name="model">omixtory.site</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="client_id"/>
+                    <field name="dc"/>
+                    <field name="idx"/>
+                    <field name="box_network_prefix"/>
+                    <field name="host_ids"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- page search view  -->
+        <record id="omixtory.site_search" model="ir.ui.view">
+            <field name="name">omixtory.site.search</field>
+            <field name="model">omixtory.site</field>
+            <field name="arch" type="xml">
+                <search string="Site">
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                    <field name="dc"/>
+                    <field name="client_id"/>
+                </search>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="omixtory.site_form">
+            <field name="name">omixtory.site.form</field>
+            <field name="model">omixtory.site</field>
+            <field name="arch" type="xml">
+                <form string="Site">
+                    <header>
+                        <field name="state" widget="statusbar" clickable="True"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                            </button>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="client_id" invisible="context.get('one2many')"/>
+                                <field name="dc"/>
+                                <field name="partner_id" options="{'no_create': True}"/>
+                                <field name="address_ids" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="idx"/>
+                                <field name="box_network_prefix"/>
+                                <field name="arc" />
+                            </group>
+                            <newline/>
+                            <group attrs="{'invisible': [('id','=',False)]}" colspan="2">
+                                <field name="box_id" />
+                                <field name="host_ids" context="{'default_client_id': client_id, 'default_site_id': id, 'one2many':True}">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="vmid"/>
+                                        <field name="ip"/>
+                                        <field name="template_id"/>
+                                        <field name="state"/>
+                                        <button string="Config" name="open_config" type="object" class="oe_highlight" />
+                                    </tree>
+                                </field>
+                                <field name="box_ids" context="{'default_client_id': client_id, 'default_site_id': id, 'one2many':True}">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="ip"/>
+                                        <field name="direct_ip"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                            </group>
+                            <separator />
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

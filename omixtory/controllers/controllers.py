@@ -11,21 +11,27 @@ class Omixtory(http.Controller):
         clients = env['omixtory.client'].sudo()
         sites = env['omixtory.site'].sudo()
         hosts = env['omixtory.host'].sudo()
+        boxes = env['omixtory.box'].sudo()
         templates = env['omixtory.host.template'].sudo()
         allhosts = hosts.search([('state', '=', 'normal')])
         allclients = clients.search([('state', '=', 'normal')])
         allsites = sites.search([('state', '=', 'normal')])
         alltemplates = templates.search([])
+        allboxes = boxes.search([])
+
+        hostvars = allhosts.hostvars()
+        hostvars.update(allboxes.hostvars())
 
         inventory = {
             "_meta": {
-                "hostvars": allhosts.hostvars()
+                "hostvars": hostvars
             },
             "all": {
                 "hosts": [r.name for r in allhosts],
                 "children": [
                     "ungrouped",
                     "pm",
+                    "pmd",
                     "arc",
                 ] + [r.dc for r in allclients] +
                             [r.group() for r in allsites] + [r.name for r in alltemplates]

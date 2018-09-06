@@ -1,0 +1,79 @@
+<odoo>
+    <data>
+
+        <record model="ir.ui.view" id="omixtory.box_list">
+            <field name="name">omixtory box list</field>
+            <field name="model">omixtory.box</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="client_id"/>
+                    <field name="site_id"/>
+                    <field name="ip"/>
+                    <field name="direct_ip"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- page search view  -->
+        <record id="omixtory.box_search" model="ir.ui.view">
+            <field name="name">omixtory.box.search</field>
+            <field name="model">omixtory.box</field>
+            <field name="arch" type="xml">
+                <search string="Box">
+                    <field name="client_id"/>
+                    <field name="name"/>
+                    <filter string="Normal" domain="[('state','=','normal')]"/>
+                    <filter string="Draft" domain="[('state','=','draft')]"/>
+                    <separator/>
+                    <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
+                    <group string="Group By">
+                        <filter string="Site" domain="[]" context="{'group_by':'site_id'}"/>
+                        <filter string="State" domain="[]" context="{'group_by':'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="omixtory.box_form">
+            <field name="name">omixtory box form</field>
+            <field name="model">omixtory.box</field>
+            <field name="arch" type="xml">
+                <form string="Host">
+                    <header>
+                        <field name="state" widget="statusbar" clickable="True"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                            </button>
+                        </div>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" readonly="1"/>
+                            </h1>
+                            <h1>
+                                <field name="ssh_url" widget="link_button" readonly="1" icon="fa-terminal"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group invisible="context.get('one2many')">
+                                <field name="client_id"/>
+                                <field name="site_id"/>
+                            </group>
+                            <group>
+                                <field name="dc"/>
+                                <field name="ip" />
+                                <field name="direct_ip"/>
+                                <field name="direct_port"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>
