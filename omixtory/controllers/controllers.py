@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
-
 from odoo import http
+
 
 class Omixtory(http.Controller):
     @http.route('/omixtory/inventory', auth='public')
@@ -34,7 +34,8 @@ class Omixtory(http.Controller):
                     "pmd",
                     "arc",
                 ] + [r.dc for r in allclients] +
-                            [r.group() for r in allsites] + [r.name for r in alltemplates]
+                [r.group() for r in allsites] +
+                [r.name for r in alltemplates]
             },
             "ungrouped": {}
         }
@@ -42,18 +43,4 @@ class Omixtory(http.Controller):
         inventory.update(allsites.inventory())
         inventory.update(alltemplates.inventory())
 
-
         return json.dumps(inventory, indent=True)
-
-#     @http.route('/omixtory/omixtory/objects/', auth='public')
-#     def list(self, **kw):
-#         return http.request.render('omixtory.listing', {
-#             'root': '/omixtory/omixtory',
-#             'objects': http.request.env['omixtory.omixtory'].search([]),
-#         })
-
-#     @http.route('/omixtory/omixtory/objects/<model("omixtory.omixtory"):obj>/', auth='public')
-#     def object(self, obj, **kw):
-#         return http.request.render('omixtory.object', {
-#             'object': obj
-#         })

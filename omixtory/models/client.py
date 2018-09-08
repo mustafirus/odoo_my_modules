@@ -3,11 +3,13 @@
 from odoo import models, fields, api
 from . common import _next_idx_sql, _calc_prefix
 
+
 class Client(models.Model):
     _name = "omixtory.client"
     _rec_name = "dc"
 
-    partner_id = fields.Many2one('res.partner', domain=[('is_company', '=', True)])
+    partner_id = fields.Many2one('res.partner',
+                                 domain=[('is_company', '=', True)])
     dc = fields.Char('Client Name', required=True,
                      states={'normal': [('readonly', True)]})
     idx = fields.Integer("Client Index", default=lambda self: self._next_idx(), required=True,
@@ -54,7 +56,8 @@ class Client(models.Model):
     #     self.host_ids.write({'state': self.state})
 
     def _vars(self):
-        vals = {k: self[k] for k, d in self._fields.items() if d._attrs and d._attrs['config']}
+        vals = {k: self[k] for k, d in self._fields.items()
+                if d._attrs and d._attrs['config']}
         vals.update({
             'client': self.dc
         })
