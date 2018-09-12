@@ -1,0 +1,115 @@
+.customfontsize {
+    font-size: 1.1em !important;
+    line-height: 1.8 !important;
+}
+.customcheckbox {
+    width: 1em !important;
+    height: 1em !important;
+}
+.customverticalalign {
+    vertical-align: 10% !important;
+}
+.custommargin {
+    margin-left: -15px !important;
+    margin-right: -15px !important;
+    padding: 0 !important;
+}
+.bg-silver {
+    background-color: #6A8487 !important;
+    }
+.bg-gainsboro {
+    background-color: #829AA5 !important;
+}
+.bg-violet {
+    background-color: #BA9AB4 !important;
+}
+.bg-purple {
+    background-color: #AA7C9E !important;
+}
+.bg-lightgreen {
+    background-color: #9BCC9F !important;
+}
+.bg-darkgreen {
+    background-color: #8FB791 !important;
+}
+.bg-glass {
+    background-color: rgba(255,255,255,0.1) !important;
+}
+.bs-bb {
+    box-sizing: border-box !important;
+}
+.m-0 {
+    margin: 0 !important;
+}
+.mx-0 {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+.my-0 {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+.mt-0 {
+    margin-top: 0 !important;
+}
+.mr-0 {
+    margin-right: 0 !important;
+}
+.mb-0 {
+    margin-bottom: 0 !important;
+}
+.ml-0 {
+    margin-left: 0 !important;
+}
+.p-0 {
+    padding: 0 !important;
+}
+.px-0 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+.py-0 {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+.pt-0 {
+    padding-top: 0 !important;
+}
+.pr-0 {
+    padding-right: 0 !important;
+}
+.pb-0 {
+    padding-bottom: 0 !important;
+}
+.pl-0 {
+    padding-left: 0 !important;
+}
+.bor-0 {
+    border: none !important;
+}
+.bor-t-0 {
+    border-top: none !important;
+}
+.bor-r-0 {
+    border-right: none !important;
+}
+.bor-b-0 {
+    border-bottom: none !important;
+}
+.bor-l-0 {
+    border-left: none !important;
+}
+.bor-rad-0 {
+    border-radius: 0 !important;
+}
+.over-h {
+  overflow: hidden !important;
+}
+@media (min-width: 767.98px) {
+    .formsend {
+        margin-left: 0.9em !important;
+    }
+    .checkboxblock {
+      padding-left: 15px !important;
+    }
+}

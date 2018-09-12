@@ -6,6 +6,8 @@ class rootfscalc(models.Model):
     _name = 'rootfscalc.rootfscalc'
     # _inherit = 'website'
 
+    meta = fields.Char('Metadata')
+    email_to = fields.Char('Email')
     workstations = fields.Integer()
     printers = fields.Integer()
     mailserver = fields.Boolean()
@@ -22,13 +24,23 @@ class rootfscalc(models.Model):
     tariff = fields.Selection([
         ('basic', 'Basic'),
         ('standard', 'Standard'),
-        ('VIP', 'VIP'),
+        ('vip', 'VIP'),
     ])
 
-    value = fields.Integer()
-    value2 = fields.Float(compute="_value_pc", store=True)
-    description = fields.Text()
 
-    @api.depends('value')
-    def _value_pc(self):
-        self.value2 = float(self.value) / 100
+    @api.multi
+    def summary(self):
+        self.ensure_one()
+        s = '''
+            {rec.workstations} workstations,
+            {rec.printers} printers,
+            {rec.mailserver} mailserver,
+            {rec.router} router,
+            {rec.ts} ts,
+            {rec.ads} ads,
+            {rec.fileserver} fileserver,
+            {rec.backup} backup,
+            {rec.oousers} oousers,
+            {rec.security} security,
+        '''.format(rec=self)
+        return s

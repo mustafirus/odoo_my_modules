@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <template id="assets_frontend" name="Rootfs Calc Assets Frontend" inherit_id="website.assets_frontend">
+            <xpath expr="." position="inside">
+                <link rel='stylesheet' href='/rootfscalc/static/src/css/calc.css'/>
+            </xpath>
+        </template>
+
+    </data>
+</odoo>

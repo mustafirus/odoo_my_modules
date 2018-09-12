@@ -1,0 +1,59 @@
+<odoo>
+    <data>
+        <!--  -->
+        <record id="model_rootfscalc_rootfscalc" model="ir.model">
+            <field name="website_form_default_field_id" ref="field_rootfscalc_rootfscalc_meta" />
+            <field name="website_form_access">True</field>
+            <field name="website_form_label">Calc</field>
+        </record>
+        <function model="ir.model.fields" name="formbuilder_whitelist">
+            <value>rootfscalc.rootfscalc</value>
+            <value eval="[
+                'meta'
+                'workstations'
+                'printers'
+                'mailserver'
+                'router'
+                'ts'
+                'ads'
+                'fileserver'
+                'backup'
+                'oousers'
+                'security'
+                'tariff'
+            ]"/>
+        </function>
+
+        <record id="calc_email_template" model="mail.template">
+            <field name="name">Calc Result</field>
+            <field name="model_id" ref="model_rootfscalc_rootfscalc"/>
+            <field name="subject">Calc result</field>
+            <field name="use_default_to" eval="True"/>
+            <field name="body_html">
+                Dear friend, this is your caclulation
+                ${object.summary()}
+            </field>
+        </record>
+        <!--  -->
+        <!--   <record id="object1" model="rootfscalc.rootfscalc"> -->
+        <!--     <field name="name">Object 1</field> -->
+        <!--     <field name="value">10</field> -->
+        <!--   </record> -->
+        <!--  -->
+        <!--   <record id="object2" model="rootfscalc.rootfscalc"> -->
+        <!--     <field name="name">Object 2</field> -->
+        <!--     <field name="value">20</field> -->
+        <!--   </record> -->
+        <!--  -->
+        <!--   <record id="object3" model="rootfscalc.rootfscalc"> -->
+        <!--     <field name="name">Object 3</field> -->
+        <!--     <field name="value">30</field> -->
+        <!--   </record> -->
+        <!--  -->
+        <!--   <record id="object4" model="rootfscalc.rootfscalc"> -->
+        <!--     <field name="name">Object 4</field> -->
+        <!--     <field name="value">40</field> -->
+        <!--   </record> -->
+        <!--  -->
+    </data>
+</odoo>
