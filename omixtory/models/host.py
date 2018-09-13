@@ -81,8 +81,7 @@ class Host(models.Model):
             raise UserError('Template is required!')
 
         client_id = self.env['omixtory.client'].search([('id', '=', vals['client_id'])])
-        site_id = self.env['omixtory.site'].search([('id', '=', vals['site_id'])]) \
-            if 'site_id' in vals else False
+        site_id = self.env['omixtory.site'].search([('id', '=', vals['site_id'])])  # if 'site_id' in vals else False
         template_id = self.env['omixtory.host.template'].search([('id', '=', vals['template_id'])])
 
         ip_prefix = site_id.box_network_prefix if site_id \
@@ -100,8 +99,8 @@ class Host(models.Model):
                 'ip': ip_prefix + "." + str(template_id.ip_suffix),
                 'vmid': str(100 + template_id.ip_suffix if template_id.siteonly
                        else 1000000 + client_id.idx*100 + template_id.ip_suffix),
-                'site_id': site_id.id,
-                'client_id': client_id.id,
+#                'site_id': site_id.id,
+#                'client_id': client_id.id,
                 'config': "{},{}".format(template_id.model, self.env[template_id.model].create({'name': fqdn}).id),
         })
 

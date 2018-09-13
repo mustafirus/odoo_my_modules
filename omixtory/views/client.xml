@@ -53,6 +53,8 @@
                                 <field name="idx"/>
                                 <field name="cloud_network_prefix"/>
                                 <field name="vpn_network_prefix"/>
+                                <field name="vpn_port"/>
+                                <field name="vlanid"/>
                             </group>
                             <newline/>
                             <group colspan="2" attrs="{'invisible': [('id','=',False)]}">

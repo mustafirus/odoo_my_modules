@@ -22,6 +22,11 @@ class Client(models.Model):
                      states={'normal': [('readonly', True)]})
     ldap_base = fields.Char('ldap_base', config=True, required=True,
                      states={'normal': [('readonly', True)]})
+    vpn_port = fields.Integer('Openvpn port number', config=True, required=True,
+                     states={'normal': [('readonly', True)]})
+    vlanid = fields.Integer('VLAN id in cloud', config=True, required=True,
+                     states={'normal': [('readonly', True)]})
+
 
     site_ids = fields.One2many('omixtory.site', 'client_id', string='Sites')
     host_ids = fields.One2many('omixtory.host', 'client_id', string='Cloud hosts',
