@@ -6,8 +6,9 @@ class rootfscalc(models.Model):
     _name = 'rootfscalc.rootfscalc'
     # _inherit = 'website'
 
-    meta = fields.Char('Metadata')
+    name = fields.Char('Email', compute='_compute_name')
     email_to = fields.Char('Email')
+    ip = fields.Char('IP')
     workstations = fields.Integer()
     printers = fields.Integer()
     mailserver = fields.Boolean()
@@ -26,7 +27,22 @@ class rootfscalc(models.Model):
         ('standard', 'Standard'),
         ('vip', 'VIP'),
     ])
+    meta = fields.Char('Metadata', inverse='_inverse_meta', readonly=True)
 
+    @api.depends('email_to', 'ip')
+    def _compute_name(self):
+        for rec in self:
+            rec.name = rec.email_to if rec.email_to else rec.ip
+
+    def _inverse_meta(self):
+        mf = False
+        for l in self.meta.split('\n'):
+            if l == 'Metadata':
+                mf = True
+                continue
+            if mf and l[:5] == 'IP : ':
+                self.ip = l[5:]
+                return
 
     @api.multi
     def summary(self):

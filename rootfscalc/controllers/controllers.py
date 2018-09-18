@@ -22,10 +22,17 @@ class Rootfscalc(http.Controller):
             rootfscalc = request.env['rootfscalc.rootfscalc'].sudo().browse(request.session.rootfscalc_id)
             calcsummary = rootfscalc.summary()
             calctotal = 3331  # calc.total()
-            return http.request.render('rootfscalc.result', {
-                'calcsummary': calcsummary,
-                'calctotal': calctotal,
-            })
+            if request.session.rootfsorder:
+                del request.session['rootfsorder']
+                return http.request.render('rootfscalc.order', {
+                    'calcsummary': calcsummary,
+                    'calctotal': calctotal,
+                })
+            else:
+                return http.request.render('rootfscalc.result', {
+                    'calcsummary': calcsummary,
+                    'calctotal': calctotal,
+                })
 
         return http.request.render('rootfscalc.calc')
 
@@ -55,4 +62,18 @@ class Rootfscalc(http.Controller):
     def calcreset(self, **kw):
         del request.session['rootfscalc_id']
         return request.redirect("/calc")
+
+    @http.route('/calc/ordernow', type='http', auth="public", methods=['GET'], website=True)
+    def ordernow(self, **kw):
+        request.session['rootfsorder'] = True
+        return request.redirect("/calc")
+
+    @http.route('/calc/order', type='http', auth="public", methods=['POST'], website=True)
+    def order(self, **kw):
+        name = kw.get('name')
+        email = kw.get('email')
+        mobile = kw.get('mobile')
+        pass
+
+
 

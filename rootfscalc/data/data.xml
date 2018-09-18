@@ -9,18 +9,18 @@
         <function model="ir.model.fields" name="formbuilder_whitelist">
             <value>rootfscalc.rootfscalc</value>
             <value eval="[
-                'meta'
-                'workstations'
-                'printers'
-                'mailserver'
-                'router'
-                'ts'
-                'ads'
-                'fileserver'
-                'backup'
-                'oousers'
-                'security'
-                'tariff'
+                'meta',
+                'workstations',
+                'printers',
+                'mailserver',
+                'router',
+                'ts',
+                'ads',
+                'fileserver',
+                'backup',
+                'oousers',
+                'security',
+                'tariff',
             ]"/>
         </function>
 
