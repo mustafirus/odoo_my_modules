@@ -45,7 +45,10 @@
                         <group>
                             <group>
                                 <field name="dc"/>
+                                <field name="category_id"/>
+<!--                                <field name="zzz"/>-->
                                 <field name="partner_id"/>
+<!--                                context="{'default_is_company': True}"-->
                                 <field name="ad_domain"/>
                                 <field name="ldap_base"/>
                             </group>
@@ -53,7 +56,7 @@
                                 <field name="idx"/>
                                 <field name="cloud_network_prefix"/>
                                 <field name="vpn_network_prefix"/>
-                                <field name="vpn_port"/>
+                                <field name="vpn_port" options="{'wothsep': True}"/>
                                 <field name="vlanid"/>
                             </group>
                             <newline/>

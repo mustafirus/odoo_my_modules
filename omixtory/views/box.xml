@@ -24,13 +24,13 @@
                 <search string="Box">
                     <field name="client_id"/>
                     <field name="name"/>
-                    <filter string="Normal" domain="[('state','=','normal')]"/>
-                    <filter string="Draft" domain="[('state','=','draft')]"/>
+                    <filter string="Normal" name="normal" domain="[('state','=','normal')]"/>
+                    <filter string="Draft"  name="draft" domain="[('state','=','draft')]"/>
                     <separator/>
                     <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
                     <group string="Group By">
-                        <filter string="Site" domain="[]" context="{'group_by':'site_id'}"/>
-                        <filter string="State" domain="[]" context="{'group_by':'state'}"/>
+                        <filter string="Site" name="site" domain="[]" context="{'group_by':'site_id'}"/>
+                        <filter string="State" name="state" domain="[]" context="{'group_by':'state'}"/>
                     </group>
                 </search>
             </field>

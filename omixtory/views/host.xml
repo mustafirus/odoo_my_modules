@@ -26,19 +26,19 @@
                     <field name="client_id"/>
                     <field name="template_id"/>
                     <field name="name"/>
-                    <filter string="Normal" domain="[('state','=','normal')]"/>
-                    <filter string="Draft" domain="[('state','=','draft')]"/>
+                    <filter string="Normal" name="normal" domain="[('state','=','normal')]"/>
+                    <filter string="Draft"  name="draft" domain="[('state','=','draft')]"/>
                     <separator/>
-                    <filter string="Box" domain="[('site_id','!=',False)]"/>
-                    <filter string="Cloud" domain="[('site_id','=',False)]"/>
+                    <filter string="Box"  name="box" domain="[('site_id','!=',False)]"/>
+                    <filter string="Cloud"  name="cloud" domain="[('site_id','=',False)]"/>
                     <separator/>
                     <filter string="Archived" name="inactive" domain="[('active','=',False)]"/>
                     <group string="Group By">
-                        <filter string="Client" domain="[]" context="{'group_by':'client_id'}"/>
-                        <filter string="Site" domain="[]" context="{'group_by':'site_id'}"/>
-                        <filter string="Template" domain="[]" context="{'group_by':'template_id'}"/>
+                        <filter string="Client" name="client" domain="[]" context="{'group_by':'client_id'}"/>
+                        <filter string="Site" name="site" domain="[]" context="{'group_by':'site_id'}"/>
+                        <filter string="Template" name="template" domain="[]" context="{'group_by':'template_id'}"/>
                         <!--<filter string="Location" domain="[]" context="{'group_by':'location'}"/>-->
-                        <filter string="State" domain="[]" context="{'group_by':'state'}"/>
+                        <filter string="State" name="state" domain="[]" context="{'group_by':'state'}"/>
                     </group>
                 </search>
             </field>
@@ -71,6 +71,11 @@
                                 <field name="client_id"/>
                                 <field name="site_id"/>
                                 <field name="location" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="cores" />
+                                <field name="mem"/>
+                                <field name="disk"/>
                             </group>
                             <group attrs="{'invisible': [('id','!=',False)]}">
                                 <field name="template_id" widget="radio"/>

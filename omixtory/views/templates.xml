@@ -1,4 +1,10 @@
 <odoo>
+    <template id="assets_backend" name="mrp assets" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <script type="text/javascript" src="/omixtory/static/src/js/integer.js"></script>
+            <script type="text/javascript" src="/omixtory/static/src/js/list_controller.js"></script>
+        </xpath>
+    </template>
     <data>
         <!-- <template id="listing"> -->
         <!--   <ul> -->

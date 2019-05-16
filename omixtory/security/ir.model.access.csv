@@ -1,2 +1,10 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_omixtory_omixtory,omixtory.omixtory,model_omixtory_omixtory,,1,0,0,0
+access_omixtory_client_manager,omixtory.client.manager,model_omixtory_client,omixtory.group_omixtory_manager,1,1,1,1
+access_omixtory_site_manager,omixtory.site.manager,model_omixtory_site,omixtory.group_omixtory_manager,1,1,1,1
+access_omixtory_box_manager,omixtory.box.manager,model_omixtory_box,omixtory.group_omixtory_manager,1,1,1,1
+access_omixtory_host_manager,omixtory.host.manager,model_omixtory_host,omixtory.group_omixtory_manager,1,1,1,1
+access_omixtory_hosttemplate_manager,omixtory.host.template.manager,model_omixtory_host_template,omixtory.group_omixtory_manager,1,1,1,1
+access_omixtory_configgw_manager,omixtory.config.gw.manager,model_omixtory_config_gw,omixtory.group_omixtory_manager,1,1,1,1
+access_omixtory_configmail_manager,omixtory.config.mail.manager,model_omixtory_config_mail,omixtory.group_omixtory_manager,1,1,1,1
+access_omixtory_configdc_manager,omixtory.config.dc.manager,model_omixtory_config_dc,omixtory.group_omixtory_manager,1,1,1,1
+access_omixtory_configfiles_manager,omixtory.config.files.manager,model_omixtory_config_files,omixtory.group_omixtory_manager,1,1,1,1

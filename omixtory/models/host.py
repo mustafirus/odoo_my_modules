@@ -7,7 +7,7 @@ from odoo.exceptions import UserError, ValidationError
 class Host(models.Model):
     _name = 'omixtory.host'
 
-    name = fields.Char('FQDN')
+    name = fields.Char('FQDN', required=True)
     client_id = fields.Many2one('omixtory.client', required=True, ondelete="cascade",
                      states={'normal': [('readonly', True)]})
     site_id = fields.Many2one('omixtory.site', domain="[('client_id', '=', client_id)]", ondelete="cascade",
@@ -25,6 +25,10 @@ class Host(models.Model):
 
     ssh_url = fields.Char('ssh', compute='_compute_ssh_url')
 
+    cores = fields.Selection([('512','512M')])
+    mem = fields.Selection([('512','512M')])
+    disk = fields.Selection([('512','512M')])
+
     state = fields.Selection([
         ('draft', 'Draft'),
         ('normal', 'Normal')
@@ -35,29 +39,24 @@ class Host(models.Model):
     def _onchange_client(self):
         if self.site_id and self.site_id.client_id != self.client_id:
             self.site_id = False
-        self.template_id = False
+        # self.template_id = False
 
-    @api.onchange('site_id')
-    def _onchange_site(self):
-        self.template_id = False
+    # @api.onchange('site_id')
+    # def _onchange_site(self):
+    #     self.template_id = False
 
-    @api.constrains('state')
-    def _validate_state(self):
-        for rec in self:
-            if rec.state == 'normal':
-                if rec.client_id.state == 'draft':
-                    raise ValidationError('Client is draft - cant change!')
-                if rec.site_id.state == 'draft':
-                    raise ValidationError('Site is draft - cant change!')
-
-    @api.constrains('active')
-    def _validate_active(self):
-        for rec in self:
-            if rec.active:
-                if not rec.client_id.active:
-                    raise ValidationError('Unarchive Client first!')
-                if rec.site_id and not rec.site_id.active:
-                    raise ValidationError('Unarchive Site first!')
+    @api.constrains('state','active')
+    def _validate_state_active(self):
+        if self.state == 'normal':
+            if self.client_id.state == 'draft':
+                raise ValidationError('Client is draft - cant change!')
+            if self.site_id.state == 'draft':
+                raise ValidationError('Site is draft - cant change!')
+        if self.active:
+            if not self.client_id.active:
+                raise ValidationError('Unarchive Client first!')
+            if self.site_id and not self.site_id.active:
+                raise ValidationError('Unarchive Site first!')
 
     @api.depends('site_id')
     def _compute_location(self):
@@ -66,14 +65,14 @@ class Host(models.Model):
     @api.multi
     def _compute_ssh_url(self):
         for rec in self:
-            rec.ssh_url = 'ssh://root@' + rec.name
+            rec.ssh_url = 'ssh://root@' + rec.name if rec.name else ''
 
-    @api.multi
-    def unlink(self):
-        for rec in self:
-            if rec.config:
-                rec.config.unlink()
-        return super(Host, self).unlink()
+    # @api.multi
+    # def unlink(self):
+    #     for rec in self:
+    #         if rec.config:
+    #             rec.config.unlink()
+    #     return super(Host, self).unlink()
 
     @api.model
     def create(self, vals):

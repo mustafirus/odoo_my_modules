@@ -2,7 +2,7 @@
 
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
-from . common import _next_idx_sql, _calc_prefix
+from . common import next_idx, calc_prefix
 
 class Site(models.Model):
     _name = 'omixtory.site'
@@ -12,7 +12,7 @@ class Site(models.Model):
         ('client_site_unique', 'unique(client_id,dc)', 'site already exists!'),
     ]
 
-    partner_id = fields.Many2one('res.partner', domain="[('id','in',address_ids),('type','=','delivery')]")
+    partner_id = fields.Many2one('res.partner', string="Address", domain="[('id','in',address_ids),('type','=','delivery')]")
     address_ids = fields.One2many(related='client_id.partner_id.child_ids', readonly=True)
     client_id = fields.Many2one('omixtory.client', required=True,
                                 context={'default_client_id': lambda r: r.id}, ondelete="cascade",
@@ -50,14 +50,15 @@ class Site(models.Model):
         return ['arc.' + self._get_domain()]
 
     def _next_idx(self):
-        self.env.cr.execute(_next_idx_sql.format(tab='site'))
-        res = self.env.cr.fetchone()
-        return res[0] if res else 1
+        return next_idx(self.env.cr, 'site', 'idx', 0)
+        # self.env.cr.execute(_next_idx_sql.format(tab='site'))
+        # res = self.env.cr.fetchone()
+        # return res[0] if res else 1
 
     @api.onchange('idx')
     def _onchange_idx(self):
-        if self.idx and self.idx < 8128:
-            self.box_network_prefix = _calc_prefix(self.idx, 32)
+        # if self.idx and self.idx < 8128:
+        self.box_network_prefix = calc_prefix(self.idx, 32)
 
     @api.onchange('client_id')
     def _onchange_client(self):
@@ -132,4 +133,9 @@ class Site(models.Model):
         box._onchange_site_id()
         box._onchange_ip()
         res.box_id = box
+        host = self.env['omixtory.host'].create({
+            'client_id': res.client_id.id,
+            'site_id': res.id,
+            'template_id': self.env.ref('omixtory.config_gw').id,
+        })
         return res

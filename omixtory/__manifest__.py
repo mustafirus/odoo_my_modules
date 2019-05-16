@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 {
     'name': "omixtory",
 
@@ -24,7 +23,8 @@
 
     # always loaded
     'data': [
-        # 'security/ir.model.access.csv',
+        'security/security.xml',
+        'security/ir.model.access.csv',
         'views/views.xml',
         'views/client.xml',
         'views/site.xml',
@@ -37,4 +37,7 @@
         'demo/demo.xml',
     ],
     'application': True,
+    'post_init_hook': 'post_init_hook',
+    'uninstall_hook': 'uninstall_hook',
 }
+# -*- coding: utf-8 -*-

@@ -12,6 +12,7 @@ class HostTemplate(models.Model):
 
     name = fields.Char()  # Description xxx
     model = fields.Char()  # model _name: omixtory.config.xxx
+    tabl = fields.Char()  # model _table: omixtory.config.xxx
 
     siteonly = fields.Boolean()
     host = fields.Char()
@@ -22,11 +23,15 @@ class HostTemplate(models.Model):
     @api.model
     def install(self):
         models = self.env['ir.model'].search([('model', 'like', 'omixtory.config.%')], order='id') #sudo().
+        imd = self.env['ir.model.data']  # .sudo()
+        imd_data_list = []
+
         for model in models:
             conf = self.env[model.model]
             vals = {
                 'name': model.name,
                 'model': model.model,
+                'tabl': conf._table,
                 'siteonly': conf.siteonly,
                 'host': conf.host,
                 'ip_suffix': conf.ip_suffix,
@@ -35,7 +40,17 @@ class HostTemplate(models.Model):
             if t:
                 t.write(vals)
             else:
-                self.create(vals)
+                t = self.create(vals)
+            imd_data_list.append({
+                'xml_id': 'omixtory.config_' + t.name,
+                'record': t,
+                'noupdate': False
+            })
+        # [{'values': {'description': 'Omix inventory', 'sequence': 15, 'name': 'Omixtory1'},
+        # 'xml_id': 'omixtory.module_category_omixtory',
+        # 'record': ir.module.category(74, ),
+        # 'noupdate': False}]
+        imd._update_xmlids(imd_data_list, True)
         for template in self.search([]):
             if not self.env['ir.model'].search_count([('model', '=', template.model)]):
                 template.unlink()

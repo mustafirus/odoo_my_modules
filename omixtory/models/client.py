@@ -1,14 +1,19 @@
 # -*- coding: utf-8 -*-
+import re
 
 from odoo import models, fields, api
-from . common import _next_idx_sql, _calc_prefix
+from odoo.exceptions import ValidationError
+from . common import next_idx, calc_prefix
 
 
 class Client(models.Model):
     _name = "omixtory.client"
     _rec_name = "dc"
 
-    partner_id = fields.Many2one('res.partner',
+    category_id = fields.Many2many('res.partner.category', string='Tags')
+    # zzz = fields.Datetime(required=True, default=fields.Datetime.now)
+
+    partner_id = fields.Many2one('res.partner', context={'default_is_company': True},
                                  domain=[('is_company', '=', True)])
     dc = fields.Char('Client Name', required=True,
                      states={'normal': [('readonly', True)]})
@@ -33,27 +38,36 @@ class Client(models.Model):
                                domain=[('site_id', '=', False)])
 
     state = fields.Selection([
-        ('draft', 'Draft'),
+        ('draft', 'Draft1'),
         ('normal', 'Normal')
     ], default='draft')
     active = fields.Boolean(default=True)
 
     def _next_idx(self):
-        self.env.cr.execute(_next_idx_sql.format(tab='client'))
-        res = self.env.cr.fetchone()
-        return res[0] if res else 1
+        return next_idx(self.env.cr, 'client', 'idx', 0)
+        # self.env.cr.execute(_next_idx_sql.format(tab='client'))
+        # res = self.env.cr.fetchone()
+        # return res[0] if res else 1
 
     @api.onchange('idx')
     def _onchange_idx(self):
-        if self.idx and self.idx < 8128:
-            self.cloud_network_prefix = _calc_prefix(self.idx, 64)
-            self.vpn_network_prefix = _calc_prefix(self.idx, 160)
+        # if self.idx and self.idx < 8128:
+        self.cloud_network_prefix = calc_prefix(self.idx, 64)
+        self.vpn_network_prefix = calc_prefix(self.idx, 160)
+        self.vpn_port = 20000 + self.idx
 
     @api.onchange('dc')
     def _onchange_dc(self):
         if self.dc:
-            self.ad_domain = "ad.{}.omx".format(self.dc)
-            self.ldap_base = "dc=ad,dc={},dc=omx".format(self.dc)
+            self.dc = self.dc.lower()
+            if re.match('^[a-z]{2,8}$', self.dc):
+                self.ad_domain = "ad.{}.omx".format(self.dc)
+                self.ldap_base = "dc=ad,dc={},dc=omx".format(self.dc)
+
+    @api.constrains('dc')
+    def _validate_name(self):
+        if not re.match('^[a-z]{2,8}$', self.dc):
+            raise ValidationError('dc must be [a-z0-9]{2,8}!')
 
     # @api.onchange('state')
     # def _onchange_state(self):

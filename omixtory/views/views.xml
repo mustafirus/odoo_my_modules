@@ -14,19 +14,21 @@
                     name="Boxes" view_mode="tree,form"/>
 
         <!-- Top menu item -->
-        <menuitem name="omixtory" id="omixtory.menu_root"/>
+        <menuitem name="Omixtory" id="omixtory.menu_root"/>
         <!-- menu categories -->
-        <menuitem name="Omixtory" id="omixtory.menu_omixtory" parent="omixtory.menu_root"/>
-        <menuitem name="Config"   id="omixtory.menu_config"   parent="omixtory.menu_root"/>
+<!--
+        <menuitem name="Omixtory" id="omixtory.menu_omixtory" parent="menu_root"/>
+        <menuitem name="Config"   id="omixtory.menu_config"   parent="menu_root"/>
+-->
         <!-- actions -->
-        <menuitem name="Client" id="omixtory.menu_client" parent="omixtory.menu_omixtory"
-                  action="omixtory.action_client"/>
-        <menuitem name="Site" id="omixtory.menu_site" parent="omixtory.menu_omixtory"
-                  action="omixtory.action_site"/>
-        <menuitem name="Host" id="omixtory.menu_host" parent="omixtory.menu_omixtory"
-                  action="omixtory.action_host"/>
-        <menuitem name="Box" id="omixtory.menu_box" parent="omixtory.menu_omixtory"
-                  action="omixtory.action_box"/>
+        <menuitem name="Client" id="omixtory.menu_client" parent="menu_root"
+                  action="omixtory.action_client" sequence="1"/>
+        <menuitem name="Site" id="omixtory.menu_site" parent="menu_root"
+                  action="omixtory.action_site" sequence="2"/>
+        <menuitem name="Box" id="omixtory.menu_box" parent="menu_root"
+                  action="omixtory.action_box" sequence="3"/>
+        <menuitem name="Host" id="omixtory.menu_host" parent="menu_root"
+                  action="omixtory.action_host" sequence="4"/>
 
         <function model="omixtory.host.template" name="install"/>
     </data>
