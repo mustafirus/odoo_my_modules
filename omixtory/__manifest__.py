@@ -31,7 +31,9 @@
         'views/host.xml',
         'views/box.xml',
         'views/templates.xml',
+        'views/config.xml',
     ],
+    'qweb': ['static/src/xml/listviewbuttons.xml'],
     # only loaded in demonstration mode
     'demo': [
         'demo/demo.xml',

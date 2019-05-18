@@ -2,7 +2,7 @@
 
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
-from . common import next_idx, calc_prefix
+from . common import next_idx, calc_prefix, MAXIDX
 
 class Site(models.Model):
     _name = 'omixtory.site'
@@ -19,7 +19,7 @@ class Site(models.Model):
                                 states={'normal': [('readonly', True)]})
     dc = fields.Char('Site name', required=True,
                      states={'normal': [('readonly', True)]})
-    idx = fields.Integer("Site Index", default=lambda self: self._next_idx(), required=True,
+    idx = fields.Integer("Site Index", default=False, required=True,
                      states={'normal': [('readonly', True)]})
     box_network_prefix = fields.Char("box_network_prefix", required=True,
                      states={'normal': [('readonly', True)]})
@@ -49,21 +49,31 @@ class Site(models.Model):
             return []
         return ['arc.' + self._get_domain()]
 
-    def _next_idx(self):
-        return next_idx(self.env.cr, 'site', 'idx', 0)
-        # self.env.cr.execute(_next_idx_sql.format(tab='site'))
-        # res = self.env.cr.fetchone()
-        # return res[0] if res else 1
+    # def _next_idx(self):
+    #     a = self.search([]).mapped('idx')
+    #     zzz = set(range(1,1000)) - set(a)
+    #     return list(zzz)[0]
+    #     return next_idx(self.env.cr, 'site', 'idx', 0)
 
     @api.onchange('idx')
     def _onchange_idx(self):
         # if self.idx and self.idx < 8128:
         self.box_network_prefix = calc_prefix(self.idx, 32)
 
+    def _next_idx(self):
+        return list(
+            set(range(1, MAXIDX)) - (
+                    set(self.client_id.site_ids.mapped('idx')) |
+                    set(self.search([]).mapped('idx'))
+            )
+        )[0]
+
     @api.onchange('client_id')
     def _onchange_client(self):
         if self.client_id:
-            self.dc = self.client_id.dc
+            self.idx = self._next_idx()
+            if self.client_id.dc not in self.client_id.site_ids.mapped('dc'):
+                self.dc = self.client_id.dc
 
     @api.constrains('state')
     def _validate_state(self):

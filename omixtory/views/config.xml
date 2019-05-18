@@ -1,0 +1,30 @@
+<odoo>
+    <data>
+
+        <record model="ir.ui.view" id="omixtory.config_mail_form">
+            <field name="name">omixtory.config.mail.form</field>
+            <field name="model">omixtory.config.mail</field>
+            <field name="arch" type="xml">
+                <form string="Config1">
+                    <header>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <field name="roundcube"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button string="Save" class="btn-primary" special="save"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</odoo>

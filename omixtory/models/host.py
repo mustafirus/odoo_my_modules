@@ -117,15 +117,21 @@ class Host(models.Model):
     @api.multi
     def open_config(self):
         self.ensure_one()
+        if not self.config:
+            raise UserError('Config not found. DB Error!')
         return {
+            'name': 'Config',
             'type': 'ir.actions.act_window',
             'res_model': self.config._name,
             'view_mode': 'form',
-            'view_type': 'form',
+            'view_type': 'tree',
             'res_id': self.config.id,
             'views': [(False, 'form')],
-            # 'target': 'new',
-             }
+            'context': {
+                'create': False
+            },
+            'target': 'new',
+        }
 
     @api.multi
     def open_ssh(self):
@@ -134,10 +140,17 @@ class Host(models.Model):
             'type': 'ir.actions.act_url',
             'url': 'ssh://root@' + self.name,
             # 'target': 'new',
-             }
+        }
+
+    def _ensure_vlanid(self):
+        if not self.site_id and self.client_id:
+            self.client_id.ensure_vlanid()
 
     @api.multi
     def write(self, vals):
         if 'active' in vals:
             vals['state'] = 'draft'
-        return super(Host, self).write(vals)
+        res = super(Host, self).write(vals)
+        for rec in self:
+            rec._ensure_vlanid()
+        return res

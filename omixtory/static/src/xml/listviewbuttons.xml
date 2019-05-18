@@ -1,0 +1,12 @@
+<templates>
+    <t t-name="ImportSelected.import_button">
+        <button t-if='widget and widget.importEnabled' type="button" class="btn btn-secondary o_button_import_selected">
+            Import Selected rows
+        </button>
+    </t>
+    <t t-extend="ImportView.import_button">
+        <t t-jquery="button.o_button_import" t-operation="after">
+           <t t-call="ImportSelected.import_button"/>
+        </t>
+    </t>
+</templates>

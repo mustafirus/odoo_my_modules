@@ -3,15 +3,12 @@ import re
 
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
-from . common import next_idx, calc_prefix
+from . common import next_idx, calc_prefix, MAXIDX
 
 
 class Client(models.Model):
     _name = "omixtory.client"
     _rec_name = "dc"
-
-    category_id = fields.Many2many('res.partner.category', string='Tags')
-    # zzz = fields.Datetime(required=True, default=fields.Datetime.now)
 
     partner_id = fields.Many2one('res.partner', context={'default_is_company': True},
                                  domain=[('is_company', '=', True)])
@@ -44,10 +41,29 @@ class Client(models.Model):
     active = fields.Boolean(default=True)
 
     def _next_idx(self):
-        return next_idx(self.env.cr, 'client', 'idx', 0)
+        return list(
+            set(range(1, MAXIDX)) -
+            set(self.search([]).mapped('idx'))
+        )[0]
+
+    @api.multi
+    def ensure_vlanid(self):
+        self.ensure_one()
+        if self.vlanid:
+            return
+        self.vlanid = list(
+            set(range(101, 4000)) -
+            set(self.search([]).mapped('vlanid'))
+        )[0]
+
+        # return next_idx(self.env.cr, 'client', 'idx', 0)
         # self.env.cr.execute(_next_idx_sql.format(tab='client'))
         # res = self.env.cr.fetchone()
         # return res[0] if res else 1
+
+    @api.onchange('site_ids')
+    def _onchange_site_ids(self):
+        pass
 
     @api.onchange('idx')
     def _onchange_idx(self):
@@ -103,6 +119,8 @@ class Client(models.Model):
 
     @api.multi
     def write(self, vals):
+        # if 'active' in vals:
+        #     vals['state'] = 'draft'
         if 'active' in vals:
             vals['state'] = 'draft'
         res = super(Client, self).write(vals)

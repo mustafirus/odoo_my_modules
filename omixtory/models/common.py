@@ -1,3 +1,4 @@
+MAXIDX=8192
 def next_idx(cr, tab, col, min):
     cr.execute(_next_idx_sql.format(tab=tab, col=col, min=min))
     res = cr.fetchone()

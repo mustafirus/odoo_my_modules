@@ -60,7 +60,7 @@
                         </div>
                         <div class="oe_title">
                             <h1>
-                                <field name="name" readonly="1"/><span>   </span>
+                                <field name="name" readonly="1" required="0"/><span>   </span>
                             </h1>
                             <h1>
                                 <field name="ssh_url" widget="link_button" readonly="1" icon="fa-terminal"/>
@@ -72,13 +72,13 @@
                                 <field name="site_id"/>
                                 <field name="location" readonly="1"/>
                             </group>
+                            <group attrs="{'invisible': [('id','!=',False)]}">
+                                <field name="template_id" widget="radio"/>
+                            </group>
                             <group>
                                 <field name="cores" />
                                 <field name="mem"/>
                                 <field name="disk"/>
-                            </group>
-                            <group attrs="{'invisible': [('id','!=',False)]}">
-                                <field name="template_id" widget="radio"/>
                             </group>
                             <group attrs="{'invisible': [('id','=',False)]}">
                                 <field name="ip" />

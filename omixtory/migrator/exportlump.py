@@ -34,6 +34,11 @@ class Field:
             return val.timestamp()
         if self.type in ["many2one"]:
             return self.table.xids[(self.relation, val)] if val else None
+        if self.type == 'reference':
+            if not val:
+                return val
+            model, id = val.split(',',1)
+            return self.table.xids[(model, int(id))]
         return val
 
 
@@ -44,11 +49,14 @@ class Table:
         self.recs = recs
         self.name = recs._name
         self.fields = []
-        for name, attrs in recs.fields_get().items():
-            if self._check_field(name, attrs):
+        fg = recs.fields_get()
+        self.fields.append(Field(self, 'id', fg['id']))
+        del fg['id']
+        for name, attrs in fg.items():
+            if self._check_field(attrs):
                 self.fields.append(Field(self, name, attrs))
 
-    def _check_field(self, name, attrs):
+    def _check_field(self, attrs):
         return \
             attrs.get('exportable', True) and \
             attrs.get('store', False)
@@ -59,7 +67,7 @@ class Table:
         if diff:
             new = self.recs | new
             self.recs = new
-            self.dirty = True
+            self.dirty = self.toexport
 
     def get_xids(self):
         xids = ensure_xml_id(self.recs)
@@ -119,8 +127,10 @@ class ExportLump:
 
     def export(self, filename):
         data = {k: v.export() for k, v in self.tables.items() if v.toexport}
-        with open(filename, 'w') as fp:
-            json.dump(data, fp, indent=4, default=lambda x: "Zzz")
+        # with open(filename, 'w') as fp:
+        fp = io.StringIO()
+        json.dump(data, fp, indent=4, default=lambda x: "Zzz")
+        return fp
 
 
 ################################################################################################
