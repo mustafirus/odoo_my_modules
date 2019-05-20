@@ -26,12 +26,17 @@ class Field:
         return False
 
     def from_json(self, val):
+        if not val:
+            return val
         if self.name == 'id':
             return self.table.xids[val][1]
         if self.type in ["datetime", "date"]:
             return datetime.fromtimestamp(val)
         if self.type in ["many2one"]:
-            return self.table.xids[val][1] or MAXINT32 if val else None
+            return self.table.xids[val][1] or MAXINT32
+        if self.type in ["reference"]:
+            model, id = self.table.xids[val]
+            return "{},{}".format(model, id or 0)
         return val
 
 
@@ -145,13 +150,13 @@ class Table:
 
 
 class ImportLump:
-    def __init__(self, filename, env):
+    def __init__(self, fp, env):
         self.tables = TableDict()
         self.xids = {}
         self.env = env
 
-        with open(filename) as fp:
-            data = json.load(fp)
+        # with open(filename) as fp:
+        data = json.load(fp)
         for k, v in data.items():
             t = self.tables.add(k, v, self)
             self.xids.update(t.collect_xids())

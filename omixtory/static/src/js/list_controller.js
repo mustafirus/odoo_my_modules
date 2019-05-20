@@ -3,17 +3,17 @@ odoo.define('omixtory.ListController', function(require) {
 
 var core = require('web.core');
 var _t = core._t;
-var Dialog = require('web.Dialog');
+var session = require('web.session');
 var framework = require('web.framework');
-var pyUtils = require('web.py_utils');
-var crash_manager = require('web.crash_manager');
-
+var Widget = require('web.Widget');
+var Dialog = require('web.Dialog');
 var ListController = require("web.ListController");
-var myalert = function (owner, title, message, options) {
+
+var myalert = function (owner, title, message, reload) {
     var buttons = [{
         text: "Ok",
         close: true,
-        click: options && options.confirm_callback,
+        click: reload,
     }];
     return new Dialog(owner, _.extend({
         size: 'medium',
@@ -23,21 +23,49 @@ var myalert = function (owner, title, message, options) {
             text: message,
         }),
         title: title,
-    }, options)).open({shouldFocusButtons:true});
+    })).open({shouldFocusButtons:true});
 };
+
+var MyWidget = Widget.extend({
+    // the name of the QWeb template to use for rendering
+    template: "ImportSelected",
+
+    events: {
+        // 'change .oe_import_grid input': 'import_dryrun',
+        'change .oe_import_selected_file': function (e) {
+            var self = this;
+            var z = e.target;
+            this.$el.ajaxSubmit({
+                url: '/omixtory/import/selectedrows',
+                complete: function (params) {
+                    self.destroy()
+                },
+                success: function (params) {
+                    var reload = function () {
+                        self.parent.do_action('reload')
+                    }
+                    myalert(this, params['title'], params['message'], reload)
+                },
+                error: function (params) {
+                    myalert(this, _("Error"), params.statusText)
+                },
+            });
+        }
+    },
+    init: function (parent) {
+        this._super.apply(this, arguments);
+        this.parent = parent;
+    },
+    start: function() {
+        // stuff you want to make after the rendering, `this.$el` holds a correct value
+        var file = this.$("input.oe_import_selected_file")[0]
+        file.click();
+        return this._super.apply(this, arguments);
+    }
+});
 
 var includeDict = {
     _onExportSelectedRows: function () {
-//        this._rpc({
-//            route: '/omixtory/export/selectedrows',
-//            params: {
-//                model: this.modelName,
-//                ids: this.getSelectedIds(),
-//            },
-//        }).then(function(params) {
-//            myalert(this, params['title'], params['message'])
-//        })
-
         framework.blockUI();
         this.getSession().get_file({
             url: '/omixtory/export/selectedrows',
@@ -50,18 +78,20 @@ var includeDict = {
             complete: framework.unblockUI,
             error: function (params) {
                 myalert(this, params['title'], params['message'])
-//                crash_manager.rpc_error.apply(crash_manager, arguments);
             },
         });
     },
     _onImportSelectedRows: function () {
-        this._rpc({
-            route: '/omixtory/import/selectedrows',
-            params: {
-            },
-        }).then(function(params) {
-            myalert(this, params['title'], params['message'])
-        })
+        var myWidget = new MyWidget(this);
+        myWidget.appendTo($(".o_list_buttons"));
+
+//        this._rpc({
+//            route: '/omixtory/import/selectedrows',
+//            params: {
+//            },
+//        }).then(function(params) {
+//            myalert(this, params['title'], params['message'])
+//        })
     },
 
     renderButtons: function ($node) {
@@ -79,12 +109,6 @@ var includeDict = {
                 label: _t("Export Selected Rows"),
                 callback: this._onExportSelectedRows.bind(this)
             }]});
-/*
-            this.sidebar._addToolbarActions({other : [{
-                label: _t("Import Selected Rows"),
-                callback: this._onImportSelectedRows.bind(this)
-            }]});
-*/
         }
     }
 };

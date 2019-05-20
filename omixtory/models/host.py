@@ -74,7 +74,7 @@ class Host(models.Model):
     #             rec.config.unlink()
     #     return super(Host, self).unlink()
 
-    @api.model
+    @api.model_create_single
     def create(self, vals):
         if 'template_id' not in vals:
             raise UserError('Template is required!')
@@ -103,7 +103,10 @@ class Host(models.Model):
                 'config': "{},{}".format(template_id.model, self.env[template_id.model].create({'name': fqdn}).id),
         })
 
-        return super(Host, self).create(vals)
+        res = super(Host, self).create(vals)
+        res._ensure_vlanid()
+        return res
+
 
     @api.multi
     def hostvars(self):

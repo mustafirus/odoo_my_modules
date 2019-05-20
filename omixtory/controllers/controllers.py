@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 # import io
+import io
 import json
+
 from odoo import http
 
 from odoo.exceptions import UserError
-from odoo.http import content_disposition, serialize_exception
+from odoo.http import content_disposition, serialize_exception, Response
 from odoo.tools import html_escape
 from ..migrator import ExportLump, ImportLump
 from odoo.tools.translate import _
@@ -17,7 +19,7 @@ class Omixtory(http.Controller):
             env = http.request.env
             ids = [ int(i) for i in ids.split(',')]
             exp = ExportLump(env[model].browse(ids))
-            fp = exp.export('Zzzz.json')
+            fp = exp.export()
             return http.request.make_response(fp.getvalue(),
                 headers=[('Content-Disposition', content_disposition('omixtory.json')),
                          ('Content-Type', 'application/json;charset=utf8')])
@@ -27,20 +29,29 @@ class Omixtory(http.Controller):
                 'message': _('Error while export!') + str(e)
             })))
 
-
-    @http.route('/omixtory/import/selectedrows', auth='user', methods=['POST'], type='json')
-    def import_selectedrows(self, **kw):
-        return {'title': _('Error'), 'message': _('Import rows done!')}
-        env = http.request.env
-        cr = env.cr
+    @http.route('/omixtory/import/selectedrows', auth='user', methods=['POST'], type='http')
+    def import_selectedrows(self, file, **kw):
         try:
+            env = http.request.env
+            cr = env.cr
             cr.execute('SAVEPOINT import_selectedrows')
-            ImportLump('Zzzz.json', env)
+            # raise UserError('fuuuuck')
+            # 'file': file.read(),
+            # 'file_name': file.filename,
+            # 'file_type': file.content_type,
+
+            ImportLump(io.TextIOWrapper(file, encoding='utf-8'), env)
             cr.execute('RELEASE SAVEPOINT import_selectedrows')
-            return {'title': _('Done'), 'message': _('Import rows done!')}
+            return http.request.make_response(json.dumps({
+                'title': _('Done'),
+                'message': _('All done!')
+            }), [('Content-Type', 'application/json')])
         except Exception as e:
             cr.execute('ROLLBACK TO SAVEPOINT import_selectedrows')
-            return {'title': _('Error'), 'message': _('Error while import!') + str(e)}
+            return http.request.make_response(json.dumps({
+                'title': _('Error'),
+                'message': _('Error while export!' + str(e))
+            }), [('Content-Type', 'application/json')])
 
     @http.route('/omixtory/inventory', auth='public')
     def index(self, **kw):

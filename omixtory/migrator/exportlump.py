@@ -125,9 +125,8 @@ class ExportLump:
                 raise UserError("Fuck")
         table.dirty = False
 
-    def export(self, filename):
+    def export(self):
         data = {k: v.export() for k, v in self.tables.items() if v.toexport}
-        # with open(filename, 'w') as fp:
         fp = io.StringIO()
         json.dump(data, fp, indent=4, default=lambda x: "Zzz")
         return fp

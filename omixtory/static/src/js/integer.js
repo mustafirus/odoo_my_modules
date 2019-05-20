@@ -14,7 +14,7 @@ var basic_fields = require('web.basic_fields');
 
 var FieldInteger = basic_fields.FieldInteger.extend({
     _formatValue: function (value) {
-        if (this.nodeOptions.wothsep) {
+        if (this.nodeOptions.wosep) {
             return _.str.sprintf('%d', value);
         }
         return this._super.apply(this, arguments);

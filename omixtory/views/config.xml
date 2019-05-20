@@ -1,30 +1,99 @@
 <odoo>
-    <data>
+    <record model="ir.ui.view" id="omixtory.config_gw_form">
+        <field name="name">omixtory.config.gw.form</field>
+        <field name="model">omixtory.config.gw</field>
+        <field name="arch" type="xml">
+            <form string="Config">
+                <header>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <field name="dhcp"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Save" class="btn-primary" special="save"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
 
-        <record model="ir.ui.view" id="omixtory.config_mail_form">
-            <field name="name">omixtory.config.mail.form</field>
-            <field name="model">omixtory.config.mail</field>
-            <field name="arch" type="xml">
-                <form string="Config1">
-                    <header>
-                    </header>
-                    <sheet>
-                        <div class="oe_title">
-                            <h1>
-                                <field name="name"/>
-                            </h1>
-                        </div>
-                        <group>
-                            <field name="roundcube"/>
-                        </group>
-                    </sheet>
-                    <footer>
-                        <button string="Save" class="btn-primary" special="save"/>
-                        <button string="Cancel" class="btn-secondary" special="cancel"/>
-                    </footer>
-                </form>
-            </field>
-        </record>
+    <record model="ir.ui.view" id="omixtory.config_mail_form">
+        <field name="name">omixtory.config.mail.form</field>
+        <field name="model">omixtory.config.mail</field>
+        <field name="arch" type="xml">
+            <form string="Config">
+                <header>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <field name="roundcube"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Save" class="btn-primary" special="save"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
 
-    </data>
+    <record model="ir.ui.view" id="omixtory.config_dc_form">
+        <field name="name">omixtory.config.dc.form</field>
+        <field name="model">omixtory.config.dc</field>
+        <field name="arch" type="xml">
+            <form string="Config">
+                <header>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Save" class="btn-primary" special="save"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="omixtory.config_files_form">
+        <field name="name">omixtory.config.files.form</field>
+        <field name="model">omixtory.config.files</field>
+        <field name="arch" type="xml">
+            <form string="Config">
+                <header>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Save" class="btn-primary" special="save"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
 </odoo>

@@ -13,7 +13,8 @@ class Client(models.Model):
     partner_id = fields.Many2one('res.partner', context={'default_is_company': True},
                                  domain=[('is_company', '=', True)])
     dc = fields.Char('Client Name', required=True,
-                     states={'normal': [('readonly', True)]})
+                     states={'normal': [('readonly', True)]},
+                     help="Domain component")
     idx = fields.Integer("Client Index", default=lambda self: self._next_idx(), required=True,
                      states={'normal': [('readonly', True)]})
     cloud_network_prefix = fields.Char("cloud_network_prefix", required=True,
@@ -60,10 +61,6 @@ class Client(models.Model):
         # self.env.cr.execute(_next_idx_sql.format(tab='client'))
         # res = self.env.cr.fetchone()
         # return res[0] if res else 1
-
-    @api.onchange('site_ids')
-    def _onchange_site_ids(self):
-        pass
 
     @api.onchange('idx')
     def _onchange_idx(self):

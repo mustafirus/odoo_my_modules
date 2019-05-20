@@ -9,4 +9,26 @@
            <t t-call="ImportSelected.import_button"/>
         </t>
     </t>
+<!--
+    <t t-name="ImportSelected">
+        <t t-set="_id" t-value="_.uniqueId('export')"/>
+        <form action="" method="post" enctype="multipart/form-data" class="oe_import_selected">
+            <input type="hidden" name="csrf_token" t-att-value="csrf_token"/>
+            <input type="hidden" name="session_id"
+               t-att-value="widget.session.session_id"/>
+            <input type="hidden" name="import_id"/>
+            <input accept=".json" t-attf-id="file_#{_id}"
+                  name="file" class="oe_import_selected_file" type="file"/>
+        </form>
+    </t>
+-->
+    <t t-name="ImportSelected">
+<!--        <t t-set="_id" t-value="_.uniqueId('export')"/>-->
+        <form action="" method="post" enctype="multipart/form-data" class="oe_import_selected">
+            <input type="hidden" name="csrf_token" t-att-value="csrf_token"/>
+<!--            <input type="hidden" name="session_id" t-att-value="widget.session.session_id"/>-->
+            <input accept=".json" name="file" class="oe_import_selected_file"
+                   type="file" style="display:none;"/>
+        </form>
+    </t>
 </templates>
