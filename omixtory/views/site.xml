@@ -6,11 +6,15 @@
             <field name="model">omixtory.site</field>
             <field name="arch" type="xml">
                 <tree>
+                    <field name="client_idx"/>
                     <field name="client_id"/>
-                    <field name="dc"/>
                     <field name="idx"/>
+                    <field name="dc"/>
                     <field name="box_network_prefix"/>
-                    <field name="host_ids"/>
+                    <field name="arc"/>
+                    <field name="host_ids_str"/>
+                    <field name="box_ids_str"/>
+                    <field name="box_id"/>
                     <field name="state"/>
                 </tree>
             </field>
@@ -51,14 +55,14 @@
                                 <field name="address_ids" invisible="1"/>
                             </group>
                             <group>
-                                <field name="idx"/>
+                                <field name="idx" options="{'wosep': True}"/>
                                 <field name="box_network_prefix"/>
                                 <field name="arc" />
                             </group>
                             <newline/>
                             <group attrs="{'invisible': [('id','=',False)]}" colspan="2">
                                 <field name="box_id" />
-                                <field name="host_ids" context="{'default_client_id': client_id, 'default_site_id': id, 'one2many':True}">
+                                <field name="host_ids" widget="one2many_list" context="{'default_client_id': client_id, 'default_site_id': id, 'one2many':True}">
                                     <tree>
                                         <field name="name"/>
                                         <field name="vmid"/>

@@ -78,7 +78,7 @@ class HostTemplate(models.Model):
             boxes += s._get_boxes()
             boxes_d += s._get_boxes_d()
             if s.arc:
-                arcs += ["arc." + s._get_domain()]
+                arcs += ["arc." + s.get_domain()]
         inv.update({
             "pmd": {'hosts': boxes_d},
             "pm": {'hosts': boxes},
@@ -148,7 +148,7 @@ class ConfigDc(models.Model):
     _description = "dc"
     name = fields.Char('FQDN', readonly=True)
 
-    siteonly = False
+    siteonly = True
     host = 'dc1'
     ip_suffix = 8
 

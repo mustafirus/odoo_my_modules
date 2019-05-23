@@ -9,9 +9,11 @@ class Box(models.Model):
     ]
 
     name = fields.Char('FQDN', compute='_compute_name', store=True)
-    dc = fields.Char('Box name', required=True, default='pm1')
+    dc = fields.Char('Boxname', required=True, default='pm1')
+    domain = fields.Char('Domain', compute='_compute_domain', required=True)
     client_id = fields.Many2one(related='site_id.client_id')
-    site_id = fields.Many2one('omixtory.site', domain="[('client_id', '=', client_id)]", ondelete="cascade")
+    site_id = fields.Many2one('omixtory.site', domain="[('client_id', '=', client_id)]",
+                              ondelete="cascade", required=True)
     ip = fields.Char('IP')
     direct_ip = fields.Char('Direct IP', required=True)
     direct_port = fields.Char('Direct port', default='22', required=True)
@@ -24,17 +26,30 @@ class Box(models.Model):
     ], default='draft')
     active = fields.Boolean(default=True)
 
-    @api.onchange('ip')
+    @api.depends('site_id.dc')
+    def _compute_domain(self):
+        for rec in self:
+            rec.domain = rec.site_id.get_domain() if rec.site_id else ''
+
+    @api.depends('dc', 'domain')
+    def _compute_name(self):
+        for rec in self:
+            if rec.dc:
+                rec.name = rec.dc + '.' + rec.domain
+            pass
+
+    @api.depends('name')
+    def _compute_ssh_url(self):
+        for rec in self:
+            rec.ssh_url = 'ssh://root@' + rec.name if rec.name else ''
+
+
+    @api.onchange('ip', 'site_id.arc')
     def _onchange_ip(self):
         if self.site_id.arc:
             self.direct_ip = self.ip
 
-    # @api.onchange('direct_ip')
-    # def _onchange_direct_ip(self):
-    #     if self.direct_ip == '0.0.0.0':
-    #         self.direct_ip = False
-    #
-    @api.onchange('site_id', 'dc')
+    @api.onchange('dc', 'site_id', 'site_id.box_network_prefix')
     def _onchange_site_id(self):
         if not self.site_id:
             return
@@ -43,15 +58,11 @@ class Box(models.Model):
             last_num -= 1
         self.ip = self.site_id.box_network_prefix + '.' + str(last_num)
 
-    @api.depends('dc', 'site_id.dc', 'site_id.client_id.dc')
-    def _compute_name(self):
-        for rec in self:
-            rec.name = rec.dc + '.' + rec.site_id._get_domain() if rec.site_id else ''
-
-    @api.depends('name')
-    def _compute_ssh_url(self):
-        for rec in self:
-            rec.ssh_url = 'ssh://root@' + rec.name if rec.name else ''
+    @api.multi
+    def write(self, vals):
+        if 'active' in vals:
+            vals['state'] = 'draft'
+        return super(Box, self).write(vals)
 
     # @api.constrains('direct_ip')
     # def _validate_direct_ip(self):
@@ -90,9 +101,3 @@ class Box(models.Model):
                 r._box_name(True): { 'ansible_host': r.direct_ip, 'ansible_port': r.direct_port },
             })
         return vals
-
-    @api.multi
-    def write(self, vals):
-        if 'active' in vals:
-            vals['state'] = 'draft'
-        return super(Box, self).write(vals)

@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
-# import io
 import io
 import json
-
-from odoo import http
-
-from odoo.exceptions import UserError
-from odoo.http import content_disposition, serialize_exception, Response
+from odoo import http, fields
+from odoo.http import content_disposition
 from odoo.tools import html_escape
-from ..migrator import ExportLump, ImportLump
 from odoo.tools.translate import _
+from ..migrator import ExportLump, ImportLump
 
 
 class Omixtory(http.Controller):
@@ -17,11 +13,15 @@ class Omixtory(http.Controller):
     def export_selectedrows(self, model, ids, **kw):
         try:
             env = http.request.env
-            ids = [ int(i) for i in ids.split(',')]
-            exp = ExportLump(env[model].browse(ids))
+            ids = [int(i) for i in ids.split(',')]
+            recs = env[model].browse(ids)
+            exp = ExportLump(recs)
             fp = exp.export()
+            filename = "{}_{}_{}.json".format(model,
+                                              recs[recs._rec_name] if len(recs) == 1 else len(recs),
+                                              fields.Datetime.to_string(fields.Datetime.now()))
             return http.request.make_response(fp.getvalue(),
-                headers=[('Content-Disposition', content_disposition('omixtory.json')),
+                headers=[('Content-Disposition', content_disposition(filename)),
                          ('Content-Type', 'application/json;charset=utf8')])
         except Exception as e:
             return http.request.make_response(html_escape(json.dumps({
@@ -31,9 +31,9 @@ class Omixtory(http.Controller):
 
     @http.route('/omixtory/import/selectedrows', auth='user', methods=['POST'], type='http')
     def import_selectedrows(self, file, **kw):
+        env = http.request.env
+        cr = env.cr
         try:
-            env = http.request.env
-            cr = env.cr
             cr.execute('SAVEPOINT import_selectedrows')
             # raise UserError('fuuuuck')
             # 'file': file.read(),

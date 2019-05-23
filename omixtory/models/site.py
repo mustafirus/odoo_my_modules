@@ -7,6 +7,9 @@ from . common import next_idx, calc_prefix, MAXIDX
 class Site(models.Model):
     _name = 'omixtory.site'
     _rec_name = "dc"
+    _order = 'client_idx, idx'
+    # _order = 'client_idx asc'
+
     _sql_constraints = [
         ('idx_unique', 'unique(idx)', 'site idx already exists!'),
         ('client_site_unique', 'unique(client_id,dc)', 'site already exists!'),
@@ -17,6 +20,7 @@ class Site(models.Model):
     client_id = fields.Many2one('omixtory.client', required=True,
                                 context={'default_client_id': lambda r: r.id}, ondelete="cascade",
                                 states={'normal': [('readonly', True)]})
+    client_idx = fields.Integer(related='client_id.idx', readonly=True, store=True)
     dc = fields.Char('Site name', required=True,
                      states={'normal': [('readonly', True)]})
     idx = fields.Integer("Site Index", default=False, required=True,
@@ -26,7 +30,9 @@ class Site(models.Model):
     arc = fields.Boolean('Uses ARC', default=False)
 
     host_ids = fields.One2many('omixtory.host', 'site_id', string="Hosts")
+    host_ids_str = fields.Char(string='Hosts', compute='_compute_host_ids_str')
     box_ids = fields.One2many('omixtory.box', 'site_id', string="Omix box list")
+    box_ids_str = fields.Char(string='Omix box list', compute='_compute_box_ids_str')
     box_id = fields.Many2one('omixtory.box', "Default Box", domain="[('site_id','=',id)]")
 
     state = fields.Selection([
@@ -35,8 +41,20 @@ class Site(models.Model):
     ], default='draft')
     active = fields.Boolean(default=True)
 
-    def _get_domain(self):
-        return "{}{}.omx".format(self.dc + '.' if self.dc != self.client_id.dc else '', self.client_id.dc)
+    api.depends('host_ids.dc')
+    def _compute_host_ids_str(self):
+        for rec in self:
+            rec.host_ids_str = ','.join(rec.mapped('host_ids.dc'))
+
+    api.depends('box_ids.dc')
+    def _compute_box_ids_str(self):
+        for rec in self:
+            rec.box_ids_str = ','.join(rec.mapped('box_ids.dc'))
+
+
+    def get_domain(self):
+        return (self.dc + '.' if self.dc != self.client_id.dc else '') + self.client_id.get_domain()
+        # return "{}{}.omx".format(self.dc + '.' if self.dc != self.client_id.dc else '', self.client_id.dc)
 
     def _get_boxes(self):
         return self.box_ids.box_list()
@@ -47,7 +65,7 @@ class Site(models.Model):
     def _get_arc(self):
         if not self.arc:
             return []
-        return ['arc.' + self._get_domain()]
+        return ['arc.' + self.get_domain()]
 
     # def _next_idx(self):
     #     a = self.search([]).mapped('idx')
@@ -64,7 +82,7 @@ class Site(models.Model):
         return list(
             set(range(1, MAXIDX)) - (
                     set(self.client_id.site_ids.mapped('idx')) |
-                    set(self.search([]).mapped('idx'))
+                    set(self.with_context(active_test=False).search([]).mapped('idx'))
             )
         )[0]
 
@@ -104,7 +122,7 @@ class Site(models.Model):
         return {
                 "vars": self._vars(),
                 "hosts": self._hosts() + self._get_boxes() + self._get_boxes_d()
-                + (["arc." + self._get_domain()] if self.arc else [])
+                + (["arc." + self.get_domain()] if self.arc else [])
             }
 
     @api.multi
@@ -146,6 +164,8 @@ class Site(models.Model):
         host = self.env['omixtory.host'].create({
             'client_id': res.client_id.id,
             'site_id': res.id,
+            'dc': 'gw',
             'template_id': self.env.ref('omixtory.config_gw').id,
         })
+        host.on_create()
         return res

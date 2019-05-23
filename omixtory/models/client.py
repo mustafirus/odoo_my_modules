@@ -3,12 +3,18 @@ import re
 
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
-from . common import next_idx, calc_prefix, MAXIDX
+from . common import calc_prefix, MAXIDX
 
 
 class Client(models.Model):
     _name = "omixtory.client"
     _rec_name = "dc"
+    _order = 'idx'
+
+    _sql_constraints = [
+        ('idx_unique', 'unique(idx)', 'client idx already exists!'),
+        ('vpn_port_unique', 'unique(vpn_port)', 'client vpn port already exists!'),
+    ]
 
     partner_id = fields.Many2one('res.partner', context={'default_is_company': True},
                                  domain=[('is_company', '=', True)])
@@ -32,11 +38,13 @@ class Client(models.Model):
 
 
     site_ids = fields.One2many('omixtory.site', 'client_id', string='Sites')
+    site_ids_str = fields.Char(string='Sites', compute='_compute_site_ids_str')
     host_ids = fields.One2many('omixtory.host', 'client_id', string='Cloud hosts',
                                domain=[('site_id', '=', False)])
+    host_ids_str = fields.Char(string='Cloud hosts', compute='_compute_host_ids_str')
 
     state = fields.Selection([
-        ('draft', 'Draft1'),
+        ('draft', 'Draft'),
         ('normal', 'Normal')
     ], default='draft')
     active = fields.Boolean(default=True)
@@ -44,8 +52,18 @@ class Client(models.Model):
     def _next_idx(self):
         return list(
             set(range(1, MAXIDX)) -
-            set(self.search([]).mapped('idx'))
+            set(self.with_context(active_test=False).search([]).mapped('idx'))
         )[0]
+
+    api.depends('site_ids.dc')
+    def _compute_site_ids_str(self):
+        for rec in self:
+            rec.site_ids_str = ','.join(rec.mapped('site_ids.dc'))
+
+    api.depends('host_ids.dc')
+    def _compute_host_ids_str(self):
+        for rec in self:
+            rec.host_ids_str = ','.join(rec.mapped('host_ids.dc'))
 
     @api.multi
     def ensure_vlanid(self):
@@ -54,7 +72,7 @@ class Client(models.Model):
             return
         self.vlanid = list(
             set(range(101, 4000)) -
-            set(self.search([]).mapped('vlanid'))
+            set(self.with_context(active_test=False).search([]).mapped('vlanid'))
         )[0]
 
         # return next_idx(self.env.cr, 'client', 'idx', 0)
@@ -79,13 +97,23 @@ class Client(models.Model):
 
     @api.constrains('dc')
     def _validate_name(self):
-        if not re.match('^[a-z]{2,8}$', self.dc):
-            raise ValidationError('dc must be [a-z0-9]{2,8}!')
+        for rec in self:
+            if not re.match('^[a-z]{2,8}$', rec.dc):
+                raise ValidationError('dc must be [a-z0-9]{2,8}!')
+
+    @api.constrains('vlanid')
+    def _validate_vlanid(self):
+        self.ensure_one()
+        if self.vlanid and self.vlanid in self.with_context(active_test=False).search([('id','!=',self.id)]).mapped('vlanid'):
+            raise ValidationError('duplicate vlanid!')
 
     # @api.onchange('state')
     # def _onchange_state(self):
     #     self.site_ids.write({'state': self.state})
     #     self.host_ids.write({'state': self.state})
+
+    def get_domain(self):
+        return self.dc + ".omx" if self.dc else '';
 
     def _vars(self):
         vals = {k: self[k] for k, d in self._fields.items()
@@ -116,8 +144,6 @@ class Client(models.Model):
 
     @api.multi
     def write(self, vals):
-        # if 'active' in vals:
-        #     vals['state'] = 'draft'
         if 'active' in vals:
             vals['state'] = 'draft'
         res = super(Client, self).write(vals)

@@ -6,11 +6,13 @@
             <field name="model">omixtory.client</field>
             <field name="arch" type="xml">
                 <tree>
+                    <field name="idx" options="{'wosep': True}"/>
                     <field name="dc"/>
-                    <field name="idx"/>
                     <field name="ad_domain"/>
-                    <field name="ldap_base"/>
-                    <field name="site_ids"/>
+                    <field name="vpn_port" widget="integer" options="{'wosep': True}"/>
+                    <field name="vlanid" widget="integer" options="{'wosep': True}"/>
+                    <field name="site_ids_str"/>
+                    <field name="host_ids_str"/>
                     <field name="state"/>
                 </tree>
             </field>
@@ -50,11 +52,11 @@
                                 <field name="ldap_base"/>
                             </group>
                             <group>
-                                <field name="idx"/>
+                                <field name="idx" options="{'wosep': True}"/>
                                 <field name="cloud_network_prefix"/>
                                 <field name="vpn_network_prefix"/>
                                 <field name="vpn_port" options="{'wosep': True}"/>
-                                <field name="vlanid" options="{'wosep': True}/>
+                                <field name="vlanid" options="{'wosep': True}"/>
                             </group>
                             <newline/>
                             <group colspan="2" attrs="{'invisible': [('id','=',False)]}">
