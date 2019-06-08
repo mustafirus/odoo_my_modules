@@ -10,15 +10,16 @@ class Box(models.Model):
 
     name = fields.Char('FQDN', compute='_compute_name', store=True)
     dc = fields.Char('Boxname', required=True, default='pm1')
-    domain = fields.Char('Domain', compute='_compute_domain', required=True)
+    domain = fields.Char('Domain', compute='_compute_domain', store=True)
     client_id = fields.Many2one(related='site_id.client_id')
-    site_id = fields.Many2one('omixtory.site', domain="[('client_id', '=', client_id)]",
+    site_id = fields.Many2one('omixtory.site',
                               ondelete="cascade", required=True)
     ip = fields.Char('IP')
-    direct_ip = fields.Char('Direct IP', required=True)
-    direct_port = fields.Char('Direct port', default='22', required=True)
+    direct_ip = fields.Char('Direct IP', required=True, default='0.0.0.0')
+    direct_port = fields.Char('Direct port', required=True, default='22')
 
     ssh_url = fields.Char('ssh', compute='_compute_ssh_url')
+    pmx_url = fields.Char('ssh', compute='_compute_pmx_url')
 
     state = fields.Selection([
         ('draft', 'Draft'),
@@ -26,15 +27,15 @@ class Box(models.Model):
     ], default='draft')
     active = fields.Boolean(default=True)
 
-    @api.depends('site_id.dc')
+    @api.depends('site_id', 'site_id.dc')
     def _compute_domain(self):
         for rec in self:
-            rec.domain = rec.site_id.get_domain() if rec.site_id else ''
+            rec.domain = rec.site_id.get_domain()
 
     @api.depends('dc', 'domain')
     def _compute_name(self):
         for rec in self:
-            if rec.dc:
+            if rec.dc and rec.domain:
                 rec.name = rec.dc + '.' + rec.domain
             pass
 
@@ -43,13 +44,22 @@ class Box(models.Model):
         for rec in self:
             rec.ssh_url = 'ssh://root@' + rec.name if rec.name else ''
 
+    @api.depends('name')
+    def _compute_pmx_url(self):
+        for rec in self:
+            rec.pmx_url = 'https://' + rec.name + ':8006' if rec.name else ''
+
+    #
+    # @api.onchange('site_id')
+    # def _onchange_site_id(self):
+    #     self._compute_domain()
 
     @api.onchange('ip', 'site_id.arc')
     def _onchange_ip(self):
         if self.site_id.arc:
             self.direct_ip = self.ip
 
-    @api.onchange('dc', 'site_id', 'site_id.box_network_prefix')
+    @api.onchange('dc', 'site_id')
     def _onchange_site_id(self):
         if not self.site_id:
             return
@@ -79,6 +89,8 @@ class Box(models.Model):
     def _box_list(self, direct):
         res = []
         for rec in self:
+            if rec.state != 'normal':
+                continue
             res.append(rec._box_name(direct))
         return res
 

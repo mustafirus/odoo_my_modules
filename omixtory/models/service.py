@@ -12,7 +12,7 @@ class HostTemplate(models.Model):
 
     name = fields.Char()  # Description xxx
     model = fields.Char()  # model _name: omixtory.config.xxx
-    tabl = fields.Char()  # model _table: omixtory.config.xxx
+    tabl = fields.Char()  # model _table: omixtory_config_xxx
 
     siteonly = fields.Boolean()
     host = fields.Char()
@@ -98,6 +98,16 @@ class ConfigGw(models.Model):
 
     dhcp = fields.Boolean("Enable DHCP", inventory=True)
 
+class ConfigDc(models.Model):
+    _name = 'omixtory.config.dc'
+    _description = "dc"
+    name = fields.Char('FQDN', readonly=True)
+
+    siteonly = True
+    host = 'dc'
+    ip_suffix = 8
+
+
 
 # class ConfigProxy(models.Model):
 #     _name = 'omixtory.config.proxy'
@@ -142,15 +152,6 @@ class ConfigMail(models.Model):
 #     host = 'odoo'
 #     ip_suffix = 5
 
-
-class ConfigDc(models.Model):
-    _name = 'omixtory.config.dc'
-    _description = "dc"
-    name = fields.Char('FQDN', readonly=True)
-
-    siteonly = True
-    host = 'dc1'
-    ip_suffix = 8
 
 
 class ConfigFiles(models.Model):

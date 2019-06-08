@@ -91,9 +91,9 @@ class Client(models.Model):
     def _onchange_dc(self):
         if self.dc:
             self.dc = self.dc.lower()
-            if re.match('^[a-z]{2,8}$', self.dc):
-                self.ad_domain = "ad.{}.omx".format(self.dc)
-                self.ldap_base = "dc=ad,dc={},dc=omx".format(self.dc)
+            # if re.match('^[a-z]{2,8}$', self.dc):
+            self.ad_domain = "ad.{}.omx".format(self.dc)
+            self.ldap_base = "dc=ad,dc={},dc=omx".format(self.dc)
 
     @api.constrains('dc')
     def _validate_name(self):

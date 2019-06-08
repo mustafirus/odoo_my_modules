@@ -11,6 +11,16 @@ class Host(models.Model):
         ('name_unique', 'unique(name)', 'host name already exists!'),
     ]
 
+    # @api.model
+    # def _get_domain(self):
+    #     gw = self.env.ref('omixtory.config_gw')
+    #     all = gw.search([])
+    #     if self.site_id:
+    #         ids = (all - gw).ids
+    #     else:
+    #         ids = all.ids
+    #     return [('id', 'in', ids)]
+
     name = fields.Char('FQDN', compute='_compute_name', store=True)
     dc = fields.Char('Hostname', required=True)
     domain = fields.Char('Domain', compute='_compute_domain', required=True)
@@ -19,7 +29,8 @@ class Host(models.Model):
     site_id = fields.Many2one('omixtory.site', domain="[('client_id', '=', client_id)]", ondelete="cascade",
                      states={'normal': [('readonly', True)]})
     template_id = fields.Many2one('omixtory.host.template', order='id', required=True, store=True,
-                                  domain="['|',('siteonly','=',site_id),('siteonly','=',False)]",
+                                  # domain="['|',('siteonly','=',site_id),('siteonly','=',False)]",
+                                  domain="[('host','!=','gw')]",
                      states={'normal': [('readonly', True)]})
     location = fields.Selection([('box', 'Box'), ('cloud', 'Cloud')], compute='_compute_location')
 
@@ -41,11 +52,18 @@ class Host(models.Model):
     ], default='draft')
     active = fields.Boolean(default=True)
 
-    @api.depends('site_id.dc', 'client_id.dc')
+    @api.depends('site_id.dc', 'client_id.dc', 'template_id')
     def _compute_domain(self):
         for rec in self:
-            rec.domain = rec.site_id.get_domain()\
-                if rec.template_id.siteonly else rec.client_id.get_domain()
+            if not rec.template_id or not rec.client_id:
+                return
+            if rec.template_id.siteonly:
+                if rec.site_id:
+                    rec.domain = rec.site_id.get_domain()
+                else:
+                    rec.domain =  'ssc.' + rec.client_id.get_domain()
+            else:
+                rec.domain = rec.client_id.get_domain()
 
     @api.depends('dc', 'domain')
     def _compute_name(self):
@@ -64,13 +82,18 @@ class Host(models.Model):
             rec.ssh_url = 'ssh://root@' + rec.name if rec.name else ''
 
 
-    @api.onchange('client_id')
+    @api.onchange('client_id','template_id')
     def _onchange_client(self):
         if self.site_id and self.site_id.client_id != self.client_id:
             self.site_id = False
-        self.vmid = str(1000000 * int(not self.template_id.siteonly) + 100 + self.template_id.ip_suffix)
-        # self.vmid = str(100 + self.template_id.ip_suffix if self.template_id.siteonly
-        #         else 1000000 + self.client_id.idx * 100 + self.template_id.ip_suffix
+        if self.template_id.siteonly:
+            if self.site_id:
+                vmid = 100 + self.template_id.ip_suffix
+            else:
+                vmid = 80000 + self.client_id.idx
+        else:
+            vmid = 7000000 + self.client_id.idx * 100 + self.template_id.ip_suffix
+        self.vmid = str(vmid)
 
     @api.onchange('site_id', 'template_id')
     def _onchange_site_template(self):
@@ -111,7 +134,7 @@ class Host(models.Model):
     def on_create(self):
         self.ensure_one()
         self._onchange_client()
-        self._onchange_site()
+        self._onchange_site_template()
 
 
     @api.model_create_single
@@ -151,16 +174,6 @@ class Host(models.Model):
         res.config = "{},{}".format(config._name, config.id)
         res._ensure_vlanid()
         return res
-
-
-    @api.multi
-    def hostvars(self):
-        return {r.name: r._hostvars() for r in self if r.state == 'normal'}
-
-    def _hostvars(self):
-        vars = {k: self.config[k] for k,d in self.config._fields.items() if d._attrs and d._attrs.get('inventory')}
-        vars.update({k: self[k] for k,d in self._fields.items() if d._attrs and d._attrs.get('inventory')})
-        return vars
 
     @api.multi
     def open_config(self):
@@ -202,3 +215,13 @@ class Host(models.Model):
         for rec in self:
             rec._ensure_vlanid()
         return res
+
+    @api.multi
+    def hostvars(self):
+        return {r.name: r._hostvars() for r in self if r.state == 'normal'}
+
+    def _hostvars(self):
+        vars = {k: self.config[k] for k,d in self.config._fields.items() if d._attrs and d._attrs.get('inventory')}
+        vars.update({k: self[k] for k,d in self._fields.items() if d._attrs and d._attrs.get('inventory')})
+        return vars
+

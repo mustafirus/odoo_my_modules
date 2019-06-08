@@ -60,7 +60,8 @@
                         </div>
                         <div class="oe_title" style="width: 700px !important">
                             <h1>
-                                <field name="dc" class="oe_edit_only" style="width: 70px !important"/>
+                                <field name="dc" class="oe_edit_only" attrs="{'invisible': [('dc','=',False)]}"
+                                       style="width: 70px !important"/>
                                 <field name="domain" readonly="1" class="oe_edit_only"/>
                                 <field name="name" readonly="1" required="0" class="oe_read_only"/>
                                 <span><![CDATA[&nbsp;&nbsp;]]></span>
@@ -70,7 +71,7 @@
                         <group cols="2">
                             <group colspan="1" cols="2">
                                 <group  colspan="2" cols="2" invisible="context.get('one2many')">
-                                    <field name="client_id"/>
+                                    <field name="client_id" class="oe_read_only"/>
                                     <field name="site_id" context="{'default_client_id': client_id}"/>
                                     <field name="location" readonly="1"/>
                                 </group>

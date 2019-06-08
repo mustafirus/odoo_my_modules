@@ -50,13 +50,15 @@
                                 <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
                             </button>
                         </div>
-                        <div class="oe_title">
+                        <div class="oe_title" style="width: 700px !important">
                             <h1>
-                                <field name="dc" class="oe_edit_only"/>
+                                <field name="dc" class="oe_edit_only" style="width: 70px !important"/>
                                 <field name="domain" readonly="1" class="oe_edit_only"/>
                                 <field name="name" readonly="1" class="oe_read_only"/>
                                 <span><![CDATA[&nbsp;&nbsp;]]></span>
                                 <field name="ssh_url" widget="link_button" readonly="1" icon="fa-terminal"/>
+                                <span><![CDATA[&nbsp;&nbsp;]]></span>
+                                <field name="pmx_url" widget="link_button" readonly="1" icon="fa-server"/>
                             </h1>
                         </div>
                         <group>
@@ -65,7 +67,7 @@
                                 <field name="site_id"/>
                             </group>
                             <group>
-                                <field name="dc"/>
+<!--                                <field name="dc"/>-->
                                 <field name="ip" />
                                 <field name="direct_ip"/>
                                 <field name="direct_port"/>

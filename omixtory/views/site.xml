@@ -72,7 +72,7 @@
                                         <button string="Config" name="open_config" type="object" class="oe_highlight" />
                                     </tree>
                                 </field>
-                                <field name="box_ids" context="{'default_client_id': client_id, 'default_site_id': id, 'one2many':True}">
+                                <field name="box_ids" context="{'default_site_id': id, 'one2many':True}">
                                     <tree>
                                         <field name="name"/>
                                         <field name="ip"/>

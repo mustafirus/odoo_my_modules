@@ -41,16 +41,28 @@ class Site(models.Model):
     ], default='draft')
     active = fields.Boolean(default=True)
 
-    api.depends('host_ids.dc')
+    @api.depends('host_ids.dc')
     def _compute_host_ids_str(self):
         for rec in self:
             rec.host_ids_str = ','.join(rec.mapped('host_ids.dc'))
 
-    api.depends('box_ids.dc')
+    @api.depends('box_ids.dc')
     def _compute_box_ids_str(self):
         for rec in self:
             rec.box_ids_str = ','.join(rec.mapped('box_ids.dc'))
 
+    @api.onchange('box_network_prefix')
+    def _onchange_network_prefix(self):
+        for rec in self.host_ids:
+            rec.ip = self._change_ip(rec.ip, self.box_network_prefix)
+            pass
+        for rec in self.box_ids:
+            rec.ip = self._change_ip(rec.ip, self.box_network_prefix)
+            pass
+
+    @staticmethod
+    def _change_ip(ip, new_prefix):
+        return new_prefix + '.' + ip.split('.',4)[3]
 
     def get_domain(self):
         return (self.dc + '.' if self.dc != self.client_id.dc else '') + self.client_id.get_domain()
