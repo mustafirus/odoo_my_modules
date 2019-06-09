@@ -86,7 +86,9 @@ class Omixtory(http.Controller):
                 [r.group() for r in allsites] +
                 [r.name for r in alltemplates]
             },
-            "ungrouped": {}
+            "ungrouped": {
+                "hosts": [],
+            }
         }
         inventory.update(allclients.inventory())
         inventory.update(allsites.inventory())
