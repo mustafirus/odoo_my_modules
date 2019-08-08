@@ -14,6 +14,7 @@ class Subscription(models.Model):
     name = fields.Char(string='Subscription Reference', required=True, copy=False, readonly=True, index=True, default=lambda self: _('New'))
     contract_id = fields.Many2one('omixbilling.contract', readonly=True, index=True)
     product_id = fields.Many2one(readonly=True, index=True)
+    description = fields.Char('Description')
 
     date_begin = fields.Date('Begin')
     date_torenew = fields.Date('To Renew')

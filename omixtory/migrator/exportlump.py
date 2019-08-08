@@ -151,7 +151,7 @@ def ensure_xml_id(self, skip=False):
             "table %s is not an ordinary table."
             % (self._name, self._table))
 
-    modname = 'omixtory'
+    modname = '__exportsl__'
 
     cr = self.env.cr
     cr.execute("""

@@ -6,7 +6,7 @@
             <field name="model">omixtory.client</field>
             <field name="arch" type="xml">
                 <tree>
-                    <field name="idx" options="{'wosep': True}"/>
+                    <field name="idx" widget="integer" options="{'wosep': True}"/>
                     <field name="dc"/>
                     <field name="ad_domain"/>
                     <field name="vpn_port" widget="integer" options="{'wosep': True}"/>

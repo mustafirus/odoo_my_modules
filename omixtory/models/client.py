@@ -92,13 +92,13 @@ class Client(models.Model):
         if self.dc:
             self.dc = self.dc.lower()
             # if re.match('^[a-z]{2,8}$', self.dc):
-            self.ad_domain = "ad.{}.omx".format(self.dc)
-            self.ldap_base = "dc=ad,dc={},dc=omx".format(self.dc)
+            self.ad_domain = "{}.ad".format(self.dc)
+            self.ldap_base = "dc={},dc=ad".format(self.dc)
 
     @api.constrains('dc')
     def _validate_name(self):
         for rec in self:
-            if not re.match('^[a-z]{2,8}$', rec.dc):
+            if not re.match('^[a-z0-9]{2,8}$', rec.dc):
                 raise ValidationError('dc must be [a-z0-9]{2,8}!')
 
     @api.constrains('vlanid')

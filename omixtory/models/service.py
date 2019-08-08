@@ -78,7 +78,8 @@ class HostTemplate(models.Model):
             boxes += s._get_boxes()
             boxes_d += s._get_boxes_d()
             if s.arc:
-                arcs += ["arc." + s.get_domain()]
+                if s.state == 'normal':
+                    arcs += ["arc." + s.get_domain()]
         inv.update({
             "pmd": {'hosts': boxes_d},
             "pm": {'hosts': boxes},

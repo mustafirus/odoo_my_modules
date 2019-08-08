@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 import io
 import json
+from io import BytesIO
+
+from werkzeug.datastructures import FileStorage
+
 from odoo import http, fields
 from odoo.http import content_disposition
 from odoo.tools import html_escape
@@ -39,8 +43,10 @@ class Omixtory(http.Controller):
             # 'file': file.read(),
             # 'file_name': file.filename,
             # 'file_type': file.content_type,
+            if isinstance(file.stream, io.BytesIO):
+                file = io.TextIOWrapper(file, encoding='utf-8')
 
-            ImportLump(io.TextIOWrapper(file, encoding='utf-8'), env)
+            ImportLump(file, env)
             cr.execute('RELEASE SAVEPOINT import_selectedrows')
             return http.request.make_response(json.dumps({
                 'title': _('Done'),
@@ -50,7 +56,7 @@ class Omixtory(http.Controller):
             cr.execute('ROLLBACK TO SAVEPOINT import_selectedrows')
             return http.request.make_response(json.dumps({
                 'title': _('Error'),
-                'message': _('Error while export!' + str(e))
+                'message': _('Error while import! ' + str(e))
             }), [('Content-Type', 'application/json')])
 
     @http.route('/omixtory/inventory', auth='public')

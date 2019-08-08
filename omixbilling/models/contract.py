@@ -14,5 +14,6 @@ class Contract(models.Model):
     active = fields.Boolean(default=True)
     company_id = fields.Many2one('res.company', string='Company',
         default=lambda self: self.env['res.company']._company_default_get())
+    subscription_ids = fields.One2many('omixbilling.subscription')
 
 
