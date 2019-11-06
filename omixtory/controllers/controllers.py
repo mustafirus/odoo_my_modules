@@ -72,7 +72,7 @@ class Omixtory(http.Controller):
         allclients = clients.search([('state', '=', 'normal')])
         allsites = sites.search([('state', '=', 'normal')])
         alltemplates = templates.search([])
-        allboxes = boxes.search([])
+        allboxes = boxes.search([('state', '=', 'normal')])
 
         hostvars = allhosts.hostvars()
         hostvars.update(allboxes.hostvars())
@@ -82,11 +82,11 @@ class Omixtory(http.Controller):
                 "hostvars": hostvars
             },
             "all": {
-                "hosts": [r.name for r in allhosts],
+                "hosts": [r.name for r in allhosts] + [r.name for r in allboxes],
                 "children": [
                     "ungrouped",
                     "pm",
-                    "pmd",
+                    # "pmd",
                     "arc",
                 ] + [r.dc for r in allclients] +
                 [r.group() for r in allsites] +

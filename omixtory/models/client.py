@@ -92,8 +92,8 @@ class Client(models.Model):
         if self.dc:
             self.dc = self.dc.lower()
             # if re.match('^[a-z]{2,8}$', self.dc):
-            self.ad_domain = "{}.ad".format(self.dc)
-            self.ldap_base = "dc={},dc=ad".format(self.dc)
+            self.ad_domain = "{}.omx".format(self.dc)
+            self.ldap_base = "dc={},dc=omx".format(self.dc)
 
     @api.constrains('dc')
     def _validate_name(self):
@@ -117,9 +117,10 @@ class Client(models.Model):
 
     def _vars(self):
         vals = {k: self[k] for k, d in self._fields.items()
-                if d._attrs and d._attrs['config']}
+                if d._attrs and d._attrs['config'] and self[k]}
         vals.update({
-            'client': self.dc
+            'client': self.dc,
+            'client_domain': self.dc + '.omx'
         })
         return vals
 

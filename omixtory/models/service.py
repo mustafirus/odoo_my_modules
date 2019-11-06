@@ -59,7 +59,7 @@ class HostTemplate(models.Model):
         return [r.name for r in self.host_ids if r.state == 'normal']
 
     def _vars(self):
-        return {k: self[k] for k, d in self._fields.items() if d._attrs and d._attrs['inventory']}
+        return {k: self[k] for k, d in self._fields.items() if d._attrs and d._attrs['inventory'] and self[k]}
 
     def _inventory(self):
         return {
@@ -72,16 +72,16 @@ class HostTemplate(models.Model):
         inv = {r.name: r._inventory() for r in self}
         sites = self.env['omixtory.site'].search([])
         boxes = []
-        boxes_d = []
+        # boxes_d = []
         arcs = []
         for s in sites:
             boxes += s._get_boxes()
-            boxes_d += s._get_boxes_d()
+            # boxes_d += s._get_boxes_d()
             if s.arc:
                 if s.state == 'normal':
                     arcs += ["arc." + s.get_domain()]
         inv.update({
-            "pmd": {'hosts': boxes_d},
+            # "pmd": {'hosts': boxes_d},
             "pm": {'hosts': boxes},
             "arc": {'hosts': arcs},
         })
@@ -97,7 +97,11 @@ class ConfigGw(models.Model):
     host = 'gw'
     ip_suffix = 1
 
-    dhcp = fields.Boolean("Enable DHCP", inventory=True)
+    wancidr = fields.Char("Wan CIDR", inventory=True)
+    wantag = fields.Integer("Wan VLAN Tag", inventory=True)
+    gwip = fields.Char("Wan gateway", inventory=True)
+
+    dhcp = fields.Boolean("Enable DHCP server", inventory=True)
 
 class ConfigDc(models.Model):
     _name = 'omixtory.config.dc'

@@ -52,6 +52,19 @@ class Host(models.Model):
     ], default='draft')
     active = fields.Boolean(default=True)
 
+    # def _next_vmid(self):
+    #     return self.env['ir.sequence'].next_by_code('omixtory.vmid')
+
+        # # s = self.client_id.host_ids.filtered(lambda s: s.id != self.id)
+        # # s = s.mapped('vmid')
+        # s = self.client_id.host_ids.mapped('vmid')
+        # vmid = list(
+        #     set(range(MINVMID, MAXVMID)) -
+        #     set(map(int, self.with_context(active_test=False).search([]).mapped('vmid'))) -
+        #     set(s)
+        # )[0]
+        # return str(vmid)
+
     @api.depends('site_id.dc', 'client_id.dc', 'template_id')
     def _compute_domain(self):
         for rec in self:
@@ -61,7 +74,7 @@ class Host(models.Model):
                 if rec.site_id:
                     rec.domain = rec.site_id.get_domain()
                 else:
-                    rec.domain =  'ssc.' + rec.client_id.get_domain()
+                    rec.domain =  rec.client_id.get_domain()  # 'c.' cloud domain siteonly
             else:
                 rec.domain = rec.client_id.get_domain()
 
@@ -82,18 +95,26 @@ class Host(models.Model):
             rec.ssh_url = 'ssh://root@' + rec.name if rec.name else ''
 
 
-    @api.onchange('client_id','template_id')
-    def _onchange_client(self):
-        if self.site_id and self.site_id.client_id != self.client_id:
-            self.site_id = False
-        if self.template_id.siteonly:
-            if self.site_id:
-                vmid = 100 + self.template_id.ip_suffix
-            else:
-                vmid = 80000 + self.client_id.idx
-        else:
-            vmid = 7000000 + self.client_id.idx * 100 + self.template_id.ip_suffix
-        self.vmid = str(vmid)
+    # @api.onchange('client_id','template_id')
+    # def _onchange_client(self):
+    #     if self.site_id and self.site_id.client_id != self.client_id:
+    #         self.site_id = False
+    #     # if self.template_id.siteonly:
+    #     #     if self.site_id:
+    #     #         vmid = 100 + self.template_id.ip_suffix
+    #     #     else:
+    #     #         vmid = 80000 + self.client_id.idx
+    #     # else:
+    #     #     vmid = 7000000 + self.client_id.idx * 100 + self.template_id.ip_suffix
+    #     if self.template_id.siteonly and self.site_id:
+    #         vmid = 100 + self.template_id.ip_suffix
+    #         self.vmid = str(vmid)
+    #     else:
+    #         if not self.vmid:
+    #             # self.vmid = self._next_vmid()
+    #             self.vmid = self.env['ir.sequence'].next_by_code('omixtory.vmid')
+
+
 
     @api.onchange('site_id', 'template_id')
     def _onchange_site_template(self):
@@ -104,7 +125,9 @@ class Host(models.Model):
 
     @api.onchange('template_id')
     def _onchange_template_id(self):
-        self.dc = self.template_id.host
+        if self.template_id:
+            n = '0' if self.template_id.siteonly and not self.site_id else ''
+            self.dc = self.template_id.host + n
 
     @api.constrains('state','active')
     def _validate_state_active(self):
@@ -133,7 +156,7 @@ class Host(models.Model):
     @api.multi
     def on_create(self):
         self.ensure_one()
-        self._onchange_client()
+        # self._onchange_client()
         self._onchange_site_template()
 
 
@@ -142,9 +165,15 @@ class Host(models.Model):
         if 'template_id' not in vals:
             raise UserError('Template is required!')
 
-        client_id = self.env['omixtory.client'].search([('id', '=', vals['client_id'])])
-        site_id = self.env['omixtory.site'].search([('id', '=', vals['site_id'])])  # if 'site_id' in vals else False
+        # client_id = self.env['omixtory.client'].search([('id', '=', vals['client_id'])])
+        # site_id = self.env['omixtory.site'].search([('id', '=', vals['site_id'])])  # if 'site_id' in vals else False
         template_id = self.env['omixtory.host.template'].search([('id', '=', vals['template_id'])])
+
+        if template_id.siteonly and vals.get('site_id'):
+            vmid = 100 + self.template_id.ip_suffix
+            vals['vmid'] = str(vmid)
+        else:
+            vals['vmid'] = self.env['ir.sequence'].next_by_code('omixtory.vmid')
 
         # ip_prefix = site_id.box_network_prefix if site_id \
         #     else client_id.cloud_network_prefix
@@ -221,7 +250,9 @@ class Host(models.Model):
         return {r.name: r._hostvars() for r in self if r.state == 'normal'}
 
     def _hostvars(self):
-        vars = {k: self.config[k] for k,d in self.config._fields.items() if d._attrs and d._attrs.get('inventory')}
-        vars.update({k: self[k] for k,d in self._fields.items() if d._attrs and d._attrs.get('inventory')})
+        vars = {k: self.config[k] for k,d in self.config._fields.items()
+                if d._attrs and d._attrs.get('inventory') and self.config[k]}
+        vars.update({k: self[k] for k,d in self._fields.items()
+                     if d._attrs and d._attrs.get('inventory') and self[k]})
         return vars
 

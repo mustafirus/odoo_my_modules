@@ -13,7 +13,12 @@
                         </h1>
                     </div>
                     <group>
-                        <field name="dhcp"/>
+                        <group>
+                            <field name="dhcp"/>
+                            <field name="wancidr"/>
+                            <field name="gwip"/>
+                            <field name="wantag"/>
+                        </group>
                     </group>
                 </sheet>
                 <footer>

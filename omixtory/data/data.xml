@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Sequences  -->
+        <record id="seq_vmid" model="ir.sequence">
+            <field name="name">vmid</field>
+            <field name="code">omixtory.vmid</field>
+            <field eval="8001" name="number_next"/>
+            <field eval="1" name="number_increment"/>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

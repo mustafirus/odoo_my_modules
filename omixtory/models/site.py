@@ -2,7 +2,8 @@
 
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
-from . common import next_idx, calc_prefix, MAXIDX
+from . common import next_idx, calc_prefix, calc_vpn_ip, MAXIDX
+
 
 class Site(models.Model):
     _name = 'omixtory.site'
@@ -15,7 +16,8 @@ class Site(models.Model):
         ('client_site_unique', 'unique(client_id,dc)', 'site already exists!'),
     ]
 
-    partner_id = fields.Many2one('res.partner', string="Address", domain="[('id','in',address_ids),('type','=','delivery')]")
+    partner_id = fields.Many2one('res.partner', string="Address",
+                                 domain="[('id','in',address_ids),('type','=','delivery')]")
     address_ids = fields.One2many(related='client_id.partner_id.child_ids', readonly=True)
     client_id = fields.Many2one('omixtory.client', required=True,
                                 context={'default_client_id': lambda r: r.id}, ondelete="cascade",
@@ -25,9 +27,9 @@ class Site(models.Model):
                      states={'normal': [('readonly', True)]})
     idx = fields.Integer("Site Index", default=False, required=True,
                      states={'normal': [('readonly', True)]})
-    box_network_prefix = fields.Char("box_network_prefix", required=True,
+    box_network_prefix = fields.Char("box_network_prefix", config=True, required=True,
                      states={'normal': [('readonly', True)]})
-    arc = fields.Boolean('Uses ARC', default=False)
+    arc = fields.Boolean('Uses ARC', config=True, default=False)
 
     host_ids = fields.One2many('omixtory.host', 'site_id', string="Hosts")
     host_ids_str = fields.Char(string='Hosts', compute='_compute_host_ids_str')
@@ -62,7 +64,7 @@ class Site(models.Model):
 
     @staticmethod
     def _change_ip(ip, new_prefix):
-        return new_prefix + '.' + ip.split('.',4)[3]
+        return new_prefix + '.' + ip.split('.', 4)[3]
 
     def get_domain(self):
         return (self.dc + '.' if self.dc != self.client_id.dc else '') + self.client_id.get_domain()
@@ -71,8 +73,8 @@ class Site(models.Model):
     def _get_boxes(self):
         return self.box_ids.box_list()
 
-    def _get_boxes_d(self):
-        return self.box_ids.box_list_d()
+    # def _get_boxes_d(self):
+    #     return self.box_ids.box_list_d()
 
     def _get_arc(self):
         if not self.arc:
@@ -123,7 +125,13 @@ class Site(models.Model):
     def _vars(self):
         vals = {k: self[k] for k, d in self._fields.items() if d._attrs and d._attrs['config']}
         vals.update({
-            'default_box': self.box_id.name
+            'site': self.dc if self.client_id.dc == self.dc else self.client_id.dc + '_' + self.dc,
+            'site_domain': self.client_id.dc + '.omx'
+            if self.client_id.dc == self.dc else self.dc + '.' + self.client_id.dc + '.omx',
+            'default_box': self.box_id.name,
+            'default_gateway': self.box_network_prefix + ".1",
+            'ipovpn': calc_vpn_ip(self.idx, 26),
+            'iparc': calc_vpn_ip(self.idx, 27)
         })
         return vals
 
@@ -133,7 +141,7 @@ class Site(models.Model):
     def _inventory(self):
         return {
                 "vars": self._vars(),
-                "hosts": self._hosts() + self._get_boxes() + self._get_boxes_d()
+                "hosts": self._hosts() + self._get_boxes()  # + self._get_boxes_d()
                 + (["arc." + self.get_domain()] if self.arc else [])
             }
 

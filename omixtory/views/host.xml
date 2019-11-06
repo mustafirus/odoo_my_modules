@@ -71,7 +71,8 @@
                         <group cols="2">
                             <group colspan="1" cols="2">
                                 <group  colspan="2" cols="2" invisible="context.get('one2many')">
-                                    <field name="client_id" class="oe_read_only"/>
+                                    <field name="client_id" attrs="{'readonly': [('id','!=',False)]}"/>
+<!--                                    class="oe_read_only"-->
                                     <field name="site_id" context="{'default_client_id': client_id}"/>
                                     <field name="location" readonly="1"/>
                                 </group>

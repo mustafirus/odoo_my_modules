@@ -83,24 +83,25 @@ class Box(models.Model):
     #         elif rec.direct_ip == '127.0.0.127':
     #             rec.direct_ip = '0.0.0.0'
     #
-    def _box_name(self, direct):
-        return self.name.replace('.', 'd.', 1) if direct else self.name
+    def _box_name(self):
+        # return self.name.replace('.', 'd.', 1) if direct else self.name
+        return self.name
 
-    def _box_list(self, direct):
+    def _box_list(self):
         res = []
         for rec in self:
             if rec.state != 'normal':
                 continue
-            res.append(rec._box_name(direct))
+            res.append(rec._box_name())
         return res
 
     @api.multi
     def box_list(self):
-        return self._box_list(False)
+        return self._box_list()
 
-    @api.multi
-    def box_list_d(self):
-        return self._box_list(True)
+    # @api.multi
+    # def box_list_d(self):
+    #     return self._box_list(True)
 
     @api.multi
     def hostvars(self):
@@ -109,7 +110,10 @@ class Box(models.Model):
             if r.state != 'normal':
                 continue
             vals.update({
-                r._box_name(False): { 'ip': r.ip },
-                r._box_name(True): { 'ansible_host': r.direct_ip, 'ansible_port': r.direct_port },
+                r._box_name(): {
+                    'ip': r.ip ,
+                    'direct_ip': r.direct_ip,
+                    'direct_port': r.direct_port
+                },
             })
         return vals
