@@ -82,13 +82,15 @@ class Omixtory(http.Controller):
                 "hostvars": hostvars
             },
             "all": {
-                "hosts": [r.name for r in allhosts] + [r.name for r in allboxes],
+                "hosts": [r.name for r in allhosts]
+                         + [r.name for r in allboxes],
                 "children": [
                     "ungrouped",
                     "pm",
                     # "pmd",
                     "arc",
                 ] + [r.dc for r in allclients] +
+                [r.dc + '_cloud' for r in allclients if r.vlanid] +
                 [r.group() for r in allsites] +
                 [r.name for r in alltemplates]
             },

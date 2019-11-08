@@ -125,22 +125,38 @@ class Client(models.Model):
         return vals
 
     def _sites(self):
-        return [r.group() for r in self.site_ids if r.state == 'normal']
+        sites = [r.group() for r in self.site_ids if r.state == 'normal']
+        if self.vlanid:
+            sites.append([self.dc + '_cloud'])
+        return sites
+
+    def _cloud_vars(self):
+        vals = {
+            "box_network_prefix": self.cloud_network_prefix,
+            "arc": False,
+            'site': self.dc + '_cloud',
+            'site_domain': self.dc + '.omx',
+            'default_gateway': self.cloud_network_prefix + ".1",
+        }
+        return vals
 
     def _cloud_hosts(self):
         return [r.name for r in self.env['omixtory.host'].
-                search([('client_id', '=', self.id), ('site_id', '=', False), ('state', '=', 'normal')])]
+                search([('client_id', '=', self.id), ('site_id', '=', False), ('state', '=', 'normal')])] \
+               + ['gw0.{}.omx'.format(self.dc)]
 
     def _inventory(self):
         return {
                 "vars": self._vars(),
-                "children": self._sites() + [self.dc + '_cloud']
+                "children": self._sites()
             }
 
     @api.multi
     def inventory(self):
         inv = {r.dc: r._inventory() for r in self if r.state == 'normal'}
-        inv.update({r.dc + '_cloud': {'hosts': r._cloud_hosts()} for r in self if r.state == 'normal'})
+        inv.update({r.dc + '_cloud': {
+            'vars': r._cloud_vars(),
+            'hosts': r._cloud_hosts()} for r in self if r.state == 'normal' and r.vlanid})
         return inv
 
     @api.multi
